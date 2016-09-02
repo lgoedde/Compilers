@@ -1,41 +1,61 @@
 import java.io.*;
+import org.antlr.v4.runtime.*;
+import java.util.Arrays.*;
+//import java.lang;
 
 public class Micro {
 
-    public static void main(String[] args) {
-    	String fileName = "testcases/"; //May want to remove this and put files in top level dir
-		fileName += args[0];
-		//System.out.println(input_file);
+    public static void main(String[] args) throws Exception{
+    	String fileName = args[0]; //May want to remove this and put files in top level dir
+		//System.out.println(fileName);
+		try
+		{
+			//int 01;
+			//System.out.println();
+			ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
+			MicroLexer lexer = new MicroLexer(fileStream);
+		
+			Token tempToken;
+			String type = null;
+			while((tempToken = lexer.nextToken()).getType() != lexer.EOF) {
+				switch (tempToken.getType()) {
+					case MicroLexer.IDENTIFIER:
+						type = "IDENTIFIER";
+						break;
+					case MicroLexer.INTLITERAL:
+						type = "INTLITERAL";
+						break;	
+					case MicroLexer.FLOATLITERAL:
+						type = "FLOATLITERAL";
+						break;
+					case MicroLexer.STRINGLITERAL:
+						type = "STRINGLITERAL";
+						break;
+					case MicroLexer.COMMENT:
+						type = "COMMENT";
+						break;
+					case MicroLexer.KEYWORD:
+						type = "KEYWORD";
+						break;
+					case MicroLexer.OPERATOR:
+						type = "OPERATOR";
+						break;
+					default: type = ""; break;
+				}
+				if (type != "COMMENT")
+				{
+					System.out.println("Token Type: "+type+"\n"+"Value: "+tempToken.getText());
+				}
+			}
 
-		String line = null;
-		try {
-            // FileReader reads text files in the default encoding.
-            FileReader fileReader = 
-                new FileReader(fileName);
+			//System.out.println(MicroLexer.getTokenNames());
+			//System.out.println(MicroLexer.getRuleNames());
 
-            // Always wrap FileReader in BufferedReader.
-            BufferedReader bufferedReader = 
-                new BufferedReader(fileReader);
-
-            while((line = bufferedReader.readLine()) != null) {
-                System.out.println(line); //Call scanner thingy here
-            }   
-
-            // Always close files.
-            bufferedReader.close();         
-        }
-        catch(FileNotFoundException ex) {
-            System.out.println(
-                "Unable to open file '" + 
-                fileName + "'");                
-        }
-        catch(IOException ex) {
-            System.out.println(
-                "Error reading file '" 
-                + fileName + "'");                  
-            // Or we could just do this: 
-            // ex.printStackTrace();
-        }
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
 
     }
 }

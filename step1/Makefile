@@ -1,7 +1,7 @@
 LIB_ANTLR := lib/antlr.jar
 ANTLR_SCRIPT := Micro.g4
 
-all: group compiler fib
+all: group compiler fib loop nested sqrt
 
 group:
 	@echo "Lucas Goedde Michael Baio"
@@ -14,8 +14,23 @@ compiler:
 	javac -cp $(LIB_ANTLR) -d classes src/*.java build/*.java
 
 fib:
-	java -cp classes/:lib/antlr.jar Micro fibonacci.micro > fibonacci.scanner
-	cat fibonacci.scanner
+	java -cp classes/:lib/antlr.jar Micro testcases/fibonacci.micro > testcases/fibonacci.scanner
+	#diff testcases/fibonacci.scanner testcases/fibonacci.out
+
+loop:
+	java -cp classes/:lib/antlr.jar Micro testcases/loop.micro > testcases/loop.scanner
+	#diff testcases/loop.scanner testcases/loop.out
+
+nested:
+	java -cp classes/:lib/antlr.jar Micro testcases/nested.micro > testcases/nested.scanner
+	#diff testcases/nested.scanner testcases/nested.out
+	
+sqrt:
+	java -cp classes/:lib/antlr.jar Micro testcases/sqrt.micro > testcases/sqrt.scanner
+	#diff testcases/sqrt.scanner testcases/sqrt.out
+
+
+
 clean:
 	rm -rf classes build
 
