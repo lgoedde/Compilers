@@ -1,3 +1,5 @@
+//Created by Michael Baio and Lucas Goedde
+
 import java.io.*;
 import org.antlr.v4.runtime.*;
 import java.util.Arrays.*;
@@ -40,9 +42,12 @@ public class Micro {
 					case MicroLexer.OPERATOR:
 						type = "OPERATOR";
 						break;
+					case MicroLexer.WHITESPACE:
+						type = "WHITESPACE";
+						break;
 					default: type = ""; break;
 				}
-				if (type != "COMMENT")
+				if (type != "COMMENT" && type != "WHITESPACE")
 				{
 					System.out.println("Token Type: "+type+"\n"+"Value: "+tempToken.getText());
 				}

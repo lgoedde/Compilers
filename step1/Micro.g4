@@ -12,6 +12,8 @@ FLOATLITERAL: [0-9]*'.'[0-9]+;
 
 STRINGLITERAL: '"'('\\"' | ~('\n'|'\r'))*? '"';
 
+WHITESPACE: [\r\t\n' ']+;
+
 COMMENT: '-''-'(.)*?'\n';
 
 testsocompiles: 'blah';
