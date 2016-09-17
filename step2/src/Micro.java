@@ -16,42 +16,47 @@ public class Micro {
 			//System.out.println();
 			ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
 			MicroLexer lexer = new MicroLexer(fileStream);
+			CommonTokenStream tokens = new CommonTokenStream(lexer); 
+			MicroParser parser = new MicroParser(tokens);
+
+			parser.program();
+
 		
-			Token tempToken;
-			String type = null;
-			while((tempToken = lexer.nextToken()).getType() != lexer.EOF) {
-				switch (tempToken.getType()) {
-					case MicroLexer.IDENTIFIER:
-						type = "IDENTIFIER";
-						break;
-					case MicroLexer.INTLITERAL:
-						type = "INTLITERAL";
-						break;	
-					case MicroLexer.FLOATLITERAL:
-						type = "FLOATLITERAL";
-						break;
-					case MicroLexer.STRINGLITERAL:
-						type = "STRINGLITERAL";
-						break;
-					case MicroLexer.COMMENT:
-						type = "COMMENT";
-						break;
-					case MicroLexer.KEYWORD:
-						type = "KEYWORD";
-						break;
-					case MicroLexer.OPERATOR:
-						type = "OPERATOR";
-						break;
-					case MicroLexer.WHITESPACE:
-						type = "WHITESPACE";
-						break;
-					default: type = ""; break;
-				}
-				if (type != "COMMENT" && type != "WHITESPACE")
-				{
-					System.out.println("Token Type: "+type+"\n"+"Value: "+tempToken.getText());
-				}
-			}
+			// Token tempToken;
+			// String type = null;
+			// while((tempToken = lexer.nextToken()).getType() != lexer.EOF) {
+			// 	switch (tempToken.getType()) {
+			// 		case MicroLexer.IDENTIFIER:
+			// 			type = "IDENTIFIER";
+			// 			break;
+			// 		case MicroLexer.INTLITERAL:
+			// 			type = "INTLITERAL";
+			// 			break;	
+			// 		case MicroLexer.FLOATLITERAL:
+			// 			type = "FLOATLITERAL";
+			// 			break;
+			// 		case MicroLexer.STRINGLITERAL:
+			// 			type = "STRINGLITERAL";
+			// 			break;
+			// 		case MicroLexer.COMMENT:
+			// 			type = "COMMENT";
+			// 			break;
+			// 		case MicroLexer.KEYWORD:
+			// 			type = "KEYWORD";
+			// 			break;
+			// 		case MicroLexer.OPERATOR:
+			// 			type = "OPERATOR";
+			// 			break;
+			// 		case MicroLexer.WHITESPACE:
+			// 			type = "WHITESPACE";
+			// 			break;
+			// 		default: type = ""; break;
+			// 	}
+			// 	if (type != "COMMENT" && type != "WHITESPACE")
+			// 	{
+			// 		System.out.println("Token Type: "+type+"\n"+"Value: "+tempToken.getText());
+			// 	}
+			// }
 
 			//System.out.println(MicroLexer.getTokenNames());
 			//System.out.println(MicroLexer.getRuleNames());
