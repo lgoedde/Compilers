@@ -8,64 +8,28 @@ import java.util.Arrays.*;
 public class Micro {
 
     public static void main(String[] args) throws Exception{
-    	String fileName = args[0]; //May want to remove this and put files in top level dir
-		//System.out.println(fileName);
-		try
-		{
-			//int 01;
-			//System.out.println();
-			ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
-			MicroLexer lexer = new MicroLexer(fileStream);
-			CommonTokenStream tokens = new CommonTokenStream(lexer); 
-			MicroParser parser = new MicroParser(tokens);
+    	//get the current file
+    	String fileName = args[0]; 
 
+    	//set up all of the stuff we need to parse
+		ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
+		MicroLexer lexer = new MicroLexer(fileStream);
+		CommonTokenStream tokens = new CommonTokenStream(lexer); 
+		MicroParser parser = new MicroParser(tokens);
+
+		//do the actual parsing
+		try {
+			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
+			System.out.println("Accepted");
+		}
 
-		
-			// Token tempToken;
-			// String type = null;
-			// while((tempToken = lexer.nextToken()).getType() != lexer.EOF) {
-			// 	switch (tempToken.getType()) {
-			// 		case MicroLexer.IDENTIFIER:
-			// 			type = "IDENTIFIER";
-			// 			break;
-			// 		case MicroLexer.INTLITERAL:
-			// 			type = "INTLITERAL";
-			// 			break;	
-			// 		case MicroLexer.FLOATLITERAL:
-			// 			type = "FLOATLITERAL";
-			// 			break;
-			// 		case MicroLexer.STRINGLITERAL:
-			// 			type = "STRINGLITERAL";
-			// 			break;
-			// 		case MicroLexer.COMMENT:
-			// 			type = "COMMENT";
-			// 			break;
-			// 		case MicroLexer.KEYWORD:
-			// 			type = "KEYWORD";
-			// 			break;
-			// 		case MicroLexer.OPERATOR:
-			// 			type = "OPERATOR";
-			// 			break;
-			// 		case MicroLexer.WHITESPACE:
-			// 			type = "WHITESPACE";
-			// 			break;
-			// 		default: type = ""; break;
-			// 	}
-			// 	if (type != "COMMENT" && type != "WHITESPACE")
-			// 	{
-			// 		System.out.println("Token Type: "+type+"\n"+"Value: "+tempToken.getText());
-			// 	}
-			// }
-
-			//System.out.println(MicroLexer.getTokenNames());
-			//System.out.println(MicroLexer.getRuleNames());
+		catch (Exception e) {
+			System.out.println("Not Accepted");
 
 		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
+
+		//took out the old stuff for step1
 
     }
 }

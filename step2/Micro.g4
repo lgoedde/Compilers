@@ -23,7 +23,7 @@ param_decl_tail   : ',' param_decl param_decl_tail |  ;
 
 
 func_declarations : func_decl func_declarations |  ;
-func_decl         : 'FUNCTION' any_type id (param_decl_list) 'BEGIN' 	func_body 'END';
+func_decl         : 'FUNCTION' any_type id '('param_decl_list')' 'BEGIN' 	func_body 'END';
 func_body         : decl stmt_list ;
 
 
@@ -53,7 +53,7 @@ mulop             : '*' | '/';
 
 
 if_stmt           : 'IF' '(' cond ')' decl stmt_list else_part 'ENDIF';
-else_part         : 'ELSIF' '(' cond ')' decl stmt_list else_part |  ;
+else_part         : 'ELSIF' '(' cond ')' decl stmt_list else_part |;
 cond              : expr compop expr | 'TRUE' | 'FALSE';
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
@@ -64,15 +64,23 @@ KEYWORD: 'PROGRAM' | 'BEGIN' | 'END' | 'FUNCTION' | 'READ' | 'WRITE' | 'IF' | 'E
 
 OPERATOR: ':='|'+'|'-'|'*'|'/'|'='|'!='|'<'|'>'|'('|')'|';'|','|'<='|'>=';
 
-IDENTIFIER: ([a-zA-Z])([a-zA-Z0-9])*;
+IDENTIFIER: ([a-zA-Z])([a-zA-Z0-9])*
+			{
+				if(getText().length() > 31)
+					throw new RuntimeException("IDENTIFIER ERROR");
+			};
 
 INTLITERAL:	[0-9]+|[0];
 
 FLOATLITERAL: [0-9]*'.'[0-9]+;
 
-STRINGLITERAL: '"'('\\"' | ~('\n'|'\r'))*? '"';
+STRINGLITERAL: '"'('\\"' | ~('\n'|'\r'))*? '"'
+				{
+					if(getText().length() > 81)
+						throw new RuntimeException("STRINGLITERAL ERROR");	
+				};
 
-WHITESPACE: [\r\t\n' ']+;
+WHITESPACE: [\r\t\n' ']+ -> skip;
 
-COMMENT: '-''-'(.)*?'\n';
+COMMENT: '-''-'(.)*?'\n' -> skip;
 
