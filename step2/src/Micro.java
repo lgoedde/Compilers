@@ -19,6 +19,7 @@ public class Micro {
 
 		//do the actual parsing
 		try {
+			parser.removeErrorListeners(); //keep errors from being written to command line
 			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
 			System.out.println("Accepted");
