@@ -2,29 +2,49 @@ grammar Micro;
 
 program           : 'PROGRAM' id 'BEGIN' pgm_body 'END' ;
 id                : IDENTIFIER;
-pgm_body          : decl func_declarations;
-decl              : string_decl decl | var_decl decl | ;
+pgm_body  		  : {
+						SymbolTable.pushScope(new Scope("GLOBAL"));
+					} 
+					decl {SymbolTable.popScope();} func_declarations ;
+decl        	  : string_decl decl | var_decl decl | ;
 
 
-string_decl       : 'STRING' id ':=' str ';' ;
+string_decl       : 'STRING' id ':=' str ';'
+					{
+						Symbol tempSymbol = new Symbol($id.text,"STRING",$str.text);
+						SymbolTable.currentScope.addSymbol(tempSymbol);
+					} ;
 str               : STRINGLITERAL;
 
 
-var_decl          : var_type id_list ';';
+var_decl 		  : var_type 
+					id_list ';'{
+						Symbol tempSymbol = new Symbol($id_list.text,$var_type.text,"");
+						SymbolTable.currentScope.addSymbol(tempSymbol);
+					};
 var_type          : 'FLOAT' | 'INT';
 any_type          : var_type | 'VOID';
-id_list           : id id_tail;
+id_list           : id
+					id_tail ;
 id_tail           : ',' id id_tail |  ;
 
 
 param_decl_list   : param_decl param_decl_tail |  ;
-param_decl        : var_type id;
+param_decl        : var_type id 
+					{
+						Symbol tempSymbol = new Symbol($id.text,$var_type.text,"");
+						SymbolTable.currentScope.addSymbol(tempSymbol); 
+					};
 param_decl_tail   : ',' param_decl param_decl_tail |  ;
 
 
-func_declarations : func_decl func_declarations |  ;
-func_decl         : 'FUNCTION' any_type id '('param_decl_list')' 'BEGIN' 	func_body 'END';
-func_body         : decl stmt_list ;
+func_declarations : func_decl  func_declarations |  ;
+func_decl         : 'FUNCTION' any_type id 
+					{
+						SymbolTable.pushScope(new Scope($id.text));
+					} 
+					'('param_decl_list')' 'BEGIN' 	func_body 'END';
+func_body         : decl {SymbolTable.popScope();} stmt_list ;
 
 
 stmt_list         : stmt stmt_list |  ;
@@ -52,12 +72,12 @@ addop             : '+' | '-';
 mulop             : '*' | '/';
 
 
-if_stmt           : 'IF' '(' cond ')' decl stmt_list else_part 'ENDIF';
-else_part         : 'ELSIF' '(' cond ')' decl stmt_list else_part |;
+if_stmt           : 'IF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
+else_part         : 'ELSIF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
 cond              : expr compop expr | 'TRUE' | 'FALSE';
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
-do_while_stmt       : 'DO' decl stmt_list 'WHILE' '(' cond ')' ';' ;
+do_while_stmt       : 'DO' {SymbolTable.pushBlock();} decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' ';' ;
 
 
 KEYWORD: 'PROGRAM' | 'BEGIN' | 'END' | 'FUNCTION' | 'READ' | 'WRITE' | 'IF' | 'ELSIF' | 'ENDIF' | 'DO' | 'WHILE' | 'CONTINUE' | 'BREAK' | 'RETURN' | 'INT' | 'VOID' | 'STRING' | 'FLOAT' | 'TRUE' | 'FALSE' ;

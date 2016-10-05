@@ -22,11 +22,11 @@ public class Micro {
 			parser.removeErrorListeners(); //keep errors from being written to command line
 			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
-			System.out.println("Accepted");
+			//System.out.println("Accepted");
 		}
 
 		catch (Exception e) {
-			System.out.println("Not Accepted");
+			//System.out.println("Not Accepted");
 
 		}
 
