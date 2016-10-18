@@ -22,6 +22,7 @@ public class Micro {
 			parser.removeErrorListeners(); //keep errors from being written to command line
 			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
+			IRList.printList();
 			//System.out.println("Accepted");
 		}
 

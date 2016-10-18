@@ -53,9 +53,9 @@ base_stmt         : assign_stmt | read_stmt | write_stmt | return_stmt;
 
 
 assign_stmt       : assign_expr ';' ;
-assign_expr       : id ':=' expr;
-read_stmt         : 'READ' '(' id_list ')'';' ;
-write_stmt        : 'WRITE' '(' id_list ')' ';' ;
+assign_expr       : id ':=' expr {IRList.addAssignment($id.text,$expr.text);} ;
+read_stmt         : 'READ' '(' id_list ')'';' {IRList.addRead($id_list.text);}  ;
+write_stmt        : 'WRITE' '(' id_list ')' ';' {IRList.addWrite($id_list.text);} ;
 return_stmt       : 'RETURN' expr ';' ;
 
 

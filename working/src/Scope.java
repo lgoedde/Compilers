@@ -6,11 +6,14 @@ import java.lang.Exception.*;
 
 public class Scope {
 	public List<Symbol> symbolTable;
+	public HashMap symbolLookUp;
 	public String name;
+	public int symbolID = 0;
 
 	public Scope(String name) {
 		this.name = name;
 		this.symbolTable = new ArrayList<Symbol>();
+		this.symbolLookUp = new HashMap();
 	}
 
 	public void addSymbol(Symbol tsymbol) {
@@ -27,13 +30,12 @@ public class Scope {
 
 	private void checkAdd(Symbol tsymbol) {
 		String identifier = tsymbol.identifier;
-		for (Symbol symbol : this.symbolTable) {
-			if (Objects.equals(symbol.identifier, identifier)) {
+		if (symbolLookUp.containsKey(identifier)) {
 				System.out.println("DECLARATION ERROR " + tsymbol.identifier);
 				System.exit(1);
-			}
 		}
-		this.symbolTable.add(tsymbol);
+		this.symbolLookUp.put(identifier,symbolID);
+		this.symbolTable.add(symbolID++,tsymbol);
 	}
 
 

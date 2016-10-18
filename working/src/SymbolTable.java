@@ -9,6 +9,7 @@ public class SymbolTable
 	public static Stack<Scope> ScopeStack = new Stack<Scope>(); 
 	public static Scope currentScope;
 	private static int block_number = 1;
+	public static Scope globalScope;
 
 	public SymbolTable() {
 	
@@ -16,6 +17,8 @@ public class SymbolTable
 
 	public static void pushScope(Scope scope) {
 		ScopeStack.push(scope);
+		if (scope.name == "GLOBAL")
+			globalScope = scope;
 		currentScope = getCurrentScope();
 	}
 
@@ -25,15 +28,25 @@ public class SymbolTable
 
 	public static void popScope() {
 		Scope tempScope = ScopeStack.pop();
-		if (tempScope.name != "GLOBAL") {
+		/*if (tempScope.name != "GLOBAL") {
 			System.out.println("");
 		}
 		System.out.println("Symbol table " + tempScope.name);
-		tempScope.printSymbols();
+		tempScope.printSymbols();*/
 	}
 
 	public static Scope getCurrentScope() {
 		return ScopeStack.peek();
+	}
+
+	public static String getSymbolType(String identifier) {
+		if (globalScope.symbolLookUp.containsKey(identifier)) {
+			return globalScope.symbolTable.get((int)globalScope.symbolLookUp.get(identifier)).type;
+		}
+		if (currentScope.symbolLookUp.containsKey(identifier)) {
+			return currentScope.symbolTable.get((int)currentScope.symbolLookUp.get(identifier)).type;
+		}
+	 	return "";
 	}
 
 
