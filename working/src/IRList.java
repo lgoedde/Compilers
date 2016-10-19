@@ -27,7 +27,10 @@ public class IRList {
 	}
 
 	public static void addAssignment(String id, String expr) {
-		
+		System.out.print("ID: "+id);
+		System.out.println("\texpr: "+expr);
+		String simplified = ExpressionEval.SimplifyExpression(expr);
+		NodeList.add(new IRNode("STOREI ",simplified," ","$T"+Integer.toString(ExpressionEval.regNum++)));
 	}
 
 	public static void addRead(String idList) {

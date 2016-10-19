@@ -59,7 +59,7 @@ write_stmt        : 'WRITE' '(' id_list ')' ';' {IRList.addWrite($id_list.text);
 return_stmt       : 'RETURN' expr ';' ;
 
 
-expr              : expr_prefix factor;
+expr              : expr_prefix factor ;
 expr_prefix       : expr_prefix factor addop |  ;
 factor            : factor_prefix postfix_expr;
 factor_prefix     : factor_prefix postfix_expr mulop |  ;
