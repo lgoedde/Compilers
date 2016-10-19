@@ -5,24 +5,24 @@ import java.util.*;
 public class ExpressionEval {
 
 	public static int regNum = 0;
+	public static HashMap regLookUp = new HashMap();
 
 	public ExpressionEval() {
-
 	}
 
 
 	public static String SimplifyExpression(String expression) {
 		String simplified;
-		System.out.print("expr: "+expression);
+		//System.out.print("expr: "+expression);
 		expression = expression.replaceAll("\\s+","");
 		expression = expression.replace(";","");
-		System.out.print("\ttrim: "+expression);
+		//System.out.print("\ttrim: "+expression);
 		simplified = SimplifyParenthesis(expression);
-		System.out.print("\tparen: "+simplified);
+		//System.out.print("\tparen: "+simplified);
 		simplified = SimpMult(simplified);
-		System.out.print("\tmult: "+simplified);
+		//System.out.print("\tmult: "+simplified);
 		simplified = SimpAdd(simplified);
-		System.out.println("\tfinish: "+simplified);
+		//System.out.println("\tfinish: "+simplified);
 		return simplified;
 	}
 
@@ -57,7 +57,7 @@ public class ExpressionEval {
 
 	private static String SimpMult (String expr) {
 		List<String> tokens = GetTokens(expr);
-		//System.out.println("tokens mult: "+tokens);
+		System.out.println("tokens mult: "+tokens);
 		String token;
 		String type;
 		String result;
@@ -65,12 +65,16 @@ public class ExpressionEval {
 		String op2;
 		Stack stack = new Stack();
 		for (int i = 0; i < tokens.size(); i++) {
+			System.out.print(i);
 			token = tokens.get(i);
+			System.out.print("\t"+token);
 			if (token.equals("*") || token.equals("/")) {
 				op1 = (String)stack.pop();
 				op2 = tokens.get(++i);
 				type = getType(op1,op2);
-				result = "$T"+Integer.toString(regNum++);
+				System.out.print("\ttype: "+type);
+				result = GetNextReg(type);
+				System.out.print("\tresult: "+result);
 				stack.push(result);
 				if (token.equals("*")) {
 					if (type.equals("FLOAT")) 
@@ -93,6 +97,7 @@ public class ExpressionEval {
 		while (!stack.empty()) {
 			result = stack.pop() + result;
 		}
+		System.out.println(result);
 		return result;
 	}
 
@@ -111,7 +116,7 @@ public class ExpressionEval {
 				op1 = (String)stack.pop();
 				op2 = tokens.get(++i);
 				type = getType(op1,op2);
-				result = "$T"+Integer.toString(regNum++);
+				result = GetNextReg(type);
 				stack.push(result);
 				if (token.equals("+")) {
 					if (type.equals("FLOAT")) 
@@ -138,6 +143,14 @@ public class ExpressionEval {
 		return result;
 	}
 
+	public static String GetNextReg(String type) {
+		System.out.println(type);
+		String reg = "$T"+Integer.toString(regNum++);
+		regLookUp.put(reg,type);
+		System.out.println(reg);
+		return reg;
+	}
+
 	private static List<String> GetTokens(String expr) {
 		List<String> strArr = new ArrayList<String>();
 		String temp = "";
@@ -159,13 +172,17 @@ public class ExpressionEval {
 		return strArr;
 	}
 
-	private static String getType(String op1, String op2) {
-		if (op1.charAt(0) == '$' || op2.charAt(0) == '$')
-			return "FLOAT";
-		if (op1.indexOf('.') != -1 || op2.indexOf('.') != -1)
-			return "FLOAT";
+	public static String getType(String op1, String op2) {
 		String type1;
 		String type2;
+		if (op1.charAt(0) == '$') 
+			type1 = (String)regLookUp.get(op1);
+		if (op2.charAt(0) == '$') {
+			type2 = (String)regLookUp.get(op2);
+		}
+		if (op1.indexOf('.') != -1 || op2.indexOf('.') != -1)
+			return "FLOAT";
+		
 		if (!isNumeric(op1)) {
 			type1 = SymbolTable.getSymbolType(op1);
 		}

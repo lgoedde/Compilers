@@ -30,7 +30,25 @@ public class IRList {
 		System.out.print("ID: "+id);
 		System.out.println("\texpr: "+expr);
 		String simplified = ExpressionEval.SimplifyExpression(expr);
-		NodeList.add(new IRNode("STOREI ",simplified," ","$T"+Integer.toString(ExpressionEval.regNum++)));
+		String type = ExpressionEval.getType(simplified,"0");
+		String result = ExpressionEval.GetNextReg(type);
+		if (simplified.charAt(0) != '$') {
+		if (type.equals("FLOAT")) {
+			NodeList.add(new IRNode("STOREF ",simplified," ",result));
+		}
+		else {
+			NodeList.add(new IRNode("STOREI ",simplified," ",result));
+
+		}
+		}
+		if (type.equals("FLOAT")) {
+			NodeList.add(new IRNode("STOREF ",simplified," ",id));
+		}
+		else {
+			NodeList.add(new IRNode("STOREI ",simplified," ",id));
+
+		}
+
 	}
 
 	public static void addRead(String idList) {
