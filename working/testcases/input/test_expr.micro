@@ -11,9 +11,6 @@ BEGIN
 		c := 10;
 		d := 20;
 
-		READ (b); 
-		READ (x);
-
 		WRITE (a);
 		WRITE (b);
 		WRITE (c);
@@ -28,7 +25,7 @@ BEGIN
 		WRITE (d);
 		a := (a+b)*(d+c)-(a+b+c+d)/a;
 		WRITE (a);
-		
+
 		a := a + 10;
 		WRITE (a);
 		b := b + a + 10;
@@ -51,5 +48,5 @@ BEGIN
 		WRITE (t);
 		t := (t+z+t+t/2.0+z/4.0+z/5.0+z/6.0+z/7.0);
 		WRITE (t);
-	END	
+	END
 END

@@ -41,10 +41,10 @@ public class SymbolTable
 
 	public static String getSymbolType(String identifier) {
 		if (globalScope.symbolLookUp.containsKey(identifier)) {
-			return globalScope.symbolTable.get((int)globalScope.symbolLookUp.get(identifier)).type;
+			return globalScope.symbolTable.get((Integer)globalScope.symbolLookUp.get(identifier)).type;
 		}
 		if (currentScope.symbolLookUp.containsKey(identifier)) {
-			return currentScope.symbolTable.get((int)currentScope.symbolLookUp.get(identifier)).type;
+			return currentScope.symbolTable.get((Integer)currentScope.symbolLookUp.get(identifier)).type;
 		}
 	 	return "";
 	}

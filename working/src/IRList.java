@@ -27,25 +27,14 @@ public class IRList {
 	}
 
 	public static void addAssignment(String id, String expr) {
-		System.out.print("ID: "+id);
-		System.out.println("\texpr: "+expr);
 		String simplified = ExpressionEval.SimplifyExpression(expr);
 		String type = ExpressionEval.getType(simplified,"0");
-		String result = ExpressionEval.GetNextReg(type);
-		if (simplified.charAt(0) != '$') {
+		String result = ExpressionEval.checkOps(simplified, "").get(0);
 		if (type.equals("FLOAT")) {
-			NodeList.add(new IRNode("STOREF ",simplified," ",result));
+			NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+result," ",id));
 		}
 		else {
-			NodeList.add(new IRNode("STOREI ",simplified," ",result));
-
-		}
-		}
-		if (type.equals("FLOAT")) {
-			NodeList.add(new IRNode("STOREF ",simplified," ",id));
-		}
-		else {
-			NodeList.add(new IRNode("STOREI ",simplified," ",id));
+			NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+result," ",id));
 
 		}
 
@@ -58,11 +47,11 @@ public class IRList {
 			for (String part : parts) {
 				if ((type = SymbolTable.getSymbolType(part)) != "") {
 					if (type.equals("INT")) {
-						IRNode tempNode = new IRNode("READI"," ","",part);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.READI," ","",part);
 						NodeList.add(tempNode);
 					}
 					else if(type.equals("FLOAT")) {
-						IRNode tempNode = new IRNode("READF"," ","",part);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.READF," ","",part);
 						NodeList.add(tempNode);
 					}
 				}
@@ -74,11 +63,11 @@ public class IRList {
 		else {
 			if ((type = SymbolTable.getSymbolType(idList)) != "") {
 				if (type.equals("INT")) {
-					IRNode tempNode = new IRNode("READI"," ","",idList);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.READI," ","",idList);
 					NodeList.add(tempNode);
 				}
 				else if(type.equals("FLOAT")) {
-					IRNode tempNode = new IRNode("READF"," ","",idList);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.READF," ","",idList);
 					NodeList.add(tempNode);
 				}
 			}
@@ -95,11 +84,11 @@ public class IRList {
 			for (String part : parts) {
 				if ((type = SymbolTable.getSymbolType(part)) != "") {
 					if (type.equals("INT")) {
-						IRNode tempNode = new IRNode("WRITEI"," ","",part);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI," ","",part);
 						NodeList.add(tempNode);
 					}
 					else if(type.equals("FLOAT")) {
-						IRNode tempNode = new IRNode("WRITEF"," ","",part);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF," ","",part);
 						NodeList.add(tempNode);
 					}
 				}
@@ -111,11 +100,11 @@ public class IRList {
 		else {
 			if ((type = SymbolTable.getSymbolType(idList)) != "") {
 				if (type.equals("INT")) {
-					IRNode tempNode = new IRNode("WRITEI"," ","",idList);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI," ","",idList);
 					NodeList.add(tempNode);
 				}
 				else if(type.equals("FLOAT")) {
-					IRNode tempNode = new IRNode("WRITEF"," ","",idList);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF," ","",idList);
 					NodeList.add(tempNode);
 				}
 			}

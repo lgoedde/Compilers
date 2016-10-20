@@ -35,7 +35,7 @@ public class ExpressionEval {
 
 			if (c == ')') {
 				String inner = "";
-				while (!stack.empty() && (pop = (char)stack.pop()) != '(') {
+				while (!stack.empty() && (pop = (Character)stack.pop()) != '(') {
 					inner = pop + inner;
 				}
 				inner = SimpMult(inner);
@@ -57,36 +57,39 @@ public class ExpressionEval {
 
 	private static String SimpMult (String expr) {
 		List<String> tokens = GetTokens(expr);
-		System.out.println("tokens mult: "+tokens);
+		//System.out.println("tokens mult: "+tokens);
 		String token;
 		String type;
 		String result;
 		String op1;
 		String op2;
-		Stack stack = new Stack();
+		Stack<String> stack = new Stack<String>();
 		for (int i = 0; i < tokens.size(); i++) {
-			System.out.print(i);
+			//System.out.print(i);
 			token = tokens.get(i);
-			System.out.print("\t"+token);
+			//System.out.print("\t"+token);
 			if (token.equals("*") || token.equals("/")) {
 				op1 = (String)stack.pop();
 				op2 = tokens.get(++i);
 				type = getType(op1,op2);
-				System.out.print("\ttype: "+type);
+				//System.out.print("\ttype: "+type);
 				result = GetNextReg(type);
-				System.out.print("\tresult: "+result);
+				//System.out.print("\tresult: "+result);
 				stack.push(result);
+				List<String> ops = checkOps(op1,op2);
+				op1 = ops.get(0);
+				op2 = ops.get(1);
 				if (token.equals("*")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode("MULTF ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode("MULTI ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTI," "+op1+" ",op2+" ",result));
 				}
 				else if (token.equals("/")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode("DIVF ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode("DIVI ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVI," "+op1+" ",op2+" ",result));
 				}
 			}
 			else {
@@ -97,7 +100,7 @@ public class ExpressionEval {
 		while (!stack.empty()) {
 			result = stack.pop() + result;
 		}
-		System.out.println(result);
+		//System.out.println(result);
 		return result;
 	}
 
@@ -108,7 +111,7 @@ public class ExpressionEval {
 		String result;
 		String op1;
 		String op2;
-		Stack stack = new Stack();
+		Stack<String> stack = new Stack<String>();
 		for (int i = 0; i < tokens.size(); i++) {
 			token = tokens.get(i);
 
@@ -118,17 +121,20 @@ public class ExpressionEval {
 				type = getType(op1,op2);
 				result = GetNextReg(type);
 				stack.push(result);
+				List<String> ops = checkOps(op1,op2);
+				op1 = ops.get(0);
+				op2 = ops.get(1);
 				if (token.equals("+")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode("ADDF ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode("ADDI ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDI," "+op1+" ",op2+" ",result));
 				}
 				else if (token.equals("-")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode("SUBF ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode("SUBI ",op1+" ",op2+" ",result));
+						IRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBI," "+op1+" ",op2+" ",result));
 				}
 				
 			}
@@ -143,11 +149,43 @@ public class ExpressionEval {
 		return result;
 	}
 
+	public static List<String> checkOps(String op1, String op2) {
+		String reg;
+		String res1 = op1;
+		String res2 = op2;
+		List<String> results = new ArrayList<String>(); 
+		if (op1.indexOf('.') != -1 ) {
+			reg = GetNextReg("FLOAT");
+			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op1," ",reg));
+			res1 = reg;
+		}
+		else if (isNumeric(op1)) {
+			reg = GetNextReg("INT");
+			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op1," ",reg));
+			res1 = reg;
+		}
+		if (op2.indexOf('.') != -1 ) {
+			reg = GetNextReg("FLOAT");
+			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op2," ",reg));
+			res2 = reg;
+		}
+		else if (isNumeric(op2)) {
+			reg = GetNextReg("INT");
+			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op2," ",reg));
+			res2 = reg;
+		}
+		
+		results.add(res1);
+		results.add(res2);
+		return results;
+		
+	}
+
 	public static String GetNextReg(String type) {
-		System.out.println(type);
+		//System.out.println(type);
 		String reg = "$T"+Integer.toString(regNum++);
 		regLookUp.put(reg,type);
-		System.out.println(reg);
+		//System.out.println(reg);
 		return reg;
 	}
 

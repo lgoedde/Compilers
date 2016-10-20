@@ -23,6 +23,7 @@ public class Micro {
 			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
 			IRList.printList();
+			TinyGeneration.printTiny();
 			//System.out.println("Accepted");
 		}
 

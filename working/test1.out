@@ -1,0 +1,65 @@
+;IR code
+;STOREI 20 $T0
+;STOREI $T0 a
+;STOREI 30 $T1
+;STOREI $T1 b
+;STOREI 40 $T2
+;STOREI $T2 c
+;MULTI a b $T3
+;ADDI $T3 c $T4
+;MULTI a b $T5
+;DIVI $T4 a $T6
+;ADDI c $T5 $T7
+;ADDI $T7 $T6 $T8
+;STOREI 20 $T10
+;ADDI $T8 $T10 $T9
+;STOREI $T9 c
+;MULTI b b $T11
+;ADDI $T11 a $T12
+;STOREI $T12 b
+;MULTI b a $T13
+;DIVI $T13 a $T14
+;STOREI $T14 a
+;WRITEI c
+;WRITEI b
+;WRITEI a
+;tiny code
+var a
+var b
+var c
+move 20 r0
+move r0 a
+move 30 r1
+move r1 b
+move 40 r2
+move r2 c
+move a r3
+muli b r3
+move r3 r4
+addi c r4
+move a r5
+muli b r5
+move r4 r6
+divi a r6
+move c r7
+addi r5 r7
+move r7 r8
+addi r6 r8
+move 20 r9
+move r8 r10
+addi r9 r10
+move r10 c
+move b r11
+muli b r11
+move r11 r12
+addi a r12
+move r12 b
+move b r13
+muli a r13
+move r13 r14
+divi a r14
+move r14 a
+sys writei c
+sys writei b
+sys writei a
+sys halt
