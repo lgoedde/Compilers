@@ -1,7 +1,7 @@
 import org.antlr.v4.runtime.*;
 import java.io.*;
 import java.util.*;
-
+// step 5
 public class ExpressionEval {
 
 	public static int regNum = 0;
@@ -13,16 +13,11 @@ public class ExpressionEval {
 
 	public static String SimplifyExpression(String expression) {
 		String simplified;
-		//System.out.print("expr: "+expression);
 		expression = expression.replaceAll("\\s+","");
 		expression = expression.replace(";","");
-		//System.out.print("\ttrim: "+expression);
 		simplified = SimplifyParenthesis(expression);
-		//System.out.print("\tparen: "+simplified);
 		simplified = SimpMult(simplified);
-		//System.out.print("\tmult: "+simplified);
 		simplified = SimpAdd(simplified);
-		//System.out.println("\tfinish: "+simplified);
 		return simplified;
 	}
 
@@ -57,7 +52,6 @@ public class ExpressionEval {
 
 	private static String SimpMult (String expr) {
 		List<String> tokens = GetTokens(expr);
-		//System.out.println("tokens mult: "+tokens);
 		String token;
 		String type;
 		String result;
@@ -65,16 +59,12 @@ public class ExpressionEval {
 		String op2;
 		Stack<String> stack = new Stack<String>();
 		for (int i = 0; i < tokens.size(); i++) {
-			//System.out.print(i);
 			token = tokens.get(i);
-			//System.out.print("\t"+token);
 			if (token.equals("*") || token.equals("/")) {
 				op1 = (String)stack.pop();
 				op2 = tokens.get(++i);
 				type = getType(op1,op2);
-				//System.out.print("\ttype: "+type);
 				result = GetNextReg(type);
-				//System.out.print("\tresult: "+result);
 				stack.push(result);
 				List<String> ops = checkOps(op1,op2);
 				op1 = ops.get(0);
@@ -100,7 +90,6 @@ public class ExpressionEval {
 		while (!stack.empty()) {
 			result = stack.pop() + result;
 		}
-		//System.out.println(result);
 		return result;
 	}
 
@@ -182,10 +171,8 @@ public class ExpressionEval {
 	}
 
 	public static String GetNextReg(String type) {
-		//System.out.println(type);
 		String reg = "$T"+Integer.toString(regNum++);
 		regLookUp.put(reg,type);
-		//System.out.println(reg);
 		return reg;
 	}
 
@@ -195,7 +182,6 @@ public class ExpressionEval {
 		for(int i = 0; i < expr.length(); i++) {
 			char c = expr.charAt(i);
 			if (c == '+' || c == '-' || c == '/' || c == '*') {
-				//System.out.println("add token: "+temp);
 				strArr.add(temp);
 				strArr.add(Character.toString(c));
 				temp = "";
@@ -204,7 +190,6 @@ public class ExpressionEval {
 				temp = temp + c;
 			}
 		}
-		//System.out.println("add token: "+temp);
 
 		strArr.add(temp);
 		return strArr;
