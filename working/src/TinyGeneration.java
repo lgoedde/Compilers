@@ -19,7 +19,7 @@ public class TinyGeneration {
 			else
 				System.out.println("var "+symbol.identifier);
 		}
-		ListIterator<IRNode> iterator = IRList.NodeList.listIterator();
+		ListIterator<IRNode> iterator = null; //IRList.NodeList.listIterator();
 		while (iterator.hasNext()) {
 			IRNode ir = iterator.next();
 			switch(ir.Opcode) {

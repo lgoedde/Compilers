@@ -41,6 +41,7 @@ param_decl_tail   : ',' param_decl param_decl_tail |  ;
 func_declarations : func_decl  func_declarations |  ;
 func_decl         : 'FUNCTION' any_type id 
 					{
+						SemanticHandler.pushTree();
 						SymbolTable.pushScope(new Scope($id.text));
 					} 
 					'('param_decl_list')' 'BEGIN' 	func_body 'END';
@@ -48,14 +49,14 @@ func_body         : decl {SymbolTable.popScope();} stmt_list ;
 
 
 stmt_list         : stmt stmt_list |  ;
-stmt              : base_stmt | if_stmt | do_while_stmt;
-base_stmt         : assign_stmt | read_stmt | write_stmt | return_stmt;
+stmt              : base_stmt  | if_stmt | do_while_stmt;
+base_stmt         : {SemanticNode newNode = new SemanticNode(SemanticNode.SemanticType.BASE);} assign_stmt | read_stmt | write_stmt | return_stmt;
 
 
 assign_stmt       : assign_expr ';' ;
-assign_expr       : id ':=' expr {IRList.addAssignment($id.text,$expr.text);} ;
-read_stmt         : 'READ' '(' id_list ')'';' {IRList.addRead($id_list.text);}  ;
-write_stmt        : 'WRITE' '(' id_list ')' ';' {IRList.addWrite($id_list.text);} ;
+assign_expr       : id ':=' expr {SemanticHandler.addAssignment($id.text,$expr.text);} ;
+read_stmt         : 'READ' '(' id_list ')'';' {SemanticHandler.addRead($id_list.text);}  ;
+write_stmt        : 'WRITE' '(' id_list ')' ';' {SemanticHandler.addWrite($id_list.text);} ;
 return_stmt       : 'RETURN' expr ';' ;
 
 
@@ -72,9 +73,9 @@ addop             : '+' | '-';
 mulop             : '*' | '/';
 
 
-if_stmt           : 'IF' '(' cond {ConditionExpr.type = "IFSTMT"; IRList.addControlStmt();}')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
-else_part         : 'ELSIF' {IRList.addElse} '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
-cond              : expr {ConditionExpr.LHS = $expr.text;} compop {ConditionExpr.CMP = $compop.text;} expr {ConditionExpr.RHS = $expr.text;} | 'TRUE' {ConditionExpr.LHS = "TRUE";} | 'FALSE' {ConditionExpr.LHS = "FALSE";} ;
+if_stmt           : 'IF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
+else_part         : 'ELSIF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
+cond              : expr compop expr | 'TRUE' | 'FALSE' ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
 do_while_stmt       : 'DO' {SymbolTable.pushBlock();} decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' ';' ;
@@ -94,4 +95,13 @@ INTLITERAL:	[0-9]+|[0];
 
 FLOATLITERAL: [0-9]*'.'[0-9]+;
 
-STRINGLITERAL: '"'('\\"' | ~('
+STRINGLITERAL: '"'('\\"' | ~('\n'|'\r'))*? '"'
+				{
+					if(getText().length() > 81)
+						throw new RuntimeException("STRINGLITERAL ERROR");	
+				};
+
+WHITESPACE: [\r\t\n' ']+ -> skip;
+
+COMMENT: '-''-'(.)*?'\n' -> skip;
+
