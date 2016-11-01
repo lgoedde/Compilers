@@ -72,9 +72,9 @@ addop             : '+' | '-';
 mulop             : '*' | '/';
 
 
-if_stmt           : 'IF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
-else_part         : 'ELSIF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
-cond              : expr compop expr | 'TRUE' | 'FALSE';
+if_stmt           : 'IF' '(' cond {ConditionExpr.type = "IFSTMT"; IRList.addControlStmt();}')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
+else_part         : 'ELSIF' {IRList.addElse} '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
+cond              : expr {ConditionExpr.LHS = $expr.text;} compop {ConditionExpr.CMP = $compop.text;} expr {ConditionExpr.RHS = $expr.text;} | 'TRUE' {ConditionExpr.LHS = "TRUE";} | 'FALSE' {ConditionExpr.LHS = "FALSE";} ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
 do_while_stmt       : 'DO' {SymbolTable.pushBlock();} decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' ';' ;
@@ -94,13 +94,4 @@ INTLITERAL:	[0-9]+|[0];
 
 FLOATLITERAL: [0-9]*'.'[0-9]+;
 
-STRINGLITERAL: '"'('\\"' | ~('\n'|'\r'))*? '"'
-				{
-					if(getText().length() > 81)
-						throw new RuntimeException("STRINGLITERAL ERROR");	
-				};
-
-WHITESPACE: [\r\t\n' ']+ -> skip;
-
-COMMENT: '-''-'(.)*?'\n' -> skip;
-
+STRINGLITERAL: '"'('\\"' | ~('
