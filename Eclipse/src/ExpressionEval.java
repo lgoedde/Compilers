@@ -71,15 +71,15 @@ public class ExpressionEval {
 				op2 = ops.get(1);
 				if (token.equals("*")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTF," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTI," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.MULTI," "+op1+" ",op2+" ",result));
 				}
 				else if (token.equals("/")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVF," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVI," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.DIVI," "+op1+" ",op2+" ",result));
 				}
 			}
 			else {
@@ -115,15 +115,15 @@ public class ExpressionEval {
 				op2 = ops.get(1);
 				if (token.equals("+")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDF," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDI," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.ADDI," "+op1+" ",op2+" ",result));
 				}
 				else if (token.equals("-")) {
 					if (type.equals("FLOAT")) 
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBF," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBF," "+op1+" ",op2+" ",result));
 					else
-						IRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBI," "+op1+" ",op2+" ",result));
+						SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.SUBI," "+op1+" ",op2+" ",result));
 				}
 				
 			}
@@ -145,22 +145,22 @@ public class ExpressionEval {
 		List<String> results = new ArrayList<String>(); 
 		if (op1.indexOf('.') != -1 ) {
 			reg = GetNextReg("FLOAT");
-			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op1," ",reg));
+			SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op1," ",reg));
 			res1 = reg;
 		}
 		else if (isNumeric(op1)) {
 			reg = GetNextReg("INT");
-			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op1," ",reg));
+			SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op1," ",reg));
 			res1 = reg;
 		}
 		if (op2.indexOf('.') != -1 ) {
 			reg = GetNextReg("FLOAT");
-			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op2," ",reg));
+			SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+op2," ",reg));
 			res2 = reg;
 		}
 		else if (isNumeric(op2)) {
 			reg = GetNextReg("INT");
-			IRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op2," ",reg));
+			SemanticHandler.currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+op2," ",reg));
 			res2 = reg;
 		}
 		

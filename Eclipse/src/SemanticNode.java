@@ -3,7 +3,6 @@ public class SemanticNode {
 	public enum SemanticType {
 		BASE,
 		IF,
-		BODY,
 		WHILE
 	}
 	public SemanticType type;
@@ -17,5 +16,10 @@ public class SemanticNode {
 	
 	public SemanticNode(SemanticType type) {
 		this.type = type;
+		if (type == SemanticType.BASE) {
+			IRNodes = new IRList();
+		}
+		SemanticHandler.getCurrentTree().addNode(this);
+		SemanticHandler.currentIRList = this.IRNodes;
 	}
 }
