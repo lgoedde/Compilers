@@ -46,6 +46,7 @@ public class IRNode {
 	}
 
 	public void printNode() {
-		System.out.println(";"+this.Opcode+this.Op1+this.Op2+this.Result);
+		if (this.Opcode != null)
+			System.out.println(";"+this.Opcode+this.Op1+this.Op2+this.Result);
 	}
 }

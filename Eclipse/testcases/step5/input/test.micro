@@ -1,0 +1,15 @@
+PROGRAM test
+BEGIN
+
+	INT i,a,num;
+	
+	FUNCTION VOID main()
+	BEGIN
+		num := 7;
+		i := 2;	
+		a := 42;
+	
+
+		WRITE(num);
+	END
+END

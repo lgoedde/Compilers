@@ -6,6 +6,9 @@ public class SemanticHandler {
 	public static Stack<SemanticActionTree> SemanticStack = new Stack<SemanticActionTree>();
 	public static IRList currentIRList;
 	private static int label = 0;
+	public static String expr1;
+	public static String expr2;
+	public static String compop;
 	public SemanticHandler() {
 		
 	}
@@ -23,67 +26,93 @@ public class SemanticHandler {
 		SemanticStack.pop();
 	}
 	
+	public static void printfriendly(SemanticActionTree tree, int offset) {
+		int sizeTree = tree.SemanticList.size();
+		System.out.println(Integer.toString(sizeTree));
+		for (int i = 0; i < sizeTree; i++) {
+			SemanticNode tempNode = tree.SemanticList.get(i);
+			System.out.print("\n");
+			for (int k = 0; k < offset; k++) {
+				System.out.print("\t");
+			}
+			
+			System.out.print(tempNode.type);
+			if (tempNode.bodyThenList != null) {
+				int sizeElse = tempNode.bodyThenList.size();
+				System.out.print("Length: "+Integer.toString(tempNode.bodyThenList.size()));
+				for (int j = 0; j < sizeElse; j++) {
+					printfriendly(tempNode.bodyThenList.get(j),offset + 1);
+				}
+			}
+			
+			
+		}
+	
+	}
+	
 	public static void printIRCode() {
+		System.out.println("SemanticActionTree:");
+		printfriendly(SemanticStack.peek(),0);
+		System.out.println("");
 		getCurrentTree().printNodes();
 	}
 	
-	public static void addIF(String cond) {
+	public static void addIF() {
 		// gen condition
 		SemanticNode newIf = new SemanticNode(SemanticNode.SemanticType.IF);
-		genCondition(cond, newIf.condition);
+		genCondition(newIf.condition);
 		newIf.bodyThenList.add(new SemanticActionTree());
 		SemanticStack.push(newIf.bodyThenList.getLast());
 	}
 	
 	
-	public static void addElseIF(String cond) {
+	public static void addElseIF() {
 		popTree();
 		SemanticNode parentIf = getCurrentTree().SemanticList.getLast();
 		SemanticActionTree newTree = new SemanticActionTree();
 		SemanticNode newelseIf = new SemanticNode(SemanticNode.SemanticType.ELSEIF);
 		newelseIf.jumpOutStart = parentIf.jumpOutStart;
-		genCondition(cond, newelseIf.condition);
+		genCondition(newelseIf.condition);
 		newTree.SemanticList.add(newelseIf);
 		parentIf.bodyThenList.add(newTree);
 		SemanticStack.push(newTree);
 		
 	}
 	
-	public static void genCondition(String cond, IRNode conditionNode) {
-		String[] parts = cond.split(" ");
-		if (parts[1].equals("TRUE")) {
+	public static void genCondition(IRNode conditionNode) {
+		if (expr1.equals("TRUE")) {
 			conditionNode.Opcode = null;
 			return;
 		}
 			
-		if (parts[1].equals("FALSE")) {
+		if (expr1.equals("FALSE")) {
 			conditionNode.Opcode = IRNode.IROpcode.JUMP;
 			return;
 		}
 			
-		String expr1 = ExpressionEval.SimplifyExpression(parts[0]);
-		String expr2 = ExpressionEval.SimplifyExpression(parts[2]);
+		expr1 = ExpressionEval.SimplifyExpression(expr1);
+		expr2 = ExpressionEval.SimplifyExpression(expr2);
 		conditionNode.Op1 = expr1;
 		conditionNode.Op2 = expr2;
-		if (parts[1].equals("<"))
+		if (compop.equals("<"))
 			conditionNode.Opcode = IRNode.IROpcode.GE;
-		else if (parts[1].equals(">"))
+		else if (compop.equals(">"))
 			conditionNode.Opcode = IRNode.IROpcode.LE;	
-		else if (parts[1].equals("="))
+		else if (compop.equals("="))
 			conditionNode.Opcode = IRNode.IROpcode.NE;
-		else if (parts[1].equals("!="))
+		else if (compop.equals("!="))
 			conditionNode.Opcode = IRNode.IROpcode.EQ;
-		else if (parts[1].equals("<="))
+		else if (compop.equals("<="))
 			conditionNode.Opcode = IRNode.IROpcode.GT;
-		else if (parts[1].equals(">="))
+		else if (compop.equals(">="))
 			conditionNode.Opcode = IRNode.IROpcode.LT;
 	}
 	
 	public static void genIfLabels(SemanticNode ifNode) {
 		int listLen = ifNode.bodyThenList.size();
 		String outLabel = "label"+Integer.toString(label);
-		ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
-		ifNode.bodyThenList.getFirst().SemanticList.getFirst().jumpOutStart.Result = outLabel;
+		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
+		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().jumpOutStart.Result = outLabel;
 		for (int i = 0; i < listLen; i++) {
 			SemanticNode tempNode = ifNode.bodyThenList.get(i).SemanticList.getFirst();
 			tempNode.jumpOutStart.Opcode = IRNode.IROpcode.JUMP;

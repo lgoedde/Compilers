@@ -30,6 +30,14 @@ public class SemanticNode {
 			bodyThenList = new LinkedList<SemanticActionTree>();
 			//elseList = new SemanticActionTree();	
 		}
+		else if (type == SemanticType.ELSEIF) {
+			elseOutLabel = new IRNode();
+			outStartLabel = new IRNode();
+			jumpOutStart = new IRNode();
+			condition = new IRNode();
+			bodyThenList = new LinkedList<SemanticActionTree>();
+			//elseList = new SemanticActionTree();	
+		}
 		SemanticHandler.getCurrentTree().addNode(this);
 		SemanticHandler.currentIRList = this.IRNodes;
 	}
