@@ -73,8 +73,21 @@ addop             : '+' | '-';
 mulop             : '*' | '/';
 
 
-if_stmt           : 'IF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF';
-else_part         : 'ELSIF' '(' cond ')' {SymbolTable.pushBlock();} decl {SymbolTable.popScope();} stmt_list else_part |;
+if_stmt           : 'IF' '(' cond ')' 
+					{
+						//SemanticHandler.pushTree();
+						SymbolTable.pushBlock();
+						SemanticHandler.addIF($cond.text);
+					} 
+					decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF' {SemanticHandler.addendIF();};
+else_part         : 'ELSIF' '(' cond ')' 
+					{
+						//SemanticHandler.popTree();
+						//SemanticHandler.pushTree();
+						SymbolTable.pushBlock();
+						SemanticHandler.addElseIF($cond.text);
+					} 
+					decl {SymbolTable.popScope();} stmt_list else_part |;
 cond              : expr compop expr | 'TRUE' | 'FALSE' ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 

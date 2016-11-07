@@ -24,16 +24,30 @@ public class SemanticActionTree {
 			}
 			else if (tempNode.type == SemanticNode.SemanticType.IF) {
 				tempNode.condition.printNode();
-				tempNode.bodyThenList.printNodes();
-				tempNode.jumpOutStart.printNode();
-				tempNode.elseOutLabel.printNode();
-				tempNode.elseList.printNodes();
+				int elseSize = tempNode.bodyThenList.size();
+				for (int j = 0; j < elseSize; j++) {
+					tempNode.bodyThenList.get(j).printNodes();
+					tempNode.jumpOutStart.printNode();
+				}
+				//tempNode.bodyThenList.printNodes();
+				
+				
+				//tempNode.elseList.printNodes();
 				tempNode.outStartLabel.printNode();
 			}
-			else if (tempNode.type == SemanticNode.SemanticType.WHILE) {
-				tempNode.outStartLabel.printNode();
+			else if (tempNode.type == SemanticNode.SemanticType.ELSEIF) {
+				tempNode.elseOutLabel.printNode();
 				tempNode.condition.printNode();
-				tempNode.bodyThenList.printNodes();
+				int elseSize = tempNode.bodyThenList.size();
+				for (int j = 0; j < elseSize; j++) {
+					tempNode.bodyThenList.get(j).printNodes();
+					tempNode.jumpOutStart.printNode();
+				}
+			}
+			else if (tempNode.type == SemanticNode.SemanticType.WHILE) {
+				//tempNode.outStartLabel.printNode();
+				tempNode.condition.printNode();
+				//tempNode.bodyThenList.printNodes();
 				tempNode.jumpOutStart.printNode();
 				tempNode.elseOutLabel.printNode();
 			}
