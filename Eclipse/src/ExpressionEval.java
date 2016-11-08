@@ -95,6 +95,9 @@ public class ExpressionEval {
 
 	private static String SimpAdd (String expr) {
 		List<String> tokens = GetTokens(expr);
+		if (tokens.size() == 1) {
+			return checkOps(tokens.get(0),"$T1").get(0);
+		}
 		String token;
 		String type;
 		String result;

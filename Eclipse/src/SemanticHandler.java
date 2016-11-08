@@ -5,7 +5,7 @@ import java.util.*;
 public class SemanticHandler {
 	public static Stack<List<HeadNode>> SemanticStack = new Stack<List<HeadNode>>();
 	public static List<IRNode> currentIRList;
-	public static List<HeadNode> rootList = new ArrayList<HeadNode>();
+	public static List<HeadNode> rootList;// = new ArrayList<HeadNode>();
 	
 	
 	
@@ -46,6 +46,7 @@ public class SemanticHandler {
 			System.out.print(Integer.toString(len)+"\n");
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
 				printOffset(offset);
+				System.out.print(" ");
 				irNode.printNode();
 			}
 		}
@@ -169,6 +170,14 @@ public class SemanticHandler {
 		String outLabel = "label"+Integer.toString(label);
 		ifNode.outLabel.Opcode = IRNode.IROpcode.LABEL;
 		ifNode.outLabel.Result = outLabel;
+		if (listLen == 1) {
+			IfBodyNode tempNode = ifNode.ifBodyList.get(0);
+			tempNode.condition.Result = outLabel;
+			tempNode.label.Opcode = null;
+			tempNode.jumpOut.Opcode = null;
+			label++;
+			return;
+		}
 		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
 		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().jumpOutStart.Result = outLabel;
 		for (int i = 0; i < listLen; i++) {
@@ -180,6 +189,7 @@ public class SemanticHandler {
 			tempNode.condition.Result = "label"+Integer.toString(label + i + 1);
 			if (i == listLen - 1) {
 				tempNode.condition.Result = outLabel;
+				tempNode.jumpOut.Opcode = null;
 			}
 			else if (i == 0) {
 				tempNode.label.Opcode = null;

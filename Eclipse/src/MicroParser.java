@@ -845,7 +845,13 @@ public class MicroParser extends Parser {
 			setState(158); any_type();
 			setState(159); ((Func_declContext)_localctx).id = id();
 
-									SemanticHandler.pushTree();
+									System.out.println((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null));
+									List<HeadNode> newList = new ArrayList<HeadNode>();
+									SemanticHandler.pushList(newList);
+									if ((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null).equals("main")) {
+										System.out.println("hello");
+										SemanticHandler.rootList = newList;
+									}
 									SymbolTable.pushScope(new Scope((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null)));
 								
 			setState(161); match(6);
@@ -1000,7 +1006,7 @@ public class MicroParser extends Parser {
 		StmtContext _localctx = new StmtContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_stmt);
 		try {
-			setState(181);
+			setState(182);
 			switch (_input.LA(1)) {
 			case 7:
 			case 18:
@@ -1008,19 +1014,20 @@ public class MicroParser extends Parser {
 			case IDENTIFIER:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(178); base_stmt();
+				BaseNode newNode = new BaseNode();
+				setState(179); base_stmt();
 				}
 				break;
 			case 15:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(179); if_stmt();
+				setState(180); if_stmt();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(180); do_while_stmt();
+				setState(181); do_while_stmt();
 				}
 				break;
 			default:
@@ -1074,7 +1081,6 @@ public class MicroParser extends Parser {
 			case IDENTIFIER:
 				enterOuterAlt(_localctx, 1);
 				{
-				SemanticNode newNode = new SemanticNode(SemanticNode.SemanticType.BASE);
 				setState(184); assign_stmt();
 				}
 				break;
@@ -1957,7 +1963,8 @@ public class MicroParser extends Parser {
 
 									//SemanticHandler.pushTree();
 									SymbolTable.pushBlock();
-									SemanticHandler.addIF();
+									IfNode ifNode = new IfNode();
+									IfBodyNode ifbNode = new IfBodyNode(true);
 								
 			setState(282); decl();
 			SymbolTable.popScope();
@@ -2022,7 +2029,7 @@ public class MicroParser extends Parser {
 										//SemanticHandler.popTree();
 										//SemanticHandler.pushTree();
 										SymbolTable.pushBlock();
-										SemanticHandler.addElseIF();
+										IfBodyNode ifbNode = new IfBodyNode(false);
 									
 				setState(294); decl();
 				SymbolTable.popScope();
@@ -2249,7 +2256,7 @@ public class MicroParser extends Parser {
 		"\f\3\r\3\r\3\r\3\r\5\r\u008d\n\r\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3"+
 		"\17\3\17\5\17\u0098\n\17\3\20\3\20\3\20\3\20\5\20\u009e\n\20\3\21\3\21"+
 		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\3\23"+
-		"\3\23\3\23\3\23\5\23\u00b3\n\23\3\24\3\24\3\24\5\24\u00b8\n\24\3\25\3"+
+		"\3\23\3\23\3\23\5\23\u00b3\n\23\3\24\3\24\3\24\3\24\5\24\u00b9\n\24\3"+
 		"\25\3\25\3\25\3\25\5\25\u00bf\n\25\3\26\3\26\3\26\3\27\3\27\3\27\3\27"+
 		"\3\27\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\31\3\31\3\31\3\31\3\31\3\31"+
 		"\3\31\3\32\3\32\3\32\3\32\3\33\3\33\3\33\3\34\3\34\3\34\3\34\3\34\7\34"+
@@ -2265,7 +2272,7 @@ public class MicroParser extends Parser {
 		"\3\2\2\2\nj\3\2\2\2\fq\3\2\2\2\16s\3\2\2\2\20x\3\2\2\2\22|\3\2\2\2\24"+
 		"~\3\2\2\2\26\u0086\3\2\2\2\30\u008c\3\2\2\2\32\u008e\3\2\2\2\34\u0097"+
 		"\3\2\2\2\36\u009d\3\2\2\2 \u009f\3\2\2\2\"\u00aa\3\2\2\2$\u00b2\3\2\2"+
-		"\2&\u00b7\3\2\2\2(\u00be\3\2\2\2*\u00c0\3\2\2\2,\u00c3\3\2\2\2.\u00c8"+
+		"\2&\u00b8\3\2\2\2(\u00be\3\2\2\2*\u00c0\3\2\2\2,\u00c3\3\2\2\2.\u00c8"+
 		"\3\2\2\2\60\u00cf\3\2\2\2\62\u00d6\3\2\2\2\64\u00da\3\2\2\2\66\u00dd\3"+
 		"\2\2\28\u00e7\3\2\2\2:\u00ea\3\2\2\2<\u00f6\3\2\2\2>\u00f8\3\2\2\2@\u0101"+
 		"\3\2\2\2B\u0108\3\2\2\2D\u0111\3\2\2\2F\u0113\3\2\2\2H\u0115\3\2\2\2J"+
@@ -2293,16 +2300,16 @@ public class MicroParser extends Parser {
 		"\13\2\2\u00a9!\3\2\2\2\u00aa\u00ab\5\b\5\2\u00ab\u00ac\b\22\1\2\u00ac"+
 		"\u00ad\5$\23\2\u00ad#\3\2\2\2\u00ae\u00af\5&\24\2\u00af\u00b0\5$\23\2"+
 		"\u00b0\u00b3\3\2\2\2\u00b1\u00b3\3\2\2\2\u00b2\u00ae\3\2\2\2\u00b2\u00b1"+
-		"\3\2\2\2\u00b3%\3\2\2\2\u00b4\u00b8\5(\25\2\u00b5\u00b8\5J&\2\u00b6\u00b8"+
-		"\5R*\2\u00b7\u00b4\3\2\2\2\u00b7\u00b5\3\2\2\2\u00b7\u00b6\3\2\2\2\u00b8"+
-		"\'\3\2\2\2\u00b9\u00ba\b\25\1\2\u00ba\u00bf\5*\26\2\u00bb\u00bf\5.\30"+
-		"\2\u00bc\u00bf\5\60\31\2\u00bd\u00bf\5\62\32\2\u00be\u00b9\3\2\2\2\u00be"+
-		"\u00bb\3\2\2\2\u00be\u00bc\3\2\2\2\u00be\u00bd\3\2\2\2\u00bf)\3\2\2\2"+
-		"\u00c0\u00c1\5,\27\2\u00c1\u00c2\7\32\2\2\u00c2+\3\2\2\2\u00c3\u00c4\5"+
-		"\4\3\2\u00c4\u00c5\7\36\2\2\u00c5\u00c6\5\64\33\2\u00c6\u00c7\b\27\1\2"+
-		"\u00c7-\3\2\2\2\u00c8\u00c9\7\t\2\2\u00c9\u00ca\7\b\2\2\u00ca\u00cb\5"+
-		"\24\13\2\u00cb\u00cc\7\25\2\2\u00cc\u00cd\7\32\2\2\u00cd\u00ce\b\30\1"+
-		"\2\u00ce/\3\2\2\2\u00cf\u00d0\7\24\2\2\u00d0\u00d1\7\b\2\2\u00d1\u00d2"+
+		"\3\2\2\2\u00b3%\3\2\2\2\u00b4\u00b5\b\24\1\2\u00b5\u00b9\5(\25\2\u00b6"+
+		"\u00b9\5J&\2\u00b7\u00b9\5R*\2\u00b8\u00b4\3\2\2\2\u00b8\u00b6\3\2\2\2"+
+		"\u00b8\u00b7\3\2\2\2\u00b9\'\3\2\2\2\u00ba\u00bf\5*\26\2\u00bb\u00bf\5"+
+		".\30\2\u00bc\u00bf\5\60\31\2\u00bd\u00bf\5\62\32\2\u00be\u00ba\3\2\2\2"+
+		"\u00be\u00bb\3\2\2\2\u00be\u00bc\3\2\2\2\u00be\u00bd\3\2\2\2\u00bf)\3"+
+		"\2\2\2\u00c0\u00c1\5,\27\2\u00c1\u00c2\7\32\2\2\u00c2+\3\2\2\2\u00c3\u00c4"+
+		"\5\4\3\2\u00c4\u00c5\7\36\2\2\u00c5\u00c6\5\64\33\2\u00c6\u00c7\b\27\1"+
+		"\2\u00c7-\3\2\2\2\u00c8\u00c9\7\t\2\2\u00c9\u00ca\7\b\2\2\u00ca\u00cb"+
+		"\5\24\13\2\u00cb\u00cc\7\25\2\2\u00cc\u00cd\7\32\2\2\u00cd\u00ce\b\30"+
+		"\1\2\u00ce/\3\2\2\2\u00cf\u00d0\7\24\2\2\u00d0\u00d1\7\b\2\2\u00d1\u00d2"+
 		"\5\24\13\2\u00d2\u00d3\7\25\2\2\u00d3\u00d4\7\32\2\2\u00d4\u00d5\b\31"+
 		"\1\2\u00d5\61\3\2\2\2\u00d6\u00d7\7\37\2\2\u00d7\u00d8\5\64\33\2\u00d8"+
 		"\u00d9\7\32\2\2\u00d9\63\3\2\2\2\u00da\u00db\5\66\34\2\u00db\u00dc\58"+
@@ -2339,7 +2346,7 @@ public class MicroParser extends Parser {
 		"\u013f\7\4\2\2\u013f\u0140\b*\1\2\u0140\u0141\5\b\5\2\u0141\u0142\b*\1"+
 		"\2\u0142\u0143\5$\23\2\u0143\u0144\7\27\2\2\u0144\u0145\7\b\2\2\u0145"+
 		"\u0146\5N(\2\u0146\u0147\7\25\2\2\u0147\u0148\7\32\2\2\u0148S\3\2\2\2"+
-		"\23h|\u0086\u008c\u0097\u009d\u00b2\u00b7\u00be\u00e4\u00f1\u00f6\u0101"+
+		"\23h|\u0086\u008c\u0097\u009d\u00b2\u00b8\u00be\u00e4\u00f1\u00f6\u0101"+
 		"\u0108\u0111\u012e\u013a";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
