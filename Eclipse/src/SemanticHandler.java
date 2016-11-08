@@ -3,8 +3,14 @@ import java.util.*;
 
 
 public class SemanticHandler {
-	public static Stack<SemanticActionTree> SemanticStack = new Stack<SemanticActionTree>();
-	public static IRList currentIRList;
+	public static Stack<List<HeadNode>> SemanticStack = new Stack<List<HeadNode>>();
+	public static List<IRNode> currentIRList;
+	public static List<HeadNode> rootList = new ArrayList<HeadNode>();
+	
+	
+	
+	//public static Stack<SemanticActionTree> SemanticStack = new Stack<SemanticActionTree>();
+	
 	private static int label = 0;
 	public static String expr1;
 	public static String expr2;
@@ -13,23 +19,55 @@ public class SemanticHandler {
 		
 	}
 	
-	public static SemanticActionTree getCurrentTree() {
+	public static List<HeadNode> getCurrentList() {
 		return SemanticStack.peek();
 	}
+
 	
-	
-	public static void pushTree() {
-		SemanticStack.push(new SemanticActionTree());
+	public static void pushList(List<HeadNode> list) {
+		SemanticStack.push(list);
 	}
 	
-	public static void popTree() {
+	public static void popList() {
 		SemanticStack.pop();
 	}
 	
-	public static void printfriendly(SemanticActionTree tree, int offset) {
-		int sizeTree = tree.SemanticList.size();
-		System.out.println(Integer.toString(sizeTree));
-		for (int i = 0; i < sizeTree; i++) {
+	public static void printOffset(int num) {
+		for (int i = 0; i < num; i++) {
+			System.out.print("\t");
+		}
+	}
+	
+	public static void printFriendly(HeadNode node, int offset) {
+		printOffset(offset);
+		if (node instanceof BaseNode) {
+			System.out.print("Base - Length: ");
+			int len = ((BaseNode) node).NodeList.size();
+			System.out.print(Integer.toString(len)+"\n");
+			for (IRNode irNode : ((BaseNode) node).NodeList) {
+				printOffset(offset);
+				irNode.printNode();
+			}
+		}
+		else if (node instanceof IfNode) {
+			System.out.print("If - IF/Else's: ");
+			int len = ((IfNode) node).ifBodyList.size();
+			System.out.print(Integer.toString(len)+"\n");
+			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
+				printFriendly(bodyNode, offset + 1);
+			}
+		}
+		else if (node instanceof IfBodyNode) {
+			System.out.print("IFBody - Length: ");
+			int len = ((IfBodyNode) node).headNodes.size();
+			System.out.print(Integer.toString(len)+"\n");
+			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
+				printFriendly(headNode,offset + 1);
+			}
+		}
+		
+		
+		/*for (int i = 0; i < sizeTree; i++) {
 			SemanticNode tempNode = tree.SemanticList.get(i);
 			System.out.print("\n");
 			for (int k = 0; k < offset; k++) {
@@ -37,7 +75,14 @@ public class SemanticHandler {
 			}
 			
 			System.out.print(tempNode.type);
-			if (tempNode.bodyThenList != null) {
+			if (tempNode.type == SemanticNode.SemanticType.IF) {
+				int sizeElse = tempNode.bodyThenList.size();
+				System.out.print("Length: "+Integer.toString(tempNode.bodyThenList.size()));
+				for (int j = 0; j < sizeElse; j++) {
+					printfriendly(tempNode.bodyThenList.get(j),offset + 1);
+				}
+			}
+			else if (tempNode.type == SemanticNode.SemanticType.ELSEIF) {
 				int sizeElse = tempNode.bodyThenList.size();
 				System.out.print("Length: "+Integer.toString(tempNode.bodyThenList.size()));
 				for (int j = 0; j < sizeElse; j++) {
@@ -46,36 +91,47 @@ public class SemanticHandler {
 			}
 			
 			
-		}
+		}*/
 	
 	}
 	
 	public static void printIRCode() {
-		System.out.println("SemanticActionTree:");
-		printfriendly(SemanticStack.peek(),0);
+		System.out.println("SemanticList:");
+		for (HeadNode node : rootList) {
+			printFriendly(node,0);
+		}
 		System.out.println("");
-		getCurrentTree().printNodes();
+		for (HeadNode node : rootList) {
+			node.printNode();
+		}
 	}
 	
-	public static void addIF() {
+	public static IfNode getParentIf() {
+		return (IfNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1);
+	}
+	
+	public static void addIF(IfBodyNode node) {
 		// gen condition
-		SemanticNode newIf = new SemanticNode(SemanticNode.SemanticType.IF);
-		genCondition(newIf.condition);
-		newIf.bodyThenList.add(new SemanticActionTree());
-		SemanticStack.push(newIf.bodyThenList.getLast());
+		
+		//genCondition(newIf.condition);
+		//newIf.bodyThenList.add(newTree);
+		//SemanticStack.push(newTree);
+		//SemanticHandler.getCurrentTree().addNode(newIf);
 	}
 	
 	
-	public static void addElseIF() {
-		popTree();
-		SemanticNode parentIf = getCurrentTree().SemanticList.getLast();
-		SemanticActionTree newTree = new SemanticActionTree();
-		SemanticNode newelseIf = new SemanticNode(SemanticNode.SemanticType.ELSEIF);
-		newelseIf.jumpOutStart = parentIf.jumpOutStart;
-		genCondition(newelseIf.condition);
-		newTree.SemanticList.add(newelseIf);
-		parentIf.bodyThenList.add(newTree);
-		SemanticStack.push(newTree);
+	public static void addIfBody() {
+		//LinkedList<Object> test;
+		//popTree();
+		//SemanticNode parentIf = getCurrentTree().SemanticList.getLast();
+		//SemanticActionTree newTree = new SemanticActionTree();
+		//SemanticNode newelseIf = new SemanticNode(SemanticNode.SemanticType.ELSEIF); // adding new node adds it to base tree
+		//newelseIf.jumpOutStart = parentIf.jumpOutStart;
+		//genCondition(newelseIf.condition);
+		//SemanticStack.push(newTree);
+		//SemanticHandler.getCurrentTree().addNode(newelseIf);
+		//parentIf.bodyThenList.add(newTree);
+		
 		
 	}
 	
@@ -108,7 +164,7 @@ public class SemanticHandler {
 			conditionNode.Opcode = IRNode.IROpcode.LT;
 	}
 	
-	public static void genIfLabels(SemanticNode ifNode) {
+	public static void genIfLabels(IfNode ifNode) {
 		int listLen = ifNode.bodyThenList.size();
 		String outLabel = "label"+Integer.toString(label);
 		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
@@ -133,8 +189,8 @@ public class SemanticHandler {
 	}
 	
 	public static void addendIF() {
-		popTree();
-		SemanticNode parentIf = getCurrentTree().SemanticList.getLast();
+		popList();
+		IfNode parentIf = getParentIf();
 		genIfLabels(parentIf);
 	}
 	

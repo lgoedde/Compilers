@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 public class IRList {
-	public LinkedList<IRNode> NodeList = new LinkedList<IRNode>();
+	public List<IRNode> NodeList = new ArrayList<IRNode>();
 
 	public IRList() {
 	}

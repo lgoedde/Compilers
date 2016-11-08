@@ -25,7 +25,7 @@ public class SemanticActionTree {
 			else if (tempNode.type == SemanticNode.SemanticType.IF) {
 				tempNode.condition.printNode();
 				int elseSize = tempNode.bodyThenList.size();
-				for (int j = 0; j < elseSize; j++) {
+				for (int j = 1; j < elseSize; j++) {
 					tempNode.bodyThenList.get(j).printNodes();
 					tempNode.jumpOutStart.printNode();
 				}

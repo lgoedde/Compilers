@@ -21,13 +21,16 @@ public class SemanticNode {
 		this.type = type;
 		if (type == SemanticType.BASE) {
 			IRNodes = new IRList();
+			SemanticHandler.getCurrentTree().addNode(this);
+			SemanticHandler.currentIRList = this.IRNodes;
 		}
 		else if (type == SemanticType.IF) {
 			elseOutLabel = new IRNode();
-			outStartLabel = new IRNode();
+			outStartLabel = new IRNode();			
 			jumpOutStart = new IRNode();
 			condition = new IRNode();
 			bodyThenList = new LinkedList<SemanticActionTree>();
+			SemanticHandler.getCurrentTree().addNode(this);
 			//elseList = new SemanticActionTree();	
 		}
 		else if (type == SemanticType.ELSEIF) {
@@ -35,10 +38,10 @@ public class SemanticNode {
 			outStartLabel = new IRNode();
 			jumpOutStart = new IRNode();
 			condition = new IRNode();
-			bodyThenList = new LinkedList<SemanticActionTree>();
+			//bodyThenList = new LinkedList<SemanticActionTree>();
 			//elseList = new SemanticActionTree();	
 		}
-		SemanticHandler.getCurrentTree().addNode(this);
-		SemanticHandler.currentIRList = this.IRNodes;
+		//SemanticHandler.getCurrentTree().addNode(this);
+		//SemanticHandler.currentIRList = this.IRNodes;
 	}
 }

@@ -1963,8 +1963,8 @@ public class MicroParser extends Parser {
 			SymbolTable.popScope();
 			setState(284); stmt_list();
 			setState(285); else_part();
-			setState(286); match(12);
 			SemanticHandler.addendIF();
+			setState(287); match(12);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2327,7 +2327,7 @@ public class MicroParser extends Parser {
 		"\u0116\t\4\2\2\u0116I\3\2\2\2\u0117\u0118\7\21\2\2\u0118\u0119\7\b\2\2"+
 		"\u0119\u011a\5N(\2\u011a\u011b\7\25\2\2\u011b\u011c\b&\1\2\u011c\u011d"+
 		"\5\b\5\2\u011d\u011e\b&\1\2\u011e\u011f\5$\23\2\u011f\u0120\5L\'\2\u0120"+
-		"\u0121\7\16\2\2\u0121\u0122\b&\1\2\u0122K\3\2\2\2\u0123\u0124\7\30\2\2"+
+		"\u0121\b&\1\2\u0121\u0122\7\16\2\2\u0122K\3\2\2\2\u0123\u0124\7\30\2\2"+
 		"\u0124\u0125\7\b\2\2\u0125\u0126\5N(\2\u0126\u0127\7\25\2\2\u0127\u0128"+
 		"\b\'\1\2\u0128\u0129\5\b\5\2\u0129\u012a\b\'\1\2\u012a\u012b\5$\23\2\u012b"+
 		"\u012c\5L\'\2\u012c\u012f\3\2\2\2\u012d\u012f\3\2\2\2\u012e\u0123\3\2"+
