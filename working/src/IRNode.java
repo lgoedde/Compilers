@@ -30,8 +30,8 @@ public class IRNode {
 	}
 
 	public IROpcode Opcode;
-	public String Op1;
-	public String Op2;
+	public String Op1 = null;
+	public String Op2 = null;
 	public String Result;
 
 	public IRNode(IROpcode opcode, String op1, String op2, String result){
@@ -42,10 +42,17 @@ public class IRNode {
 	}
 
 	public IRNode() {
-
+		
 	}
 
 	public void printNode() {
-		System.out.println(";"+this.Opcode+this.Op1+this.Op2+this.Result);
+		if (this.Opcode != null) {
+			System.out.print(";"+this.Opcode+" ");
+			if (this.Op1 != null)
+				System.out.print(this.Op1+" ");
+			if (this.Op2 != null)
+				System.out.print(this.Op2+" ");
+			System.out.print(this.Result+"\n");
+		}
 	}
 }

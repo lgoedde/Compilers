@@ -10,18 +10,12 @@ public class TinyGeneration {
 	public TinyGeneration() {
 	}
 	
-	public static void printTiny() {
-		resetRegisterStack();
-		System.out.println(";tiny code");
-		for (Symbol symbol : SymbolTable.globalScope.symbolTable) {
-			if (symbol.type.equals("STRING"))
-				System.out.println("str "+symbol.identifier);
-			else
-				System.out.println("var "+symbol.identifier);
-		}
-		ListIterator<IRNode> iterator = null; //IRList.NodeList.listIterator();
-		while (iterator.hasNext()) {
-			IRNode ir = iterator.next();
+	public static void printTiny(IRNode ir) {
+		if (ir == null || ir.Opcode == null)
+			return;
+		//ListIterator<IRNode> iterator = null; //IRList.NodeList.listIterator();
+		//while (iterator.hasNext()) {
+			//IRNode ir = iterator.next();
 			switch(ir.Opcode) {
 			case STOREI :
 			case STOREF :
@@ -63,16 +57,38 @@ public class TinyGeneration {
 			case WRITEF :
 				read_write("writer",ir.Result);
 				break;
-				
+			case GT :
+				branchCompare(TinyInstr.TinyOpcode.jgt,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case GE :
+				branchCompare(TinyInstr.TinyOpcode.jge,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case LT :
+				branchCompare(TinyInstr.TinyOpcode.jlt,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case LE :
+				branchCompare(TinyInstr.TinyOpcode.jle,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case NE :
+				branchCompare(TinyInstr.TinyOpcode.jne,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case EQ :
+				branchCompare(TinyInstr.TinyOpcode.jeq,ir.Op1,ir.Op2,ir.Result);
+				break;
+			case JUMP :
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.jmp,null,ir.Result));
+				break;
+			case LABEL :
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.label,null,ir.Result));
+				break;
 			}
-		}
-		
-		int listSize = TinyList.size();
-		for (int i = 0; i < listSize; i++) 
-		{
-			TinyList.get(i).printInstr();
-		}
-		System.out.println("sys halt");
+	}
+	
+	private static void branchCompare(TinyInstr.TinyOpcode opcode, String op1, String op2, String dest) {
+		op1 = convertOp(op1);
+		op2 = convertOp(op2);
+		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.cmpi,op1,op2));
+		TinyList.add(new TinyInstr(opcode,null,dest));
 	}
 	
 	
@@ -126,7 +142,7 @@ public class TinyGeneration {
 			return op;
 	}
 	
-	private static void resetRegisterStack() {
+	public static void resetRegisterStack() {
 		for (int i = 999; i >= 0; i--) {
 			AvailableRegs.push("r"+Integer.toString(i));
 		}

@@ -25,6 +25,6 @@ for testfile in `ls testcases/input/ | sort -V` ; do
 
 
     #output=$(echo $output | tr -d '\r')
-    
+
 done
 echo "Results: $cases_passed / $cases_total"

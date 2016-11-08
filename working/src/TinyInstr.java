@@ -46,11 +46,10 @@ public class TinyInstr {
 	
 	public void printInstr() {
 		System.out.print(opcode+" ");
-		if (op1.equals(""))
-			System.out.print(" ");
-		else 
+		if (op1 != null)
 			System.out.print(op1+" ");
-		if (! op2.equals(""))
-			System.out.println(op2);
+		if (op2 != null)
+			System.out.print(op2);
+		System.out.print("\n");
 	}
 }

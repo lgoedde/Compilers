@@ -41,7 +41,11 @@ param_decl_tail   : ',' param_decl param_decl_tail |  ;
 func_declarations : func_decl  func_declarations |  ;
 func_decl         : 'FUNCTION' any_type id 
 					{
-						SemanticHandler.pushTree();
+						List<HeadNode> newList = new ArrayList<HeadNode>();
+						SemanticHandler.pushList(newList);
+						if ($id.text.equals("main")) {
+							SemanticHandler.rootList = newList;
+						}
 						SymbolTable.pushScope(new Scope($id.text));
 					} 
 					'('param_decl_list')' 'BEGIN' 	func_body 'END';
@@ -49,8 +53,8 @@ func_body         : decl {SymbolTable.popScope();} stmt_list ;
 
 
 stmt_list         : stmt stmt_list |  ;
-stmt              : base_stmt  | if_stmt | do_while_stmt;
-base_stmt         : {SemanticNode newNode = new SemanticNode(SemanticNode.SemanticType.BASE);} assign_stmt | read_stmt | write_stmt | return_stmt;
+stmt              : {BaseNode newNode = new BaseNode();} base_stmt  | if_stmt | do_while_stmt;
+base_stmt         :  assign_stmt | read_stmt | write_stmt | return_stmt;
 
 
 assign_stmt       : assign_expr ';' ;
@@ -77,18 +81,19 @@ if_stmt           : 'IF' '(' cond ')'
 					{
 						//SemanticHandler.pushTree();
 						SymbolTable.pushBlock();
-						SemanticHandler.addIF($cond.text);
+						IfNode ifNode = new IfNode();
+						IfBodyNode ifbNode = new IfBodyNode(true);
 					} 
-					decl {SymbolTable.popScope();} stmt_list else_part 'ENDIF' {SemanticHandler.addendIF();};
+					decl {SymbolTable.popScope();} stmt_list else_part {SemanticHandler.addendIF();} 'ENDIF' ;
 else_part         : 'ELSIF' '(' cond ')' 
 					{
 						//SemanticHandler.popTree();
 						//SemanticHandler.pushTree();
 						SymbolTable.pushBlock();
-						SemanticHandler.addElseIF($cond.text);
+						IfBodyNode ifbNode = new IfBodyNode(false);
 					} 
-					decl {SymbolTable.popScope();} stmt_list else_part |;
-cond              : expr compop expr | 'TRUE' | 'FALSE' ;
+					decl {SymbolTable.popScope();} stmt_list else_part | ;
+cond              : expr {SemanticHandler.expr1 = $expr.text;} compop expr {SemanticHandler.compop = $compop.text; SemanticHandler.expr2 = $expr.text;} | 'TRUE' {SemanticHandler.expr1 = "TRUE";} | 'FALSE' {SemanticHandler.expr1 = "FALSE";} ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
 do_while_stmt       : 'DO' {SymbolTable.pushBlock();} decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' ';' ;

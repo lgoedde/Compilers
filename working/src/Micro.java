@@ -10,7 +10,6 @@ public class Micro {
     public static void main(String[] args) throws Exception{
     	//get the current file
     	String fileName = args[0]; 
-
     	//set up all of the stuff we need to parse
 		ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
 		MicroLexer lexer = new MicroLexer(fileStream);
