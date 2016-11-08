@@ -165,24 +165,24 @@ public class SemanticHandler {
 	}
 	
 	public static void genIfLabels(IfNode ifNode) {
-		int listLen = ifNode.bodyThenList.size();
+		int listLen = ifNode.ifBodyList.size();
 		String outLabel = "label"+Integer.toString(label);
+		ifNode.outLabel.Opcode = IRNode.IROpcode.LABEL;
+		ifNode.outLabel.Result = outLabel;
 		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
 		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().jumpOutStart.Result = outLabel;
 		for (int i = 0; i < listLen; i++) {
-			SemanticNode tempNode = ifNode.bodyThenList.get(i).SemanticList.getFirst();
-			tempNode.jumpOutStart.Opcode = IRNode.IROpcode.JUMP;
-			tempNode.jumpOutStart.Result = outLabel;
-			tempNode.elseOutLabel.Result = "label"+Integer.toString(label + i);
-			tempNode.elseOutLabel.Opcode = IRNode.IROpcode.LABEL;
+			IfBodyNode tempNode = ifNode.ifBodyList.get(i);
+			tempNode.jumpOut.Opcode = IRNode.IROpcode.JUMP;
+			tempNode.jumpOut.Result = outLabel;
+			tempNode.label.Result = "label"+Integer.toString(label + i);
+			tempNode.label.Opcode = IRNode.IROpcode.LABEL;
 			tempNode.condition.Result = "label"+Integer.toString(label + i + 1);
 			if (i == listLen - 1) {
 				tempNode.condition.Result = outLabel;
 			}
 			else if (i == 0) {
-				tempNode.elseOutLabel.Opcode = null;
-				tempNode.outStartLabel.Opcode = IRNode.IROpcode.LABEL;
-				tempNode.outStartLabel.Result = outLabel;
+				tempNode.label.Opcode = null;
 			}
 		}
 		label += listLen;
@@ -199,10 +199,10 @@ public class SemanticHandler {
 		String type = ExpressionEval.getType(simplified,"0");
 		String result = ExpressionEval.checkOps(simplified, "").get(0);
 		if (type.equals("FLOAT")) {
-			currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREF," "+result," ",id));
+			currentIRList.add(new IRNode(IRNode.IROpcode.STOREF,result,null,id));
 		}
 		else {
-			currentIRList.NodeList.add(new IRNode(IRNode.IROpcode.STOREI," "+result," ",id));
+			currentIRList.add(new IRNode(IRNode.IROpcode.STOREI,result,null,id));
 
 		}
 
@@ -215,12 +215,12 @@ public class SemanticHandler {
 			for (String part : parts) {
 				if ((type = SymbolTable.getSymbolType(part)) != "") {
 					if (type.equals("INT")) {
-						IRNode tempNode = new IRNode(IRNode.IROpcode.READI," ","",part);
-						currentIRList.NodeList.add(tempNode);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.READI,null,null,part);
+						currentIRList.add(tempNode);
 					}
 					else if(type.equals("FLOAT")) {
-						IRNode tempNode = new IRNode(IRNode.IROpcode.READF," ","",part);
-						currentIRList.NodeList.add(tempNode);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.READF,null,null,part);
+						currentIRList.add(tempNode);
 					}
 				}
 				else {
@@ -231,12 +231,12 @@ public class SemanticHandler {
 		else {
 			if ((type = SymbolTable.getSymbolType(idList)) != "") {
 				if (type.equals("INT")) {
-					IRNode tempNode = new IRNode(IRNode.IROpcode.READI," ","",idList);
-					currentIRList.NodeList.add(tempNode);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.READI,null,null,idList);
+					currentIRList.add(tempNode);
 				}
 				else if(type.equals("FLOAT")) {
-					IRNode tempNode = new IRNode(IRNode.IROpcode.READF," ","",idList);
-					currentIRList.NodeList.add(tempNode);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.READF,null,null,idList);
+					currentIRList.add(tempNode);
 				}
 			}
 			else {
@@ -252,12 +252,12 @@ public class SemanticHandler {
 			for (String part : parts) {
 				if ((type = SymbolTable.getSymbolType(part)) != "") {
 					if (type.equals("INT")) {
-						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI," ","",part);
-						currentIRList.NodeList.add(tempNode);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI,null,null,part);
+						currentIRList.add(tempNode);
 					}
 					else if(type.equals("FLOAT")) {
-						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF," ","",part);
-						currentIRList.NodeList.add(tempNode);
+						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF,null,null,part);
+						currentIRList.add(tempNode);
 					}
 				}
 				else {
@@ -268,12 +268,12 @@ public class SemanticHandler {
 		else {
 			if ((type = SymbolTable.getSymbolType(idList)) != "") {
 				if (type.equals("INT")) {
-					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI," ","",idList);
-					currentIRList.NodeList.add(tempNode);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI,null,null,idList);
+					currentIRList.add(tempNode);
 				}
 				else if(type.equals("FLOAT")) {
-					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF," ","",idList);
-					currentIRList.NodeList.add(tempNode);
+					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEF,null,null,idList);
+					currentIRList.add(tempNode);
 				}
 			}
 			else {

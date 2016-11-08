@@ -18,7 +18,7 @@ public class SemanticNode {
 	//public SemanticActionTree elseList = null;
 	
 	public SemanticNode(SemanticType type) {
-		this.type = type;
+		/*this.type = type;
 		if (type == SemanticType.BASE) {
 			IRNodes = new IRList();
 			SemanticHandler.getCurrentTree().addNode(this);
@@ -42,6 +42,6 @@ public class SemanticNode {
 			//elseList = new SemanticActionTree();	
 		}
 		//SemanticHandler.getCurrentTree().addNode(this);
-		//SemanticHandler.currentIRList = this.IRNodes;
+		//SemanticHandler.currentIRList = this.IRNodes;*/
 	}
 }

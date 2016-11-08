@@ -12,7 +12,7 @@ public class IfBodyNode extends HeadNode {
 		}
 		IfNode parent = SemanticHandler.getParentIf();
 		parent.ifBodyList.add(this);
-		jumpOut = parent.jumpOut;
+		//jumpOut = parent.jumpOut;
 		SemanticHandler.genCondition(condition);
 		SemanticHandler.pushList(this.headNodes);
 	}
