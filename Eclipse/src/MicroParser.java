@@ -845,11 +845,9 @@ public class MicroParser extends Parser {
 			setState(158); any_type();
 			setState(159); ((Func_declContext)_localctx).id = id();
 
-									System.out.println((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null));
 									List<HeadNode> newList = new ArrayList<HeadNode>();
 									SemanticHandler.pushList(newList);
 									if ((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null).equals("main")) {
-										System.out.println("hello");
 										SemanticHandler.rootList = newList;
 									}
 									SymbolTable.pushScope(new Scope((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null)));
@@ -2200,7 +2198,11 @@ public class MicroParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(316); match(2);
-			SymbolTable.pushBlock();
+
+										SymbolTable.pushBlock();
+										SymbolTable.pushBlock();
+										WhileNode whileNode = new WhileNode();
+									
 			setState(318); decl();
 			SymbolTable.popScope();
 			setState(320); stmt_list();
@@ -2208,7 +2210,8 @@ public class MicroParser extends Parser {
 			setState(322); match(6);
 			setState(323); cond();
 			setState(324); match(19);
-			setState(325); match(24);
+			SemanticHandler.addendWhile();
+			setState(326); match(24);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2244,7 +2247,7 @@ public class MicroParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3+\u014a\4\2\t\2\4"+
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3+\u014b\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
@@ -2266,11 +2269,11 @@ public class MicroParser extends Parser {
 		"\n\"\3#\3#\3#\3#\3#\3#\3#\5#\u0112\n#\3$\3$\3%\3%\3&\3&\3&\3&\3&\3&\3"+
 		"&\3&\3&\3&\3&\3&\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\5\'\u012f"+
 		"\n\'\3(\3(\3(\3(\3(\3(\3(\3(\3(\3(\5(\u013b\n(\3)\3)\3*\3*\3*\3*\3*\3"+
-		"*\3*\3*\3*\3*\3*\3*\2+\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,"+
-		".\60\62\64\668:<>@BDFHJLNPR\2\6\4\2\35\35##\4\2\6\6\26\26\4\2\5\5  \7"+
-		"\2\n\n\f\r\31\31\34\34\"\"\u0138\2T\3\2\2\2\4Z\3\2\2\2\6\\\3\2\2\2\bh"+
-		"\3\2\2\2\nj\3\2\2\2\fq\3\2\2\2\16s\3\2\2\2\20x\3\2\2\2\22|\3\2\2\2\24"+
-		"~\3\2\2\2\26\u0086\3\2\2\2\30\u008c\3\2\2\2\32\u008e\3\2\2\2\34\u0097"+
+		"*\3*\3*\3*\3*\3*\3*\3*\2+\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&"+
+		"(*,.\60\62\64\668:<>@BDFHJLNPR\2\6\4\2\35\35##\4\2\6\6\26\26\4\2\5\5 "+
+		" \7\2\n\n\f\r\31\31\34\34\"\"\u0139\2T\3\2\2\2\4Z\3\2\2\2\6\\\3\2\2\2"+
+		"\bh\3\2\2\2\nj\3\2\2\2\fq\3\2\2\2\16s\3\2\2\2\20x\3\2\2\2\22|\3\2\2\2"+
+		"\24~\3\2\2\2\26\u0086\3\2\2\2\30\u008c\3\2\2\2\32\u008e\3\2\2\2\34\u0097"+
 		"\3\2\2\2\36\u009d\3\2\2\2 \u009f\3\2\2\2\"\u00aa\3\2\2\2$\u00b2\3\2\2"+
 		"\2&\u00b8\3\2\2\2(\u00be\3\2\2\2*\u00c0\3\2\2\2,\u00c3\3\2\2\2.\u00c8"+
 		"\3\2\2\2\60\u00cf\3\2\2\2\62\u00d6\3\2\2\2\64\u00da\3\2\2\2\66\u00dd\3"+
@@ -2345,9 +2348,9 @@ public class MicroParser extends Parser {
 		"\u0138\3\2\2\2\u013bO\3\2\2\2\u013c\u013d\t\5\2\2\u013dQ\3\2\2\2\u013e"+
 		"\u013f\7\4\2\2\u013f\u0140\b*\1\2\u0140\u0141\5\b\5\2\u0141\u0142\b*\1"+
 		"\2\u0142\u0143\5$\23\2\u0143\u0144\7\27\2\2\u0144\u0145\7\b\2\2\u0145"+
-		"\u0146\5N(\2\u0146\u0147\7\25\2\2\u0147\u0148\7\32\2\2\u0148S\3\2\2\2"+
-		"\23h|\u0086\u008c\u0097\u009d\u00b2\u00b8\u00be\u00e4\u00f1\u00f6\u0101"+
-		"\u0108\u0111\u012e\u013a";
+		"\u0146\5N(\2\u0146\u0147\7\25\2\2\u0147\u0148\b*\1\2\u0148\u0149\7\32"+
+		"\2\2\u0149S\3\2\2\2\23h|\u0086\u008c\u0097\u009d\u00b2\u00b8\u00be\u00e4"+
+		"\u00f1\u00f6\u0101\u0108\u0111\u012e\u013a";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

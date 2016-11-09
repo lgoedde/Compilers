@@ -23,7 +23,7 @@ public class Micro {
 			parser.program();
 			SemanticHandler.printIRCode();
 			//IRList.printList();
-			TinyGeneration.printTiny();
+			//TinyGeneration.printTiny();
 			//System.out.println("Accepted");
 		}
 

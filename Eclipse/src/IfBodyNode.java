@@ -15,7 +15,7 @@ public class IfBodyNode extends HeadNode {
 		parent.ifBodyList.add(this);
 		//jumpOut = parent.jumpOut;
 		SemanticHandler.currentIRList = conditionSetUp;
-		SemanticHandler.genCondition(condition);
+		SemanticHandler.genCondition(condition,true);
 		SemanticHandler.pushList(this.headNodes);
 	}
 	

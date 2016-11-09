@@ -66,45 +66,84 @@ public class SemanticHandler {
 				printFriendly(headNode,offset + 1);
 			}
 		}
-		
-		
-		/*for (int i = 0; i < sizeTree; i++) {
-			SemanticNode tempNode = tree.SemanticList.get(i);
-			System.out.print("\n");
-			for (int k = 0; k < offset; k++) {
-				System.out.print("\t");
+		else if (node instanceof WhileNode) {
+			System.out.print("While - Length: ");
+			int len = ((WhileNode) node).headNodes.size();
+			System.out.print(Integer.toString(len)+"\n");
+			for (HeadNode headNode : ((WhileNode) node).headNodes) {
+				printFriendly(headNode,offset + 1);
 			}
-			
-			System.out.print(tempNode.type);
-			if (tempNode.type == SemanticNode.SemanticType.IF) {
-				int sizeElse = tempNode.bodyThenList.size();
-				System.out.print("Length: "+Integer.toString(tempNode.bodyThenList.size()));
-				for (int j = 0; j < sizeElse; j++) {
-					printfriendly(tempNode.bodyThenList.get(j),offset + 1);
-				}
-			}
-			else if (tempNode.type == SemanticNode.SemanticType.ELSEIF) {
-				int sizeElse = tempNode.bodyThenList.size();
-				System.out.print("Length: "+Integer.toString(tempNode.bodyThenList.size()));
-				for (int j = 0; j < sizeElse; j++) {
-					printfriendly(tempNode.bodyThenList.get(j),offset + 1);
-				}
-			}
-			
-			
-		}*/
+		}
 	
 	}
 	
-	public static void printIRCode() {
-		System.out.println("SemanticList:");
-		for (HeadNode node : rootList) {
-			printFriendly(node,0);
+	public static void printTinyCode(HeadNode node) {
+		if (node instanceof BaseNode) {
+			for (IRNode irNode : ((BaseNode) node).NodeList) {
+				TinyGeneration.printTiny(irNode);
+			}
 		}
-		System.out.println("");
+		else if (node instanceof IfNode) {
+			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
+				printTinyCode(bodyNode);
+			}
+			TinyGeneration.printTiny(((IfNode) node).outLabel);
+		}
+		else if (node instanceof IfBodyNode) {
+			TinyGeneration.printTiny(((IfBodyNode) node).label);
+			for (IRNode irNode : ((IfBodyNode)node).conditionSetUp) {
+				TinyGeneration.printTiny(irNode);
+			}
+			TinyGeneration.printTiny(((IfBodyNode)node).condition);
+			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
+				printTinyCode(headNode);
+			}
+			TinyGeneration.printTiny(((IfBodyNode)node).jumpOut);
+			
+		}
+		else if (node instanceof WhileNode) {
+			for (IRNode irNode : ((WhileNode)node).conditionSetUp) {
+				TinyGeneration.printTiny(irNode);
+			}
+			TinyGeneration.printTiny(((WhileNode) node).labelTop);
+			for (HeadNode headNode : ((WhileNode) node).headNodes) {
+				printTinyCode(headNode);
+			}
+			TinyGeneration.printTiny(((WhileNode)node).condition);
+			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
+		}
+		
+	}
+	
+	public static void printIRCode() {
+		//System.out.println("SemanticList:");
+		//for (HeadNode node : rootList) {
+		//	printFriendly(node,0);
+		//}
+		//System.out.println("");
+		System.out.println(";IR code");
 		for (HeadNode node : rootList) {
 			node.printNode();
 		}
+		
+		TinyGeneration.resetRegisterStack();
+		System.out.println(";tiny code");
+		for (Symbol symbol : SymbolTable.globalScope.symbolTable) {
+			if (symbol.type.equals("STRING"))
+				System.out.println("str "+symbol.identifier);
+			else
+				System.out.println("var "+symbol.identifier);
+		}
+		for (HeadNode node : rootList) {
+			printTinyCode(node);
+		}
+		int listSize = TinyGeneration.TinyList.size();
+		for (int i = 0; i < listSize; i++) 
+		{
+			TinyGeneration.TinyList.get(i).printInstr();
+		}
+		System.out.println("sys halt");
+		
 	}
 	
 	public static IfNode getParentIf() {
@@ -136,14 +175,24 @@ public class SemanticHandler {
 		
 	}
 	
-	public static void genCondition(IRNode conditionNode) {
+	public static void genCondition(IRNode conditionNode, boolean ifStmt) {
 		if (expr1.equals("TRUE")) {
-			conditionNode.Opcode = null;
+			if (ifStmt) {
+				conditionNode.Opcode = null;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			}
 			return;
 		}
 			
 		if (expr1.equals("FALSE")) {
-			conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			}
+			else {
+				conditionNode.Opcode = null;
+			}
 			return;
 		}
 			
@@ -151,18 +200,54 @@ public class SemanticHandler {
 		expr2 = ExpressionEval.SimplifyExpression(expr2);
 		conditionNode.Op1 = expr1;
 		conditionNode.Op2 = expr2;
-		if (compop.equals("<"))
-			conditionNode.Opcode = IRNode.IROpcode.GE;
-		else if (compop.equals(">"))
-			conditionNode.Opcode = IRNode.IROpcode.LE;	
-		else if (compop.equals("="))
-			conditionNode.Opcode = IRNode.IROpcode.NE;
-		else if (compop.equals("!="))
-			conditionNode.Opcode = IRNode.IROpcode.EQ;
-		else if (compop.equals("<="))
-			conditionNode.Opcode = IRNode.IROpcode.GT;
-		else if (compop.equals(">="))
-			conditionNode.Opcode = IRNode.IROpcode.LT;
+		if (compop.equals("<")) {
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.GE;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.LT;
+			}
+		}
+		else if (compop.equals(">")) {
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.LE;	
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.GT;
+			}
+		}
+		else if (compop.equals("=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.NE;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.EQ;
+			}
+		}
+		else if (compop.equals("!=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.EQ;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.NE;
+			}
+		}
+		else if (compop.equals("<=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.GT;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.LE;
+			}
+		}
+		else if (compop.equals(">=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.LT;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.GE;
+			}
+		}
 	}
 	
 	public static void genIfLabels(IfNode ifNode) {
@@ -202,6 +287,21 @@ public class SemanticHandler {
 		popList();
 		IfNode parentIf = getParentIf();
 		genIfLabels(parentIf);
+	}
+	
+	public static void genWhileLabels(WhileNode node) {
+		String labelTop = "label"+Integer.toString(label++);
+		node.labelTop.Opcode = IRNode.IROpcode.LABEL;
+		node.labelTop.Result = labelTop;
+		node.condition.Result = labelTop;
+	}
+	
+	public static void addendWhile() {
+		popList();
+		WhileNode whileNode = (WhileNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1);
+		SemanticHandler.currentIRList = whileNode.conditionSetUp;
+		SemanticHandler.genCondition(whileNode.condition,false);
+		genWhileLabels(whileNode);
 	}
 	
 	public static void addAssignment(String id, String expr) {

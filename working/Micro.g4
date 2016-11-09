@@ -96,7 +96,13 @@ else_part         : 'ELSIF' '(' cond ')'
 cond              : expr {SemanticHandler.expr1 = $expr.text;} compop expr {SemanticHandler.compop = $compop.text; SemanticHandler.expr2 = $expr.text;} | 'TRUE' {SemanticHandler.expr1 = "TRUE";} | 'FALSE' {SemanticHandler.expr1 = "FALSE";} ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
-do_while_stmt       : 'DO' {SymbolTable.pushBlock();} decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' ';' ;
+do_while_stmt       : 'DO' 
+						{
+							SymbolTable.pushBlock();
+							SymbolTable.pushBlock();
+							WhileNode whileNode = new WhileNode();
+						} 
+						decl{SymbolTable.popScope();} stmt_list 'WHILE' '(' cond ')' {SemanticHandler.addendWhile();} ';' ;
 
 
 KEYWORD: 'PROGRAM' | 'BEGIN' | 'END' | 'FUNCTION' | 'READ' | 'WRITE' | 'IF' | 'ELSIF' | 'ENDIF' | 'DO' | 'WHILE' | 'CONTINUE' | 'BREAK' | 'RETURN' | 'INT' | 'VOID' | 'STRING' | 'FLOAT' | 'TRUE' | 'FALSE' ;

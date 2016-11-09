@@ -66,6 +66,14 @@ public class SemanticHandler {
 				printFriendly(headNode,offset + 1);
 			}
 		}
+		else if (node instanceof WhileNode) {
+			System.out.print("While - Length: ");
+			int len = ((WhileNode) node).headNodes.size();
+			System.out.print(Integer.toString(len)+"\n");
+			for (HeadNode headNode : ((WhileNode) node).headNodes) {
+				printFriendly(headNode,offset + 1);
+			}
+		}
 	
 	}
 	
@@ -93,6 +101,18 @@ public class SemanticHandler {
 			TinyGeneration.printTiny(((IfBodyNode)node).jumpOut);
 			
 		}
+		else if (node instanceof WhileNode) {
+			for (IRNode irNode : ((WhileNode)node).conditionSetUp) {
+				TinyGeneration.printTiny(irNode);
+			}
+			TinyGeneration.printTiny(((WhileNode) node).labelTop);
+			for (HeadNode headNode : ((WhileNode) node).headNodes) {
+				printTinyCode(headNode);
+			}
+			TinyGeneration.printTiny(((WhileNode)node).condition);
+			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
+		}
+		
 	}
 	
 	public static void printIRCode() {
@@ -155,14 +175,24 @@ public class SemanticHandler {
 		
 	}
 	
-	public static void genCondition(IRNode conditionNode) {
+	public static void genCondition(IRNode conditionNode, boolean ifStmt) {
 		if (expr1.equals("TRUE")) {
-			conditionNode.Opcode = null;
+			if (ifStmt) {
+				conditionNode.Opcode = null;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			}
 			return;
 		}
 			
 		if (expr1.equals("FALSE")) {
-			conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.JUMP;
+			}
+			else {
+				conditionNode.Opcode = null;
+			}
 			return;
 		}
 			
@@ -170,18 +200,54 @@ public class SemanticHandler {
 		expr2 = ExpressionEval.SimplifyExpression(expr2);
 		conditionNode.Op1 = expr1;
 		conditionNode.Op2 = expr2;
-		if (compop.equals("<"))
-			conditionNode.Opcode = IRNode.IROpcode.GE;
-		else if (compop.equals(">"))
-			conditionNode.Opcode = IRNode.IROpcode.LE;	
-		else if (compop.equals("="))
-			conditionNode.Opcode = IRNode.IROpcode.NE;
-		else if (compop.equals("!="))
-			conditionNode.Opcode = IRNode.IROpcode.EQ;
-		else if (compop.equals("<="))
-			conditionNode.Opcode = IRNode.IROpcode.GT;
-		else if (compop.equals(">="))
-			conditionNode.Opcode = IRNode.IROpcode.LT;
+		if (compop.equals("<")) {
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.GE;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.LT;
+			}
+		}
+		else if (compop.equals(">")) {
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.LE;	
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.GT;
+			}
+		}
+		else if (compop.equals("=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.NE;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.EQ;
+			}
+		}
+		else if (compop.equals("!=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.EQ;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.NE;
+			}
+		}
+		else if (compop.equals("<=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.GT;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.LE;
+			}
+		}
+		else if (compop.equals(">=")){
+			if (ifStmt) {
+				conditionNode.Opcode = IRNode.IROpcode.LT;
+			}
+			else {
+				conditionNode.Opcode = IRNode.IROpcode.GE;
+			}
+		}
 	}
 	
 	public static void genIfLabels(IfNode ifNode) {
@@ -221,6 +287,21 @@ public class SemanticHandler {
 		popList();
 		IfNode parentIf = getParentIf();
 		genIfLabels(parentIf);
+	}
+	
+	public static void genWhileLabels(WhileNode node) {
+		String labelTop = "label"+Integer.toString(label++);
+		node.labelTop.Opcode = IRNode.IROpcode.LABEL;
+		node.labelTop.Result = labelTop;
+		node.condition.Result = labelTop;
+	}
+	
+	public static void addendWhile() {
+		popList();
+		WhileNode whileNode = (WhileNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1);
+		SemanticHandler.currentIRList = whileNode.conditionSetUp;
+		SemanticHandler.genCondition(whileNode.condition,false);
+		genWhileLabels(whileNode);
 	}
 	
 	public static void addAssignment(String id, String expr) {

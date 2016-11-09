@@ -85,17 +85,54 @@ public class TinyGeneration {
 	}
 	
 	private static void branchCompare(TinyInstr.TinyOpcode opcode, String op1, String op2, String dest) {
+		String type = ExpressionEval.getType(op1, op2);
 		op1 = convertOp(op1);
 		op2 = convertOp(op2);
-		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.cmpi,op1,op2));
+		if (!testReg(op2)) {
+			String nextReg = AvailableRegs.pop();
+			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,op2, nextReg));
+			op2 = nextReg;
+		}
+		TinyInstr.TinyOpcode cmpInstr = TinyInstr.TinyOpcode.cmpi;
+		if (type.equals("FLOAT"))
+			cmpInstr = TinyInstr.TinyOpcode.cmpr;
+		TinyList.add(new TinyInstr(cmpInstr,op1,op2));
 		TinyList.add(new TinyInstr(opcode,null,dest));
+	}
+	
+	private static boolean testReg(String val) {
+		if (val.charAt(0) != 'r')
+			return false;
+		if (isNumeric(val.split("r")[1]))
+				return true;
+		return false;
 	}
 	
 	
 	private static void store(String value, String dest) {
 		value = convertOp(value);
 		dest = convertOp(dest);
-		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
+		if (testVarName(value) && testVarName(dest) ) {
+			String newReg = AvailableRegs.pop();
+			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,newReg));
+			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,newReg,dest));
+		}
+		else {
+			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
+		}
+	}
+	
+	public static boolean isNumeric(String s) {  
+    	return s.matches("[-+]?\\d*\\.?\\d+");  
+	}
+	
+	private static boolean testVarName(String val) {
+		if (isNumeric(val))
+			return false;
+		if (val.charAt(0) == 'r' && isNumeric(val.split("r")[1])) {
+				return false;
+		}
+		return true;
 	}
 	
 	private static void arithmetic(TinyInstr.TinyOpcode opcode, String op1, String op2, String result) {
