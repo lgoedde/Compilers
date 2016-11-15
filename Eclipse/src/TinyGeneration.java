@@ -13,9 +13,7 @@ public class TinyGeneration {
 	public static void printTiny(IRNode ir) {
 		if (ir == null || ir.Opcode == null)
 			return;
-		//ListIterator<IRNode> iterator = null; //IRList.NodeList.listIterator();
-		//while (iterator.hasNext()) {
-			//IRNode ir = iterator.next();
+		
 			switch(ir.Opcode) {
 			case STOREI :
 			case STOREF :

@@ -22,8 +22,6 @@ public class Micro {
 			parser.setErrorHandler(new BailErrorStrategy());
 			parser.program();
 			SemanticHandler.printIRCode();
-			//IRList.printList();
-			//TinyGeneration.printTiny();
 			//System.out.println("Accepted");
 		}
 

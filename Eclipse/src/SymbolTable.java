@@ -28,11 +28,6 @@ public class SymbolTable
 
 	public static void popScope() {
 		Scope tempScope = ScopeStack.pop();
-		/*if (tempScope.name != "GLOBAL") {
-			System.out.println("");
-		}
-		System.out.println("Symbol table " + tempScope.name);
-		tempScope.printSymbols();*/
 	}
 
 	public static Scope getCurrentScope() {

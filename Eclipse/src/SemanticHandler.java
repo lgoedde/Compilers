@@ -7,10 +7,7 @@ public class SemanticHandler {
 	public static List<IRNode> currentIRList;
 	public static List<HeadNode> rootList;// = new ArrayList<HeadNode>();
 	
-	
-	
-	//public static Stack<SemanticActionTree> SemanticStack = new Stack<SemanticActionTree>();
-	
+		
 	private static int label = 0;
 	public static String expr1;
 	public static String expr2;
@@ -116,11 +113,6 @@ public class SemanticHandler {
 	}
 	
 	public static void printIRCode() {
-		//System.out.println("SemanticList:");
-		//for (HeadNode node : rootList) {
-		//	printFriendly(node,0);
-		//}
-		//System.out.println("");
 		System.out.println(";IR code");
 		for (HeadNode node : rootList) {
 			node.printNode();
@@ -150,30 +142,6 @@ public class SemanticHandler {
 		return (IfNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1);
 	}
 	
-	public static void addIF(IfBodyNode node) {
-		// gen condition
-		
-		//genCondition(newIf.condition);
-		//newIf.bodyThenList.add(newTree);
-		//SemanticStack.push(newTree);
-		//SemanticHandler.getCurrentTree().addNode(newIf);
-	}
-	
-	
-	public static void addIfBody() {
-		//LinkedList<Object> test;
-		//popTree();
-		//SemanticNode parentIf = getCurrentTree().SemanticList.getLast();
-		//SemanticActionTree newTree = new SemanticActionTree();
-		//SemanticNode newelseIf = new SemanticNode(SemanticNode.SemanticType.ELSEIF); // adding new node adds it to base tree
-		//newelseIf.jumpOutStart = parentIf.jumpOutStart;
-		//genCondition(newelseIf.condition);
-		//SemanticStack.push(newTree);
-		//SemanticHandler.getCurrentTree().addNode(newelseIf);
-		//parentIf.bodyThenList.add(newTree);
-		
-		
-	}
 	
 	public static void genCondition(IRNode conditionNode, boolean ifStmt) {
 		if (expr1.equals("TRUE")) {
@@ -263,8 +231,6 @@ public class SemanticHandler {
 			label++;
 			return;
 		}
-		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().condition.Result = outLabel;
-		//ifNode.bodyThenList.getFirst().SemanticList.getFirst().jumpOutStart.Result = outLabel;
 		for (int i = 0; i < listLen; i++) {
 			IfBodyNode tempNode = ifNode.ifBodyList.get(i);
 			tempNode.jumpOut.Opcode = IRNode.IROpcode.JUMP;
