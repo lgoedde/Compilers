@@ -5,7 +5,7 @@ import java.lang.Exception.*;
 
 
 public class Scope {
-	public List<Symbol> symbolTable;
+	/*public List<Symbol> symbolTable;
 	public HashMap symbolLookUp;
 	public String name;
 	public int symbolID = 0;
@@ -44,5 +44,5 @@ public class Scope {
 		for (Symbol tsymbol : this.symbolTable) {
     		System.out.println("name "+tsymbol.identifier+" type "+tsymbol.type+tsymbol.value);
     	}
-	}
+	}*/
 }

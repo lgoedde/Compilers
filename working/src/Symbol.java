@@ -3,23 +3,19 @@ import java.io.*;
 import java.util.*;
 
 public class Symbol {
-	public String identifier;
+	public static String typeIn;
 	public String type;
 	public String value;
+	public String irReg;
 
-	public Symbol(String identifier, String type, String value) {
-		this.identifier = identifier;
-		this.type = type;
-		if (type == "STRING") {
-			this.value = " value "+value;
-		}
-		else {
-			this.value = "";
-		}
+	public Symbol(String value) {
+		this.type = typeIn;
+		this.value = value;
+		this.irReg = null;
 	}
 
-	public Symbol () {
-		this.identifier = "";
+	public Symbol (int depth) {
+		this.irReg = "";
 		this.type = "";
 		this.value = "";
 	}

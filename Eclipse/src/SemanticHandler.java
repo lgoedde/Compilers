@@ -5,8 +5,11 @@ import java.util.*;
 public class SemanticHandler {
 	public static Stack<List<HeadNode>> SemanticStack = new Stack<List<HeadNode>>();
 	public static List<IRNode> currentIRList;
-	public static List<HeadNode> rootList;// = new ArrayList<HeadNode>();
+	public List<HeadNode> rootList;// = new ArrayList<HeadNode>();
+	public static BaseNode currentBaseNode;
 	
+	public static List<Function> FunctionList = new ArrayList<Function>(); // Iterate through to print each functions semantic handler
+	public static Function currentFunction;
 		
 	private static int label = 0;
 	public static String expr1;
@@ -16,6 +19,8 @@ public class SemanticHandler {
 		
 	}
 	
+	
+		
 	public static List<HeadNode> getCurrentList() {
 		return SemanticStack.peek();
 	}
@@ -114,7 +119,18 @@ public class SemanticHandler {
 	
 	public static void printIRCode() {
 		System.out.println(";IR code");
-		for (HeadNode node : rootList) {
+		
+		for(Function func : FunctionList) {
+			for (HeadNode node : func.semanticHandler.rootList) {
+				node.printNode();
+			}
+		}
+		
+		
+		
+		
+		
+		/*for (HeadNode node : rootList) {
 			node.printNode();
 		}
 		
@@ -134,7 +150,7 @@ public class SemanticHandler {
 		{
 			TinyGeneration.TinyList.get(i).printInstr();
 		}
-		System.out.println("sys halt");
+		System.out.println("sys halt");*/
 		
 	}
 	
@@ -289,7 +305,7 @@ public class SemanticHandler {
 		if (idList.indexOf(',') != -1) {
 			String[] parts = idList.split(",");
 			for (String part : parts) {
-				if ((type = SymbolTable.getSymbolType(part)) != "") {
+				if ((type = currentFunction.getSymbol(part).type) != "") {
 					if (type.equals("INT")) {
 						IRNode tempNode = new IRNode(IRNode.IROpcode.READI,null,null,part);
 						currentIRList.add(tempNode);
@@ -305,7 +321,7 @@ public class SemanticHandler {
 			}
 		}
 		else {
-			if ((type = SymbolTable.getSymbolType(idList)) != "") {
+			if ((type = currentFunction.getSymbol(idList).type) != "") {
 				if (type.equals("INT")) {
 					IRNode tempNode = new IRNode(IRNode.IROpcode.READI,null,null,idList);
 					currentIRList.add(tempNode);
@@ -326,7 +342,7 @@ public class SemanticHandler {
 		if (idList.indexOf(',') != -1) {
 			String[] parts = idList.split(",");
 			for (String part : parts) {
-				if ((type = SymbolTable.getSymbolType(part)) != "") {
+				if ((type = currentFunction.getSymbol(part).type) != "") {
 					if (type.equals("INT")) {
 						IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI,null,null,part);
 						currentIRList.add(tempNode);
@@ -342,7 +358,7 @@ public class SemanticHandler {
 			}
 		}
 		else {
-			if ((type = SymbolTable.getSymbolType(idList)) != "") {
+			if ((type = currentFunction.getSymbol(idList).type) != "") {
 				if (type.equals("INT")) {
 					IRNode tempNode = new IRNode(IRNode.IROpcode.WRITEI,null,null,idList);
 					currentIRList.add(tempNode);

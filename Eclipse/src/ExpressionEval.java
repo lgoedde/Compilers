@@ -210,13 +210,13 @@ public class ExpressionEval {
 			return "FLOAT";
 		
 		if (!isNumeric(op1)) {
-			type1 = SymbolTable.getSymbolType(op1);
+			type1 = SemanticHandler.currentFunction.getSymbol(op1).type;
 		}
 		else {
 			type1 = "INT";
 		}
 		if (!isNumeric(op2)) {
-			type2 = SymbolTable.getSymbolType(op2);
+			type2 = SemanticHandler.currentFunction.getSymbol(op2).type;
 		}
 		else {
 			type2 = "INT";

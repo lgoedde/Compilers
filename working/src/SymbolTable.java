@@ -5,7 +5,7 @@ import java.lang.Exception.*;
 
 
 public class SymbolTable
-{
+{/*
 	public static Stack<Scope> ScopeStack = new Stack<Scope>(); 
 	public static Scope currentScope;
 	private static int block_number = 1;
@@ -27,12 +27,7 @@ public class SymbolTable
 	}
 
 	public static void popScope() {
-		Scope tempScope = ScopeStack.pop();
-		/*if (tempScope.name != "GLOBAL") {
-			System.out.println("");
-		}
-		System.out.println("Symbol table " + tempScope.name);
-		tempScope.printSymbols();*/
+		ScopeStack.pop();
 	}
 
 	public static Scope getCurrentScope() {
@@ -48,7 +43,7 @@ public class SymbolTable
 		}
 	 	return "";
 	}
-
+*/
 
 
 }

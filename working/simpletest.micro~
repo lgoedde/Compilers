@@ -1,0 +1,21 @@
+PROGRAM factorial
+BEGIN
+
+INT z;
+
+FUNCTION INT main ()
+	BEGIN
+		INT a;
+		IF (TRUE) 
+			INT b;
+		ELSIF (TRUE)
+			INT c;
+		ENDIF
+
+		DO
+			INT d;
+		WHILE(FALSE);
+
+	END
+
+END

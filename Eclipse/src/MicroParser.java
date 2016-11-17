@@ -175,11 +175,10 @@ public class MicroParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 
-									SymbolTable.pushScope(new Scope("GLOBAL"));
+									Function.addGlobal();
 								
 			setState(91); decl();
-			SymbolTable.popScope();
-			setState(93); func_declarations();
+			setState(92); func_declarations();
 			}
 		}
 		catch (RecognitionException re) {
@@ -221,21 +220,21 @@ public class MicroParser extends Parser {
 		DeclContext _localctx = new DeclContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_decl);
 		try {
-			setState(102);
+			setState(101);
 			switch (_input.LA(1)) {
 			case 14:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(95); string_decl();
-				setState(96); decl();
+				setState(94); string_decl();
+				setState(95); decl();
 				}
 				break;
 			case 27:
 			case 33:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(98); var_decl();
-				setState(99); decl();
+				setState(97); var_decl();
+				setState(98); decl();
 				}
 				break;
 			case 2:
@@ -297,14 +296,14 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(104); match(14);
-			setState(105); ((String_declContext)_localctx).id = id();
-			setState(106); match(28);
-			setState(107); ((String_declContext)_localctx).str = str();
-			setState(108); match(24);
+			setState(103); match(14);
+			setState(104); ((String_declContext)_localctx).id = id();
+			setState(105); match(28);
+			setState(106); ((String_declContext)_localctx).str = str();
+			setState(107); match(24);
 
-									Symbol tempSymbol = new Symbol((((String_declContext)_localctx).id!=null?_input.getText(((String_declContext)_localctx).id.start,((String_declContext)_localctx).id.stop):null),"STRING",(((String_declContext)_localctx).str!=null?_input.getText(((String_declContext)_localctx).str.start,((String_declContext)_localctx).str.stop):null));
-									SymbolTable.currentScope.addSymbol(tempSymbol);
+									Symbol.typeIn = "STRING";
+									Function.addSymbol((((String_declContext)_localctx).id!=null?_input.getText(((String_declContext)_localctx).id.start,((String_declContext)_localctx).id.stop):null),new Symbol((((String_declContext)_localctx).str!=null?_input.getText(((String_declContext)_localctx).str.start,((String_declContext)_localctx).str.stop):null)));
 								
 			}
 		}
@@ -341,7 +340,7 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(111); match(STRINGLITERAL);
+			setState(110); match(STRINGLITERAL);
 			}
 		}
 		catch (RecognitionException re) {
@@ -357,7 +356,6 @@ public class MicroParser extends Parser {
 
 	public static class Var_declContext extends ParserRuleContext {
 		public Var_typeContext var_type;
-		public Id_listContext id_list;
 		public Id_listContext id_list() {
 			return getRuleContext(Id_listContext.class,0);
 		}
@@ -384,13 +382,12 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(113); ((Var_declContext)_localctx).var_type = var_type();
-			setState(114); ((Var_declContext)_localctx).id_list = id_list();
-			setState(115); match(24);
+			setState(112); ((Var_declContext)_localctx).var_type = var_type();
 
-									Symbol tempSymbol = new Symbol((((Var_declContext)_localctx).id_list!=null?_input.getText(((Var_declContext)_localctx).id_list.start,((Var_declContext)_localctx).id_list.stop):null),(((Var_declContext)_localctx).var_type!=null?_input.getText(((Var_declContext)_localctx).var_type.start,((Var_declContext)_localctx).var_type.stop):null),"");
-									SymbolTable.currentScope.addSymbol(tempSymbol);
+									Symbol.typeIn = (((Var_declContext)_localctx).var_type!=null?_input.getText(((Var_declContext)_localctx).var_type.start,((Var_declContext)_localctx).var_type.stop):null);
 								
+			setState(114); id_list();
+			setState(115); match(24);
 			}
 		}
 		catch (RecognitionException re) {
@@ -426,7 +423,7 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(118);
+			setState(117);
 			_la = _input.LA(1);
 			if ( !(_la==27 || _la==33) ) {
 			_errHandler.recoverInline(this);
@@ -467,19 +464,19 @@ public class MicroParser extends Parser {
 		Any_typeContext _localctx = new Any_typeContext(_ctx, getState());
 		enterRule(_localctx, 16, RULE_any_type);
 		try {
-			setState(122);
+			setState(121);
 			switch (_input.LA(1)) {
 			case 27:
 			case 33:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(120); var_type();
+				setState(119); var_type();
 				}
 				break;
 			case 13:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(121); match(13);
+				setState(120); match(13);
 				}
 				break;
 			default:
@@ -498,6 +495,7 @@ public class MicroParser extends Parser {
 	}
 
 	public static class Id_listContext extends ParserRuleContext {
+		public IdContext id;
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
@@ -524,7 +522,10 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(124); id();
+			setState(123); ((Id_listContext)_localctx).id = id();
+			Symbol tempSymb = new Symbol(null);
+						Function.addSymbol((((Id_listContext)_localctx).id!=null?_input.getText(((Id_listContext)_localctx).id.start,((Id_listContext)_localctx).id.stop):null),tempSymb);
+						
 			setState(125); id_tail();
 			}
 		}
@@ -680,10 +681,10 @@ public class MicroParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(140); ((Param_declContext)_localctx).var_type = var_type();
-			setState(141); ((Param_declContext)_localctx).id = id();
+			Symbol.typeIn = (((Param_declContext)_localctx).var_type!=null?_input.getText(((Param_declContext)_localctx).var_type.start,((Param_declContext)_localctx).var_type.stop):null);
+			setState(142); ((Param_declContext)_localctx).id = id();
 
-									Symbol tempSymbol = new Symbol((((Param_declContext)_localctx).id!=null?_input.getText(((Param_declContext)_localctx).id.start,((Param_declContext)_localctx).id.stop):null),(((Param_declContext)_localctx).var_type!=null?_input.getText(((Param_declContext)_localctx).var_type.start,((Param_declContext)_localctx).var_type.stop):null),"");
-									SymbolTable.currentScope.addSymbol(tempSymbol); 
+									Function.addSymbol((((Param_declContext)_localctx).id!=null?_input.getText(((Param_declContext)_localctx).id.start,((Param_declContext)_localctx).id.stop):null),new Symbol(null)); 
 								
 			}
 		}
@@ -723,14 +724,14 @@ public class MicroParser extends Parser {
 		Param_decl_tailContext _localctx = new Param_decl_tailContext(_ctx, getState());
 		enterRule(_localctx, 26, RULE_param_decl_tail);
 		try {
-			setState(149);
+			setState(150);
 			switch (_input.LA(1)) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(144); match(1);
-				setState(145); param_decl();
-				setState(146); param_decl_tail();
+				setState(145); match(1);
+				setState(146); param_decl();
+				setState(147); param_decl_tail();
 				}
 				break;
 			case 19:
@@ -778,13 +779,13 @@ public class MicroParser extends Parser {
 		Func_declarationsContext _localctx = new Func_declarationsContext(_ctx, getState());
 		enterRule(_localctx, 28, RULE_func_declarations);
 		try {
-			setState(155);
+			setState(156);
 			switch (_input.LA(1)) {
 			case 25:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(151); func_decl();
-				setState(152); func_declarations();
+				setState(152); func_decl();
+				setState(153); func_declarations();
 				}
 				break;
 			case 9:
@@ -841,23 +842,18 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(157); match(25);
-			setState(158); any_type();
-			setState(159); ((Func_declContext)_localctx).id = id();
+			setState(158); match(25);
+			setState(159); any_type();
+			setState(160); ((Func_declContext)_localctx).id = id();
 
-									List<HeadNode> newList = new ArrayList<HeadNode>();
-									SemanticHandler.pushList(newList);
-									if ((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null).equals("main")) {
-										SemanticHandler.rootList = newList;
-									}
-									SymbolTable.pushScope(new Scope((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null)));
+									Function funct = new Function((((Func_declContext)_localctx).id!=null?_input.getText(((Func_declContext)_localctx).id.start,((Func_declContext)_localctx).id.stop):null));
 								
-			setState(161); match(6);
-			setState(162); param_decl_list();
-			setState(163); match(19);
-			setState(164); match(31);
-			setState(165); func_body();
-			setState(166); match(9);
+			setState(162); match(6);
+			setState(163); param_decl_list();
+			setState(164); match(19);
+			setState(165); match(31);
+			setState(166); func_body();
+			setState(167); match(9);
 			}
 		}
 		catch (RecognitionException re) {
@@ -898,9 +894,9 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(168); decl();
-			SymbolTable.popScope();
+			setState(169); decl();
 			setState(170); stmt_list();
+			Function.popBlock();
 			}
 		}
 		catch (RecognitionException re) {
@@ -939,7 +935,7 @@ public class MicroParser extends Parser {
 		Stmt_listContext _localctx = new Stmt_listContext(_ctx, getState());
 		enterRule(_localctx, 34, RULE_stmt_list);
 		try {
-			setState(176);
+			setState(177);
 			switch (_input.LA(1)) {
 			case 2:
 			case 7:
@@ -949,8 +945,8 @@ public class MicroParser extends Parser {
 			case IDENTIFIER:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(172); stmt();
-				setState(173); stmt_list();
+				setState(173); stmt();
+				setState(174); stmt_list();
 				}
 				break;
 			case 9:
@@ -1004,7 +1000,7 @@ public class MicroParser extends Parser {
 		StmtContext _localctx = new StmtContext(_ctx, getState());
 		enterRule(_localctx, 36, RULE_stmt);
 		try {
-			setState(182);
+			setState(183);
 			switch (_input.LA(1)) {
 			case 7:
 			case 18:
@@ -1013,19 +1009,19 @@ public class MicroParser extends Parser {
 				enterOuterAlt(_localctx, 1);
 				{
 				BaseNode newNode = new BaseNode();
-				setState(179); base_stmt();
+				setState(180); base_stmt();
 				}
 				break;
 			case 15:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(180); if_stmt();
+				setState(181); if_stmt();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(181); do_while_stmt();
+				setState(182); do_while_stmt();
 				}
 				break;
 			default:
@@ -1074,30 +1070,30 @@ public class MicroParser extends Parser {
 		Base_stmtContext _localctx = new Base_stmtContext(_ctx, getState());
 		enterRule(_localctx, 38, RULE_base_stmt);
 		try {
-			setState(188);
+			setState(189);
 			switch (_input.LA(1)) {
 			case IDENTIFIER:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(184); assign_stmt();
+				setState(185); assign_stmt();
 				}
 				break;
 			case 7:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(185); read_stmt();
+				setState(186); read_stmt();
 				}
 				break;
 			case 18:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(186); write_stmt();
+				setState(187); write_stmt();
 				}
 				break;
 			case 29:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(187); return_stmt();
+				setState(188); return_stmt();
 				}
 				break;
 			default:
@@ -1139,8 +1135,8 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(190); assign_expr();
-			setState(191); match(24);
+			setState(191); assign_expr();
+			setState(192); match(24);
 			}
 		}
 		catch (RecognitionException re) {
@@ -1155,8 +1151,6 @@ public class MicroParser extends Parser {
 	}
 
 	public static class Assign_exprContext extends ParserRuleContext {
-		public IdContext id;
-		public ExprContext expr;
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
@@ -1183,10 +1177,9 @@ public class MicroParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(193); ((Assign_exprContext)_localctx).id = id();
-			setState(194); match(28);
-			setState(195); ((Assign_exprContext)_localctx).expr = expr();
-			SemanticHandler.addAssignment((((Assign_exprContext)_localctx).id!=null?_input.getText(((Assign_exprContext)_localctx).id.start,((Assign_exprContext)_localctx).id.stop):null),(((Assign_exprContext)_localctx).expr!=null?_input.getText(((Assign_exprContext)_localctx).expr.start,((Assign_exprContext)_localctx).expr.stop):null));
+			setState(194); id();
+			setState(195); match(28);
+			setState(196); expr();
 			}
 		}
 		catch (RecognitionException re) {
@@ -1960,13 +1953,13 @@ public class MicroParser extends Parser {
 			setState(280); match(19);
 
 									//SemanticHandler.pushTree();
-									SymbolTable.pushBlock();
+									Function.pushBlock();
 									IfNode ifNode = new IfNode();
 									IfBodyNode ifbNode = new IfBodyNode(true);
 								
 			setState(282); decl();
-			SymbolTable.popScope();
-			setState(284); stmt_list();
+			setState(283); stmt_list();
+			Function.popBlock();
 			setState(285); else_part();
 			SemanticHandler.addendIF();
 			setState(287); match(12);
@@ -2026,12 +2019,12 @@ public class MicroParser extends Parser {
 
 										//SemanticHandler.popTree();
 										//SemanticHandler.pushTree();
-										SymbolTable.pushBlock();
+										Function.pushBlock();
 										IfBodyNode ifbNode = new IfBodyNode(false);
 									
 				setState(294); decl();
-				SymbolTable.popScope();
-				setState(296); stmt_list();
+				setState(295); stmt_list();
+				Function.popBlock();
 				setState(297); else_part();
 				}
 				break;
@@ -2199,19 +2192,17 @@ public class MicroParser extends Parser {
 			{
 			setState(316); match(2);
 
-										SymbolTable.pushBlock();
-										SymbolTable.pushBlock();
+										Function.pushBlock();
 										WhileNode whileNode = new WhileNode();
 									
 			setState(318); decl();
-			SymbolTable.popScope();
-			setState(320); stmt_list();
-			setState(321); match(21);
-			setState(322); match(6);
-			setState(323); cond();
-			setState(324); match(19);
-			SemanticHandler.addendWhile();
-			setState(326); match(24);
+			setState(319); stmt_list();
+			setState(320); match(21);
+			setState(321); match(6);
+			setState(322); cond();
+			setState(323); match(19);
+			Function.popBlock(); SemanticHandler.addendWhile();
+			setState(325); match(24);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2247,20 +2238,20 @@ public class MicroParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3+\u014b\4\2\t\2\4"+
+		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3+\u014a\4\2\t\2\4"+
 		"\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t"+
 		"\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
 		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\4*\t*\3\2\3\2"+
-		"\3\2\3\2\3\2\3\2\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\5\5i\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3"+
-		"\t\3\t\3\n\3\n\5\n}\n\n\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\5\f\u0087\n"+
-		"\f\3\r\3\r\3\r\3\r\5\r\u008d\n\r\3\16\3\16\3\16\3\16\3\17\3\17\3\17\3"+
-		"\17\3\17\5\17\u0098\n\17\3\20\3\20\3\20\3\20\5\20\u009e\n\20\3\21\3\21"+
-		"\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3\22\3\23"+
-		"\3\23\3\23\3\23\5\23\u00b3\n\23\3\24\3\24\3\24\3\24\5\24\u00b9\n\24\3"+
-		"\25\3\25\3\25\3\25\5\25\u00bf\n\25\3\26\3\26\3\26\3\27\3\27\3\27\3\27"+
+		"\3\2\3\2\3\2\3\2\3\3\3\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5"+
+		"\5h\n\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\t\3"+
+		"\t\3\n\3\n\5\n|\n\n\3\13\3\13\3\13\3\13\3\f\3\f\3\f\3\f\3\f\5\f\u0087"+
+		"\n\f\3\r\3\r\3\r\3\r\5\r\u008d\n\r\3\16\3\16\3\16\3\16\3\16\3\17\3\17"+
+		"\3\17\3\17\3\17\5\17\u0099\n\17\3\20\3\20\3\20\3\20\5\20\u009f\n\20\3"+
+		"\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\21\3\22\3\22\3\22\3"+
+		"\22\3\23\3\23\3\23\3\23\5\23\u00b4\n\23\3\24\3\24\3\24\3\24\5\24\u00ba"+
+		"\n\24\3\25\3\25\3\25\3\25\5\25\u00c0\n\25\3\26\3\26\3\26\3\27\3\27\3\27"+
 		"\3\27\3\30\3\30\3\30\3\30\3\30\3\30\3\30\3\31\3\31\3\31\3\31\3\31\3\31"+
 		"\3\31\3\32\3\32\3\32\3\32\3\33\3\33\3\33\3\34\3\34\3\34\3\34\3\34\7\34"+
 		"\u00e3\n\34\f\34\16\34\u00e6\13\34\3\35\3\35\3\35\3\36\3\36\3\36\3\36"+
@@ -2269,47 +2260,47 @@ public class MicroParser extends Parser {
 		"\n\"\3#\3#\3#\3#\3#\3#\3#\5#\u0112\n#\3$\3$\3%\3%\3&\3&\3&\3&\3&\3&\3"+
 		"&\3&\3&\3&\3&\3&\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\3\'\5\'\u012f"+
 		"\n\'\3(\3(\3(\3(\3(\3(\3(\3(\3(\3(\5(\u013b\n(\3)\3)\3*\3*\3*\3*\3*\3"+
-		"*\3*\3*\3*\3*\3*\3*\3*\2+\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&"+
-		"(*,.\60\62\64\668:<>@BDFHJLNPR\2\6\4\2\35\35##\4\2\6\6\26\26\4\2\5\5 "+
-		" \7\2\n\n\f\r\31\31\34\34\"\"\u0139\2T\3\2\2\2\4Z\3\2\2\2\6\\\3\2\2\2"+
-		"\bh\3\2\2\2\nj\3\2\2\2\fq\3\2\2\2\16s\3\2\2\2\20x\3\2\2\2\22|\3\2\2\2"+
-		"\24~\3\2\2\2\26\u0086\3\2\2\2\30\u008c\3\2\2\2\32\u008e\3\2\2\2\34\u0097"+
-		"\3\2\2\2\36\u009d\3\2\2\2 \u009f\3\2\2\2\"\u00aa\3\2\2\2$\u00b2\3\2\2"+
-		"\2&\u00b8\3\2\2\2(\u00be\3\2\2\2*\u00c0\3\2\2\2,\u00c3\3\2\2\2.\u00c8"+
+		"*\3*\3*\3*\3*\3*\3*\2+\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,"+
+		".\60\62\64\668:<>@BDFHJLNPR\2\6\4\2\35\35##\4\2\6\6\26\26\4\2\5\5  \7"+
+		"\2\n\n\f\r\31\31\34\34\"\"\u0138\2T\3\2\2\2\4Z\3\2\2\2\6\\\3\2\2\2\bg"+
+		"\3\2\2\2\ni\3\2\2\2\fp\3\2\2\2\16r\3\2\2\2\20w\3\2\2\2\22{\3\2\2\2\24"+
+		"}\3\2\2\2\26\u0086\3\2\2\2\30\u008c\3\2\2\2\32\u008e\3\2\2\2\34\u0098"+
+		"\3\2\2\2\36\u009e\3\2\2\2 \u00a0\3\2\2\2\"\u00ab\3\2\2\2$\u00b3\3\2\2"+
+		"\2&\u00b9\3\2\2\2(\u00bf\3\2\2\2*\u00c1\3\2\2\2,\u00c4\3\2\2\2.\u00c8"+
 		"\3\2\2\2\60\u00cf\3\2\2\2\62\u00d6\3\2\2\2\64\u00da\3\2\2\2\66\u00dd\3"+
 		"\2\2\28\u00e7\3\2\2\2:\u00ea\3\2\2\2<\u00f6\3\2\2\2>\u00f8\3\2\2\2@\u0101"+
 		"\3\2\2\2B\u0108\3\2\2\2D\u0111\3\2\2\2F\u0113\3\2\2\2H\u0115\3\2\2\2J"+
 		"\u0117\3\2\2\2L\u012e\3\2\2\2N\u013a\3\2\2\2P\u013c\3\2\2\2R\u013e\3\2"+
 		"\2\2TU\7\7\2\2UV\5\4\3\2VW\7!\2\2WX\5\6\4\2XY\7\13\2\2Y\3\3\2\2\2Z[\7"+
-		"&\2\2[\5\3\2\2\2\\]\b\4\1\2]^\5\b\5\2^_\b\4\1\2_`\5\36\20\2`\7\3\2\2\2"+
-		"ab\5\n\6\2bc\5\b\5\2ci\3\2\2\2de\5\16\b\2ef\5\b\5\2fi\3\2\2\2gi\3\2\2"+
-		"\2ha\3\2\2\2hd\3\2\2\2hg\3\2\2\2i\t\3\2\2\2jk\7\20\2\2kl\5\4\3\2lm\7\36"+
-		"\2\2mn\5\f\7\2no\7\32\2\2op\b\6\1\2p\13\3\2\2\2qr\7)\2\2r\r\3\2\2\2st"+
-		"\5\20\t\2tu\5\24\13\2uv\7\32\2\2vw\b\b\1\2w\17\3\2\2\2xy\t\2\2\2y\21\3"+
-		"\2\2\2z}\5\20\t\2{}\7\17\2\2|z\3\2\2\2|{\3\2\2\2}\23\3\2\2\2~\177\5\4"+
-		"\3\2\177\u0080\5\26\f\2\u0080\25\3\2\2\2\u0081\u0082\7\3\2\2\u0082\u0083"+
-		"\5\4\3\2\u0083\u0084\5\26\f\2\u0084\u0087\3\2\2\2\u0085\u0087\3\2\2\2"+
-		"\u0086\u0081\3\2\2\2\u0086\u0085\3\2\2\2\u0087\27\3\2\2\2\u0088\u0089"+
-		"\5\32\16\2\u0089\u008a\5\34\17\2\u008a\u008d\3\2\2\2\u008b\u008d\3\2\2"+
-		"\2\u008c\u0088\3\2\2\2\u008c\u008b\3\2\2\2\u008d\31\3\2\2\2\u008e\u008f"+
-		"\5\20\t\2\u008f\u0090\5\4\3\2\u0090\u0091\b\16\1\2\u0091\33\3\2\2\2\u0092"+
-		"\u0093\7\3\2\2\u0093\u0094\5\32\16\2\u0094\u0095\5\34\17\2\u0095\u0098"+
-		"\3\2\2\2\u0096\u0098\3\2\2\2\u0097\u0092\3\2\2\2\u0097\u0096\3\2\2\2\u0098"+
-		"\35\3\2\2\2\u0099\u009a\5 \21\2\u009a\u009b\5\36\20\2\u009b\u009e\3\2"+
-		"\2\2\u009c\u009e\3\2\2\2\u009d\u0099\3\2\2\2\u009d\u009c\3\2\2\2\u009e"+
-		"\37\3\2\2\2\u009f\u00a0\7\33\2\2\u00a0\u00a1\5\22\n\2\u00a1\u00a2\5\4"+
-		"\3\2\u00a2\u00a3\b\21\1\2\u00a3\u00a4\7\b\2\2\u00a4\u00a5\5\30\r\2\u00a5"+
-		"\u00a6\7\25\2\2\u00a6\u00a7\7!\2\2\u00a7\u00a8\5\"\22\2\u00a8\u00a9\7"+
-		"\13\2\2\u00a9!\3\2\2\2\u00aa\u00ab\5\b\5\2\u00ab\u00ac\b\22\1\2\u00ac"+
-		"\u00ad\5$\23\2\u00ad#\3\2\2\2\u00ae\u00af\5&\24\2\u00af\u00b0\5$\23\2"+
-		"\u00b0\u00b3\3\2\2\2\u00b1\u00b3\3\2\2\2\u00b2\u00ae\3\2\2\2\u00b2\u00b1"+
-		"\3\2\2\2\u00b3%\3\2\2\2\u00b4\u00b5\b\24\1\2\u00b5\u00b9\5(\25\2\u00b6"+
-		"\u00b9\5J&\2\u00b7\u00b9\5R*\2\u00b8\u00b4\3\2\2\2\u00b8\u00b6\3\2\2\2"+
-		"\u00b8\u00b7\3\2\2\2\u00b9\'\3\2\2\2\u00ba\u00bf\5*\26\2\u00bb\u00bf\5"+
-		".\30\2\u00bc\u00bf\5\60\31\2\u00bd\u00bf\5\62\32\2\u00be\u00ba\3\2\2\2"+
-		"\u00be\u00bb\3\2\2\2\u00be\u00bc\3\2\2\2\u00be\u00bd\3\2\2\2\u00bf)\3"+
-		"\2\2\2\u00c0\u00c1\5,\27\2\u00c1\u00c2\7\32\2\2\u00c2+\3\2\2\2\u00c3\u00c4"+
-		"\5\4\3\2\u00c4\u00c5\7\36\2\2\u00c5\u00c6\5\64\33\2\u00c6\u00c7\b\27\1"+
+		"&\2\2[\5\3\2\2\2\\]\b\4\1\2]^\5\b\5\2^_\5\36\20\2_\7\3\2\2\2`a\5\n\6\2"+
+		"ab\5\b\5\2bh\3\2\2\2cd\5\16\b\2de\5\b\5\2eh\3\2\2\2fh\3\2\2\2g`\3\2\2"+
+		"\2gc\3\2\2\2gf\3\2\2\2h\t\3\2\2\2ij\7\20\2\2jk\5\4\3\2kl\7\36\2\2lm\5"+
+		"\f\7\2mn\7\32\2\2no\b\6\1\2o\13\3\2\2\2pq\7)\2\2q\r\3\2\2\2rs\5\20\t\2"+
+		"st\b\b\1\2tu\5\24\13\2uv\7\32\2\2v\17\3\2\2\2wx\t\2\2\2x\21\3\2\2\2y|"+
+		"\5\20\t\2z|\7\17\2\2{y\3\2\2\2{z\3\2\2\2|\23\3\2\2\2}~\5\4\3\2~\177\b"+
+		"\13\1\2\177\u0080\5\26\f\2\u0080\25\3\2\2\2\u0081\u0082\7\3\2\2\u0082"+
+		"\u0083\5\4\3\2\u0083\u0084\5\26\f\2\u0084\u0087\3\2\2\2\u0085\u0087\3"+
+		"\2\2\2\u0086\u0081\3\2\2\2\u0086\u0085\3\2\2\2\u0087\27\3\2\2\2\u0088"+
+		"\u0089\5\32\16\2\u0089\u008a\5\34\17\2\u008a\u008d\3\2\2\2\u008b\u008d"+
+		"\3\2\2\2\u008c\u0088\3\2\2\2\u008c\u008b\3\2\2\2\u008d\31\3\2\2\2\u008e"+
+		"\u008f\5\20\t\2\u008f\u0090\b\16\1\2\u0090\u0091\5\4\3\2\u0091\u0092\b"+
+		"\16\1\2\u0092\33\3\2\2\2\u0093\u0094\7\3\2\2\u0094\u0095\5\32\16\2\u0095"+
+		"\u0096\5\34\17\2\u0096\u0099\3\2\2\2\u0097\u0099\3\2\2\2\u0098\u0093\3"+
+		"\2\2\2\u0098\u0097\3\2\2\2\u0099\35\3\2\2\2\u009a\u009b\5 \21\2\u009b"+
+		"\u009c\5\36\20\2\u009c\u009f\3\2\2\2\u009d\u009f\3\2\2\2\u009e\u009a\3"+
+		"\2\2\2\u009e\u009d\3\2\2\2\u009f\37\3\2\2\2\u00a0\u00a1\7\33\2\2\u00a1"+
+		"\u00a2\5\22\n\2\u00a2\u00a3\5\4\3\2\u00a3\u00a4\b\21\1\2\u00a4\u00a5\7"+
+		"\b\2\2\u00a5\u00a6\5\30\r\2\u00a6\u00a7\7\25\2\2\u00a7\u00a8\7!\2\2\u00a8"+
+		"\u00a9\5\"\22\2\u00a9\u00aa\7\13\2\2\u00aa!\3\2\2\2\u00ab\u00ac\5\b\5"+
+		"\2\u00ac\u00ad\5$\23\2\u00ad\u00ae\b\22\1\2\u00ae#\3\2\2\2\u00af\u00b0"+
+		"\5&\24\2\u00b0\u00b1\5$\23\2\u00b1\u00b4\3\2\2\2\u00b2\u00b4\3\2\2\2\u00b3"+
+		"\u00af\3\2\2\2\u00b3\u00b2\3\2\2\2\u00b4%\3\2\2\2\u00b5\u00b6\b\24\1\2"+
+		"\u00b6\u00ba\5(\25\2\u00b7\u00ba\5J&\2\u00b8\u00ba\5R*\2\u00b9\u00b5\3"+
+		"\2\2\2\u00b9\u00b7\3\2\2\2\u00b9\u00b8\3\2\2\2\u00ba\'\3\2\2\2\u00bb\u00c0"+
+		"\5*\26\2\u00bc\u00c0\5.\30\2\u00bd\u00c0\5\60\31\2\u00be\u00c0\5\62\32"+
+		"\2\u00bf\u00bb\3\2\2\2\u00bf\u00bc\3\2\2\2\u00bf\u00bd\3\2\2\2\u00bf\u00be"+
+		"\3\2\2\2\u00c0)\3\2\2\2\u00c1\u00c2\5,\27\2\u00c2\u00c3\7\32\2\2\u00c3"+
+		"+\3\2\2\2\u00c4\u00c5\5\4\3\2\u00c5\u00c6\7\36\2\2\u00c6\u00c7\5\64\33"+
 		"\2\u00c7-\3\2\2\2\u00c8\u00c9\7\t\2\2\u00c9\u00ca\7\b\2\2\u00ca\u00cb"+
 		"\5\24\13\2\u00cb\u00cc\7\25\2\2\u00cc\u00cd\7\32\2\2\u00cd\u00ce\b\30"+
 		"\1\2\u00ce/\3\2\2\2\u00cf\u00d0\7\24\2\2\u00d0\u00d1\7\b\2\2\u00d1\u00d2"+
@@ -2336,21 +2327,21 @@ public class MicroParser extends Parser {
 		"\u0110\3\2\2\2\u0112E\3\2\2\2\u0113\u0114\t\3\2\2\u0114G\3\2\2\2\u0115"+
 		"\u0116\t\4\2\2\u0116I\3\2\2\2\u0117\u0118\7\21\2\2\u0118\u0119\7\b\2\2"+
 		"\u0119\u011a\5N(\2\u011a\u011b\7\25\2\2\u011b\u011c\b&\1\2\u011c\u011d"+
-		"\5\b\5\2\u011d\u011e\b&\1\2\u011e\u011f\5$\23\2\u011f\u0120\5L\'\2\u0120"+
+		"\5\b\5\2\u011d\u011e\5$\23\2\u011e\u011f\b&\1\2\u011f\u0120\5L\'\2\u0120"+
 		"\u0121\b&\1\2\u0121\u0122\7\16\2\2\u0122K\3\2\2\2\u0123\u0124\7\30\2\2"+
 		"\u0124\u0125\7\b\2\2\u0125\u0126\5N(\2\u0126\u0127\7\25\2\2\u0127\u0128"+
-		"\b\'\1\2\u0128\u0129\5\b\5\2\u0129\u012a\b\'\1\2\u012a\u012b\5$\23\2\u012b"+
+		"\b\'\1\2\u0128\u0129\5\b\5\2\u0129\u012a\5$\23\2\u012a\u012b\b\'\1\2\u012b"+
 		"\u012c\5L\'\2\u012c\u012f\3\2\2\2\u012d\u012f\3\2\2\2\u012e\u0123\3\2"+
 		"\2\2\u012e\u012d\3\2\2\2\u012fM\3\2\2\2\u0130\u0131\5\64\33\2\u0131\u0132"+
 		"\b(\1\2\u0132\u0133\5P)\2\u0133\u0134\5\64\33\2\u0134\u0135\b(\1\2\u0135"+
 		"\u013b\3\2\2\2\u0136\u0137\7\22\2\2\u0137\u013b\b(\1\2\u0138\u0139\7\23"+
 		"\2\2\u0139\u013b\b(\1\2\u013a\u0130\3\2\2\2\u013a\u0136\3\2\2\2\u013a"+
 		"\u0138\3\2\2\2\u013bO\3\2\2\2\u013c\u013d\t\5\2\2\u013dQ\3\2\2\2\u013e"+
-		"\u013f\7\4\2\2\u013f\u0140\b*\1\2\u0140\u0141\5\b\5\2\u0141\u0142\b*\1"+
-		"\2\u0142\u0143\5$\23\2\u0143\u0144\7\27\2\2\u0144\u0145\7\b\2\2\u0145"+
-		"\u0146\5N(\2\u0146\u0147\7\25\2\2\u0147\u0148\b*\1\2\u0148\u0149\7\32"+
-		"\2\2\u0149S\3\2\2\2\23h|\u0086\u008c\u0097\u009d\u00b2\u00b8\u00be\u00e4"+
-		"\u00f1\u00f6\u0101\u0108\u0111\u012e\u013a";
+		"\u013f\7\4\2\2\u013f\u0140\b*\1\2\u0140\u0141\5\b\5\2\u0141\u0142\5$\23"+
+		"\2\u0142\u0143\7\27\2\2\u0143\u0144\7\b\2\2\u0144\u0145\5N(\2\u0145\u0146"+
+		"\7\25\2\2\u0146\u0147\b*\1\2\u0147\u0148\7\32\2\2\u0148S\3\2\2\2\23g{"+
+		"\u0086\u008c\u0098\u009e\u00b3\u00b9\u00bf\u00e4\u00f1\u00f6\u0101\u0108"+
+		"\u0111\u012e\u013a";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

@@ -5,9 +5,6 @@ public class WhileNode extends HeadNode {
 	public List<IRNode> conditionSetUp = new ArrayList<IRNode>();
 	public IRNode condition = new IRNode();
 	public IRNode labelTop = new IRNode();
-	//public IRNode labelOut = new IRNode();
-	//public IRNode jumpTop = new IRNode();
-	
 	
 	public WhileNode() {
 		SemanticHandler.getCurrentList().add(this);
@@ -23,6 +20,5 @@ public class WhileNode extends HeadNode {
 			node.printNode();
 		}
 		condition.printNode();
-		//jumpTop.printNode();
 	}
 }

@@ -1,0 +1,29 @@
+PROGRAM factorial
+BEGIN
+
+INT z;
+
+FUNCTION INT hey (INT a, INT b)
+BEGIN
+	INT yo;
+	INT yo2;
+	RETURN yo;
+END
+
+
+FUNCTION INT main ()
+	BEGIN
+		INT a;
+		IF (TRUE) 
+			INT b;
+		ELSIF (TRUE)
+			INT c;
+		ENDIF
+
+		DO
+			INT d;
+		WHILE(FALSE);
+
+	END
+
+END
