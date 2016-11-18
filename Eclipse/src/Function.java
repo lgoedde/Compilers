@@ -37,6 +37,7 @@ public class Function {
 	}
 	
 	public static void addSymbol(String identifier, Symbol tsymbol) {
+		//TODO handle if identifier is comma separated values)
 		if (getSymbol(identifier) != null) {
 			System.out.println("DECLARATION ERROR " + identifier);
 			System.exit(1);

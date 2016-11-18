@@ -18,6 +18,8 @@ public class SemanticHandler {
 	public SemanticHandler() {
 		
 	}
+	
+	
 		
 	public static List<HeadNode> getCurrentList() {
 		return SemanticStack.peek();

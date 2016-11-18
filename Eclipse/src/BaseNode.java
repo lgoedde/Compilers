@@ -9,7 +9,7 @@ public class BaseNode extends HeadNode {
 	public BaseNode() {	
 		SemanticHandler.getCurrentList().add(this);
 		SemanticHandler.currentBaseNode = this;
-		SemanticHandler.currentIRList = this.NodeList;
+		//SemanticHandler.currentIRList = this.NodeList;
 	}
 	
 	public void printNode() {
@@ -18,7 +18,15 @@ public class BaseNode extends HeadNode {
 		}
 	}
 	
-	public void addVal(String value) {
+	public void addInt(String value) {
+		
+	}
+	
+	public void addFloat(String value) {
+		
+	}
+	
+	public void addId(String value) {
 		this.valueStack.push(value);
 	}
 	
@@ -34,12 +42,20 @@ public class BaseNode extends HeadNode {
 		
 	}
 	
-	public void finishBase() {
+	public void finishBase(String type) {
 		//parse through stacks and build IR list
 		
 		
 		this.valueStack = null;
 		this.opStack = null;
+	}
+	
+	public void addRead(String idList) {
+		
+	}
+	
+	public void addWrite(String idList) {
+		
 	}
 	
 	public int getPrec(String op) {

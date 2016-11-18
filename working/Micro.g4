@@ -20,13 +20,13 @@ str               : STRINGLITERAL;
 var_decl 		  : var_type {
 						Symbol.typeIn = $var_type.text;
 					}
-					id_list ';' ;
+					id_list {Symbol tempSymb = new Symbol(null);
+			Function.addSymbol($id_list.text,tempSymb);
+			} ';' ;
 var_type          : 'FLOAT' | 'INT';
 any_type          : var_type | 'VOID';
 id_list           : id
-			{Symbol tempSymb = new Symbol(null);
-			Function.addSymbol($id.text,tempSymb);
-			}
+			
 					id_tail ;
 id_tail           : ',' id id_tail |  ;
 
@@ -54,21 +54,21 @@ base_stmt         :  assign_stmt | read_stmt | write_stmt | return_stmt;
 
 
 assign_stmt       : assign_expr ';' ;
-assign_expr       : id ':=' expr /*{SemanticHandler.addAssignment($id.text,$expr.text);}*/ ;
-read_stmt         : 'READ' '(' id_list ')'';' {SemanticHandler.addRead($id_list.text);}  ;
-write_stmt        : 'WRITE' '(' id_list ')' ';' {SemanticHandler.addWrite($id_list.text);} ;
-return_stmt       : 'RETURN' expr ';' ;
+assign_expr       : id ':=' expr {SemanticHandler.currentBaseNode.finishBase("ASSIGN");} ;
+read_stmt         : 'READ' '(' id_list ')'';' {SemanticHandler.currentBaseNode.addRead($id_list.text);}  ;
+write_stmt        : 'WRITE' '(' id_list ')' ';' {SemanticHandler.currentBaseNode.addWrite($id_list.text);} ;
+return_stmt       : 'RETURN' expr {SemanticHandler.currentBaseNode.finishBase("RETURN");} ';' ;
 
 
 expr              : expr_prefix factor ;
-expr_prefix       : expr_prefix factor addop /*{System.out.println("addop: "+$addop.text);}*/ |  ;
-factor            : factor_prefix postfix_expr /*{System.out.println("postfix_expr: "+$postfix_expr.text);}*/ ;
-factor_prefix     : factor_prefix postfix_expr mulop /*{System.out.println("mulop: "+$mulop.text);}*/ |  ;
-postfix_expr      : primary /*{System.out.println("Primary: "+$primary.text);}*/ | call_expr /*{System.out.println("Call: "+$call_expr.text);}*/ ;
-call_expr         : id '(' expr_list ')';
+expr_prefix       : expr_prefix factor addop {SemanticHandler.currentBaseNode.addOp($addop.text);} |  ;
+factor            : factor_prefix postfix_expr  ;
+factor_prefix     : factor_prefix postfix_expr  mulop {SemanticHandler.currentBaseNode.addOp($mulop.text);} |  ;
+postfix_expr      : primary  | call_expr  ;
+call_expr         : id {SemanticHandler.currentBaseNode.startFunc($id.text);}'(' expr_list ')' {SemanticHandler.currentBaseNode.endFunc();} ;
 expr_list         : expr expr_list_tail |  ;
-expr_list_tail    : ',' expr expr_list_tail |  ;
-primary           : '(' expr ')' | id /*{System.out.println("id: "+$id.text);}*/ | INTLITERAL /*{System.out.println("literal: "+$INTLITERAL.text);}*/ | FLOATLITERAL;
+expr_list_tail    : ',' {SemanticHandler.currentBaseNode.addOp(",");} expr expr_list_tail |  ;
+primary           : '(' {SemanticHandler.currentBaseNode.addOp("(");} expr {SemanticHandler.currentBaseNode.addOp(")");} ')' | id {SemanticHandler.currentBaseNode.addId($id.text);} | INTLITERAL {SemanticHandler.currentBaseNode.addInt($INTLITERAL.text);} | FLOATLITERAL {SemanticHandler.currentBaseNode.addFloat($FLOATLITERAL.text);};
 addop             : '+' | '-';
 mulop             : '*' | '/';
 
