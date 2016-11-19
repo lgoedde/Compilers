@@ -10,7 +10,18 @@ FUNCTION INT funct(INT a,INT b)
 FUNCTION INT main ()
 	BEGIN
 		INT a;
-		a := 1 * (2 - 3) + funct(a,funct(4,5-6)) - 7 * (8 + 9) * 10;
+		a := 1;
+		DO
+			a := a - 1;
+		WHILE (a != 0);
+
+		IF (a<2)
+			a := 5;
+		ELSIF (TRUE)
+			a := 2;
+		ENDIF
+
+		
 
 	END
 

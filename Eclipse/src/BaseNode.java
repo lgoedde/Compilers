@@ -5,6 +5,7 @@ public class BaseNode extends HeadNode {
 	public List<IRNode> NodeList = new ArrayList<IRNode>();
 	public Stack<stackVal> valueStack = new Stack<stackVal>();
 	public Stack<String> opStack = new Stack<String>();
+	public String lastRegVal;
 	
 	public BaseNode() {	
 		SemanticHandler.getCurrentList().add(this);
@@ -12,8 +13,19 @@ public class BaseNode extends HeadNode {
 		//SemanticHandler.currentIRList = this.NodeList;
 	}
 	
+	public BaseNode(int a) {
+		SemanticHandler.currentBaseNode = this;
+		if (a == 1) {
+			SemanticHandler.conditionSetUp.leftSetUp = this;
+		}
+		else {
+			SemanticHandler.conditionSetUp.rightSetUp = this;
+		}
+	}
+	
 	public void printNode() {
 		for (IRNode node : NodeList) {
+			SemanticHandler.lastOpCode = node.Opcode;
 			node.printNode();
 		}
 	}
@@ -197,9 +209,23 @@ public class BaseNode extends HeadNode {
 		String result;
 		
 		if (id == null) { //RETURN STATEMENT
+			//System.out.println("finish return");
 			result = "$R";
 		}
+		else if (isNumeric(id)) {
+			//System.out.println("finish cond: "+id);
+			lastRegVal = lastVal.value; 
+			if (Integer.parseInt(id) == 1) {
+				SemanticHandler.expr1 = lastVal.value;
+			}
+			else {
+				SemanticHandler.expr2 = lastVal.value;
+			}
+			//expr num
+			return;
+		}
 		else { //ASSIGN
+			//System.out.println("finish assign: "+id);
 			result = Function.getSymbol(id).irReg; 
 		}
 		

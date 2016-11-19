@@ -22,7 +22,7 @@ var_decl 		  : var_type {
 						Symbol.typeIn = $var_type.text;
 					}
 					id_list {Symbol tempSymb = new Symbol(null);
-			Function.addSymbol($id_list.text,tempSymb);
+					Function.addSymbol($id_list.text,tempSymb);
 			} ';' ;
 var_type          : 'FLOAT' | 'INT';
 any_type          : var_type | 'VOID';
@@ -76,13 +76,15 @@ addop             : '+' | '-';
 mulop             : '*' | '/';
 
 
-if_stmt           : 'IF' '(' cond ')' 
+if_stmt           : 'IF' 
 					{
 						//SemanticHandler.pushTree();
 						Function.pushBlock();
 						IfNode ifNode = new IfNode();
 						IfBodyNode ifbNode = new IfBodyNode(true);
 					} 
+					'(' cond ')' 
+					
 					decl stmt_list {Function.popBlock();} else_part {SemanticHandler.addendIF();} 'ENDIF' ;
 else_part         : 'ELSIF' '(' cond ')' 
 					{
@@ -92,7 +94,7 @@ else_part         : 'ELSIF' '(' cond ')'
 						IfBodyNode ifbNode = new IfBodyNode(false);
 					} 
 					decl  stmt_list {Function.popBlock();} else_part | ;
-cond              : expr {SemanticHandler.expr1 = $expr.text;} compop expr {SemanticHandler.compop = $compop.text; SemanticHandler.expr2 = $expr.text;} | 'TRUE' {SemanticHandler.expr1 = "TRUE";} | 'FALSE' {SemanticHandler.expr1 = "FALSE";} ;
+cond              : {BaseNode newNode = new BaseNode(1);} expr {SemanticHandler.currentBaseNode.finishBase("1");} compop {BaseNode newNode2 = new BaseNode(2);} expr {SemanticHandler.compop = $compop.text; SemanticHandler.currentBaseNode.finishBase("2");} | 'TRUE' {SemanticHandler.expr1 = "TRUE";} | 'FALSE' {SemanticHandler.expr1 = "FALSE";} ;
 compop            : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
 do_while_stmt       : 'DO' 

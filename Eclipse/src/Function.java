@@ -40,10 +40,10 @@ public class Function {
 	}
 	
 	public static void endFunc() {
-		BaseNode currNode = SemanticHandler.currentFunction.semanticHandler.currentBaseNode;
-		int last = currNode.NodeList.size() - 1;
-		if (currNode.NodeList.get(last).Opcode != IRNode.IROpcode.RET)
-			currNode.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+		//BaseNode currNode = SemanticHandler.currentFunction.semanticHandler.currentBaseNode;
+		//int last = currNode.NodeList.size() - 1;
+		//if (currNode.NodeList.get(last).Opcode != IRNode.IROpcode.RET)
+			//currNode.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
 	}
 	
 	public static void addGlobal() {

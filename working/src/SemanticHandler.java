@@ -10,7 +10,8 @@ public class SemanticHandler {
 	
 	public static List<Function> FunctionList = new ArrayList<Function>(); // Iterate through to print each functions semantic handler
 	public static Function currentFunction;
-		
+	public static ConditionSetUp conditionSetUp;	
+	
 	private static int label = 0;
 	public static String expr1;
 	public static String expr2;
@@ -79,7 +80,7 @@ public class SemanticHandler {
 	
 	}
 	
-	public static void printTinyCode(HeadNode node) {
+	public static void printTinyCode(HeadNode node) {/*
 		if (node instanceof BaseNode) {
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
 				TinyGeneration.printTiny(irNode);
@@ -114,7 +115,7 @@ public class SemanticHandler {
 			TinyGeneration.printTiny(((WhileNode)node).condition);
 			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
 		}
-		
+	*/	
 	}
 	
 	public static void printIRCode() {
@@ -181,8 +182,6 @@ public class SemanticHandler {
 			return;
 		}
 			
-		expr1 = ExpressionEval.SimplifyExpression(expr1);
-		expr2 = ExpressionEval.SimplifyExpression(expr2);
 		conditionNode.Op1 = expr1;
 		conditionNode.Op2 = expr2;
 		if (compop.equals("<")) {
@@ -242,7 +241,7 @@ public class SemanticHandler {
 		ifNode.outLabel.Result = outLabel;
 		if (listLen == 1) {
 			IfBodyNode tempNode = ifNode.ifBodyList.get(0);
-			tempNode.condition.Result = outLabel;
+			tempNode.conditionSetUp.condition.Result = outLabel;
 			tempNode.label.Opcode = null;
 			tempNode.jumpOut.Opcode = null;
 			label++;
@@ -254,9 +253,9 @@ public class SemanticHandler {
 			tempNode.jumpOut.Result = outLabel;
 			tempNode.label.Result = "label"+Integer.toString(label + i);
 			tempNode.label.Opcode = IRNode.IROpcode.LABEL;
-			tempNode.condition.Result = "label"+Integer.toString(label + i + 1);
+			tempNode.conditionSetUp.condition.Result = "label"+Integer.toString(label + i + 1);
 			if (i == listLen - 1) {
-				tempNode.condition.Result = outLabel;
+				tempNode.conditionSetUp.condition.Result = outLabel;
 				tempNode.jumpOut.Opcode = null;
 			}
 			else if (i == 0) {
@@ -276,14 +275,14 @@ public class SemanticHandler {
 		String labelTop = "label"+Integer.toString(label++);
 		node.labelTop.Opcode = IRNode.IROpcode.LABEL;
 		node.labelTop.Result = labelTop;
-		node.condition.Result = labelTop;
+		node.conditionSetUp.condition.Result = labelTop;
 	}
 	
 	public static void addendWhile() {
 		popList();
 		WhileNode whileNode = (WhileNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1);
-		SemanticHandler.currentIRList = whileNode.conditionSetUp;
-		SemanticHandler.genCondition(whileNode.condition,false);
+		//SemanticHandler.currentIRList = whileNode.conditionSetUp;
+		SemanticHandler.genCondition(whileNode.conditionSetUp.condition,false);
 		genWhileLabels(whileNode);
 	}
 	
