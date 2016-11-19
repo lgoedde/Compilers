@@ -45,8 +45,9 @@ func_decl         : 'FUNCTION' any_type id
 					{
 						Function.scope = "PARAM";
 						Function funct = new Function($id.text);
+						SemanticHandler.currentFunction.retType = $any_type.text;
 					} 
-					'('param_decl_list')' 'BEGIN' {Function.scope = "LOCAL";}	func_body 'END';
+					'('param_decl_list')' 'BEGIN' {Function.scope = "LOCAL";}	func_body {Function.endFunc();} 'END';
 func_body         : decl  stmt_list {Function.popBlock();} ;
 
 

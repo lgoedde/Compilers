@@ -124,6 +124,7 @@ public class SemanticHandler {
 			for (HeadNode node : func.semanticHandler.rootList) {
 				node.printNode();
 			}
+			System.out.println("");
 		}
 		
 		

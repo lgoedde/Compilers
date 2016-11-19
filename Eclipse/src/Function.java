@@ -6,6 +6,7 @@ public class Function {
 	public SemanticHandler semanticHandler = new SemanticHandler();
 	public int locals = 0;
 	public int params = 0;
+	public String retType;
 	
 	public static String scope;
 	
@@ -32,7 +33,17 @@ public class Function {
 		SemanticHandler.pushList(rootList);
 		semanticHandler.rootList = rootList;
 		symbolLookUp.push(new HashMap<String,Symbol>());
+		BaseNode label = new BaseNode();
+		label.NodeList.add(new IRNode(IRNode.IROpcode.LABEL,null,null,name));
+		label.NodeList.add(new IRNode(IRNode.IROpcode.LINK,null,null,null));
 		//test();
+	}
+	
+	public static void endFunc() {
+		BaseNode currNode = SemanticHandler.currentFunction.semanticHandler.currentBaseNode;
+		int last = currNode.NodeList.size() - 1;
+		if (currNode.NodeList.get(last).Opcode != IRNode.IROpcode.RET)
+			currNode.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
 	}
 	
 	public static void addGlobal() {
@@ -68,9 +79,8 @@ public class Function {
 	}
 	
 	public static void addSymbol(String identifier, Symbol tsymbol) {
-		String[] ids = splitIdList(identifier);
-		if (ids.length > 1) {
-			List<Symbol> symbolsToAdd = new ArrayList<Symbol>();
+		List<String> ids = splitIdList(identifier);
+		if (ids.size() > 1) {
 			for (String id : ids) {
 				if (getSymbol(id) != null) {
 					System.out.println("DECLARATION ERROR " + identifier);
@@ -113,13 +123,16 @@ public class Function {
 		
 	}
 	
-	public static String[] splitIdList(String idList) {
-		String[] parts = new String[]{};
+	public static List<String> splitIdList(String idList) {
+		List<String> parts = new ArrayList<String>();
 		if (idList.indexOf(',') != -1) {
-			parts = idList.split(",");
+			String[] partsArr = idList.split(",");
+			for (String part : partsArr) {
+				parts.add(part);
+			}
 		}
 		else {
-			parts[0] = idList;
+			parts.add(idList);
 		}
 		return parts;
 	}

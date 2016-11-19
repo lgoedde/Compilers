@@ -19,17 +19,17 @@ public class BaseNode extends HeadNode {
 	}
 	
 	public void addInt(String value) {
-		System.out.println("int: "+value);
+		//System.out.println("int: "+value);
 		this.valueStack.push(new stackVal("INT",value));
 	}
 	
 	public void addFloat(String value) {
-		System.out.println("float: "+value);
+		//System.out.println("float: "+value);
 		this.valueStack.push(new stackVal("FLOAT",value));
 	}
 	
 	public void addId(String value) {
-		System.out.println("id: "+value);
+		//System.out.println("id: "+value);
 		String type = null;
 		Symbol temp = Function.getSymbol(value);
 		if (temp != null) {
@@ -102,7 +102,7 @@ public class BaseNode extends HeadNode {
 	}
 	
 	public void addOp(String op) {
-		System.out.println("op: "+op);
+		//System.out.println("op: "+op);
 		if (op.equals(")")) {
 			// Eval Parenthesis
 			String opPop;
@@ -124,7 +124,7 @@ public class BaseNode extends HeadNode {
 		else { // + - * /
 			if (this.opStack.size() != 0) {
 				int thisPrec = getPrec(op);
-				while (getPrec(this.opStack.peek()) >= thisPrec) {
+				while (this.opStack.size() > 0 && getPrec(this.opStack.peek()) >= thisPrec) {
 					evalOp(this.opStack.pop());
 				}
 			}
@@ -135,12 +135,12 @@ public class BaseNode extends HeadNode {
 	}
 	
 	public void startFunc(String id) {
-		System.out.println("funct start: "+id);
+		//System.out.println("funct start: "+id);
 		this.opStack.push(id);
 	}
 	
 	public void endFunc() { // do not need to convert nums to regs for paramters - push can take nums
-		System.out.println("funct end");
+		//System.out.println("funct end");
 		Stack<stackVal> paramList = new Stack<stackVal>();
 		List<String> typeList = new ArrayList<String>();
 		String currOp;
@@ -154,19 +154,18 @@ public class BaseNode extends HeadNode {
 				NodeList.add(new IRNode(IRNode.IROpcode.PUSH,null,null,null));
 				String param;
 				stackVal temp;
-				int count = 0;
 				while (!paramList.empty()) {
-					count++;
 					temp = paramList.pop();
 					typeList.add(temp.type);
 					NodeList.add(new IRNode(IRNode.IROpcode.PUSH,temp.value,null,null));
 				}
 				NodeList.add(new IRNode(IRNode.IROpcode.JSR,null,null,currOp));
 				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
-				for (int j = 0; j < count; j++) {
-					param = Function.GetNextReg(typeList.get(j));
-					NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,param));
-				}
+				
+				param = Function.GetNextReg(Function.TableLookUp.get(currOp).retType);
+				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,param));
+				this.valueStack.push(new stackVal(Function.TableLookUp.get(currOp).retType,param));
+				break;
 			}
 			else if (currOp.equals(",")) {
 				// Add param to list
@@ -183,7 +182,7 @@ public class BaseNode extends HeadNode {
 	
 	public void finishBase(String id) { // id is null if return statement, otherwise id for assign
 		//parse through stacks and build IR list
-		System.out.println("done: "+id);
+		//System.out.println("done: "+id);
 		while (!this.opStack.empty()) {
 			evalOp(this.opStack.pop());
 		}
