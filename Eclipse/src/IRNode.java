@@ -26,7 +26,12 @@ public class IRNode {
 		READI,
 		READF,
 		WRITEI,
-		WRITEF
+		WRITEF,
+		PUSH,
+		POP,
+		JSR,
+		LINK,
+		RET,
 	}
 
 	public IROpcode Opcode;

@@ -19,5 +19,13 @@ public class Symbol {
 		this.type = "";
 		this.value = "";
 	}
+	
+	public Symbol clone() {
+		Symbol newSymb = new Symbol(null);
+		newSymb.type = this.type;
+		newSymb.value = this.value;
+		newSymb.irReg = this.irReg;
+		return newSymb;
+	}
 }
 

@@ -7,10 +7,23 @@ public class Function {
 	public int locals = 0;
 	public int params = 0;
 	
+	public static String scope;
+	
+	
+	public static HashMap<String,String> regLookUp = new HashMap<String,String>();
+	public static int tempReg = 0;
+	public static int tempLocal = 0;
+	public static int tempParam = 0;
+	
+	
 	public Function(String name) {
 		if (!SemanticHandler.SemanticStack.empty()) {
 			SemanticHandler.SemanticStack.clear();
 		}
+		tempReg = 0;
+		tempLocal = 0;
+		tempParam = 0;
+		regLookUp.clear();
 		//System.out.println("Entered Function: "+name);
 		SemanticHandler.currentFunction = this;
 		TableLookUp.put(name, this);
@@ -36,14 +49,79 @@ public class Function {
 		symbolLookUp.pop();
 	}
 	
+	public static String GetNextReg(String type) {
+		String reg = "$T"+Integer.toString(tempReg++);
+		regLookUp.put(reg,type);
+		return reg;
+	}
+	
+	public static String getNextParam(String type) {
+		String reg = "$P"+Integer.toString(tempParam++);
+		regLookUp.put(reg,type);
+		return reg;
+	}
+	
+	public static String getNextLocal(String type) {
+		String reg = "$L"+Integer.toString(tempLocal++);
+		regLookUp.put(reg,type);
+		return reg;
+	}
+	
 	public static void addSymbol(String identifier, Symbol tsymbol) {
-		//TODO handle if identifier is comma separated values)
-		if (getSymbol(identifier) != null) {
-			System.out.println("DECLARATION ERROR " + identifier);
-			System.exit(1);
-		}	
-		//System.out.println("New Symbol: "+identifier);
-		symbolLookUp.peek().put(identifier, tsymbol);
+		String[] ids = splitIdList(identifier);
+		if (ids.length > 1) {
+			List<Symbol> symbolsToAdd = new ArrayList<Symbol>();
+			for (String id : ids) {
+				if (getSymbol(id) != null) {
+					System.out.println("DECLARATION ERROR " + identifier);
+					System.exit(1);
+				}	
+				Symbol temp = tsymbol.clone();
+				if (scope.equals("GLOBAL")) 
+					temp.irReg = id;
+				else if (scope.equals("PARAM"))
+					temp.irReg = getNextParam(temp.type);
+				else if (scope.equals("LOCAL"))
+					temp.irReg = getNextLocal(temp.type);
+				else {
+					System.out.println("type not valid in add symbol");
+				}
+				//System.out.println("New Symbol: "+identifier);
+				symbolLookUp.peek().put(identifier, temp);
+			}
+		}
+		else {
+			if (getSymbol(identifier) != null) {
+				System.out.println("DECLARATION ERROR " + identifier);
+				System.exit(1);
+			}	
+			if (scope.equals("GLOBAL")) 
+				tsymbol.irReg = identifier;
+			else if (scope.equals("PARAM"))
+				tsymbol.irReg = getNextParam(tsymbol.type);
+			else if (scope.equals("LOCAL"))
+				tsymbol.irReg = getNextLocal(tsymbol.type);
+			else {
+				System.out.println("type not valid in add symbol");
+			}
+			//System.out.println("New Symbol: "+identifier);
+			symbolLookUp.peek().put(identifier, tsymbol);
+		}
+		
+		
+		
+		
+	}
+	
+	public static String[] splitIdList(String idList) {
+		String[] parts = new String[]{};
+		if (idList.indexOf(',') != -1) {
+			parts = idList.split(",");
+		}
+		else {
+			parts[0] = idList;
+		}
+		return parts;
 	}
 	
 	public static Symbol getSymbol(String identifier) {

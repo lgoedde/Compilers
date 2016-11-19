@@ -3,6 +3,7 @@ grammar Micro;
 program           : 'PROGRAM' id 'BEGIN' pgm_body 'END' ;
 id                : IDENTIFIER;
 pgm_body  		  : {
+						Function.scope = "GLOBAL";
 						Function.addGlobal();
 					} 
 					decl  func_declarations ;
@@ -42,9 +43,10 @@ param_decl_tail   : ',' param_decl param_decl_tail |  ;
 func_declarations : func_decl  func_declarations |  ;
 func_decl         : 'FUNCTION' any_type id 
 					{
+						Function.scope = "PARAM";
 						Function funct = new Function($id.text);
 					} 
-					'('param_decl_list')' 'BEGIN' 	func_body 'END';
+					'('param_decl_list')' 'BEGIN' {Function.scope = "LOCAL";}	func_body 'END';
 func_body         : decl  stmt_list {Function.popBlock();} ;
 
 
@@ -54,10 +56,10 @@ base_stmt         :  assign_stmt | read_stmt | write_stmt | return_stmt;
 
 
 assign_stmt       : assign_expr ';' ;
-assign_expr       : id ':=' expr {SemanticHandler.currentBaseNode.finishBase("ASSIGN");} ;
+assign_expr       : id ':=' expr {SemanticHandler.currentBaseNode.finishBase($id.text);} ;
 read_stmt         : 'READ' '(' id_list ')'';' {SemanticHandler.currentBaseNode.addRead($id_list.text);}  ;
 write_stmt        : 'WRITE' '(' id_list ')' ';' {SemanticHandler.currentBaseNode.addWrite($id_list.text);} ;
-return_stmt       : 'RETURN' expr {SemanticHandler.currentBaseNode.finishBase("RETURN");} ';' ;
+return_stmt       : 'RETURN' expr {SemanticHandler.currentBaseNode.finishBase(null);} ';' ;
 
 
 expr              : expr_prefix factor ;

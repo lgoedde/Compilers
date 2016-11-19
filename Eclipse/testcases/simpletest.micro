@@ -1,28 +1,16 @@
 PROGRAM factorial
 BEGIN
 
-INT z;
-
-FUNCTION INT hey (INT a, INT b)
-BEGIN
-	INT yo;
-	INT yo2;
-	RETURN yo;
-END
+FUNCTION INT funct(INT a,INT b)
+	BEGIN
+	RETURN 2;
+	END
 
 
 FUNCTION INT main ()
 	BEGIN
 		INT a;
-		IF (TRUE) 
-			INT b;
-		ELSIF (TRUE)
-			INT c;
-		ENDIF
-
-		DO
-			INT d;
-		WHILE(FALSE);
+		a := 1 * (2 - 3) + funct(a,funct(4,5-6)) - 7 * (8 + 9) * 10;
 
 	END
 
