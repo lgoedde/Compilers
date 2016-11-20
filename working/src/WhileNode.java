@@ -13,14 +13,18 @@ public class WhileNode extends HeadNode {
 	}
 	
 	public void printNode() {
-		conditionSetUp.leftSetUp.printNode();
-		conditionSetUp.rightSetUp.printNode();
+		if (conditionSetUp.leftSetUp != null)
+			conditionSetUp.leftSetUp.printNode();
+		if (conditionSetUp.rightSetUp != null)
+			conditionSetUp.rightSetUp.printNode();
+		
 		
 		labelTop.printNode();
 		for (HeadNode node : headNodes) {
 			node.printNode();
 		}
-		conditionSetUp.condition.printNode();
+		if (conditionSetUp.condition != null)
+			conditionSetUp.condition.printNode();
 	}
 	
 	

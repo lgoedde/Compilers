@@ -6,13 +6,15 @@ public class BaseNode extends HeadNode {
 	public Stack<stackVal> valueStack = new Stack<stackVal>();
 	public Stack<String> opStack = new Stack<String>();
 	public String lastRegVal;
-	
-	public BaseNode() {	
+	public static String type1;
+	public static String condType;
+
+	public BaseNode() {
 		SemanticHandler.getCurrentList().add(this);
 		SemanticHandler.currentBaseNode = this;
 		//SemanticHandler.currentIRList = this.NodeList;
 	}
-	
+
 	public BaseNode(int a) {
 		SemanticHandler.currentBaseNode = this;
 		if (a == 1) {
@@ -22,24 +24,24 @@ public class BaseNode extends HeadNode {
 			SemanticHandler.conditionSetUp.rightSetUp = this;
 		}
 	}
-	
+
 	public void printNode() {
 		for (IRNode node : NodeList) {
 			SemanticHandler.lastOpCode = node.Opcode;
 			node.printNode();
 		}
 	}
-	
+
 	public void addInt(String value) {
 		//System.out.println("int: "+value);
 		this.valueStack.push(new stackVal("INT",value));
 	}
-	
+
 	public void addFloat(String value) {
 		//System.out.println("float: "+value);
 		this.valueStack.push(new stackVal("FLOAT",value));
 	}
-	
+
 	public void addId(String value) {
 		//System.out.println("id: "+value);
 		String type = null;
@@ -54,7 +56,7 @@ public class BaseNode extends HeadNode {
 		}
 		this.valueStack.push(new stackVal(type,value));
 	}
-	
+
 	public void evalOp(String op) {
 		stackVal val2 = this.valueStack.pop();
 		val2.value = checkVal(val2.value,val2.type);
@@ -92,7 +94,7 @@ public class BaseNode extends HeadNode {
 		}
 		valueStack.push(new stackVal(resType,resReg));
 	}
-	
+
 	public String checkVal(String value, String type) {
 		String newVal = value;
 		if (isNumeric(value)) {
@@ -108,11 +110,11 @@ public class BaseNode extends HeadNode {
 		}
 		return newVal;
 	}
-	
-	public boolean isNumeric(String s) {  
-    	return s.matches("[-+]?\\d*\\.?\\d+");  
+
+	public boolean isNumeric(String s) {
+    	return s.matches("[-+]?\\d*\\.?\\d+");
 	}
-	
+
 	public void addOp(String op) {
 		//System.out.println("op: "+op);
 		if (op.equals(")")) {
@@ -141,16 +143,16 @@ public class BaseNode extends HeadNode {
 				}
 			}
 			this.opStack.push(op);
-			
+
 		}
-		
+
 	}
-	
+
 	public void startFunc(String id) {
 		//System.out.println("funct start: "+id);
 		this.opStack.push(id);
 	}
-	
+
 	public void endFunc() { // do not need to convert nums to regs for paramters - push can take nums
 		//System.out.println("funct end");
 		Stack<stackVal> paramList = new Stack<stackVal>();
@@ -172,9 +174,10 @@ public class BaseNode extends HeadNode {
 					NodeList.add(new IRNode(IRNode.IROpcode.PUSH,temp.value,null,null));
 				}
 				NodeList.add(new IRNode(IRNode.IROpcode.JSR,null,null,currOp));
-				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
-				
+				//NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
+
 				param = Function.GetNextReg(Function.TableLookUp.get(currOp).retType);
+				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
 				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,param));
 				this.valueStack.push(new stackVal(Function.TableLookUp.get(currOp).retType,param));
 				break;
@@ -189,9 +192,9 @@ public class BaseNode extends HeadNode {
 				evalOp(currOp);
 			}
 		}
-		
+
 	}
-	
+
 	public void finishBase(String id) { // id is null if return statement, otherwise id for assign
 		//parse through stacks and build IR list
 		//System.out.println("done: "+id);
@@ -207,28 +210,31 @@ public class BaseNode extends HeadNode {
 		stackVal lastVal = this.valueStack.pop();
 		lastVal.value = checkVal(lastVal.value, lastVal.type);
 		String result;
-		
+
 		if (id == null) { //RETURN STATEMENT
 			//System.out.println("finish return");
 			result = "$R";
 		}
 		else if (isNumeric(id)) {
 			//System.out.println("finish cond: "+id);
-			lastRegVal = lastVal.value; 
+			lastRegVal = lastVal.value;
 			if (Integer.parseInt(id) == 1) {
 				SemanticHandler.expr1 = lastVal.value;
+				type1 = lastVal.type;
 			}
 			else {
 				SemanticHandler.expr2 = lastVal.value;
+				condType = type1.equals("FLOAT") || lastVal.type.equals("FLOAT") ? "FLOAT" : "INT";
 			}
+
 			//expr num
 			return;
 		}
 		else { //ASSIGN
 			//System.out.println("finish assign: "+id);
-			result = Function.getSymbol(id).irReg; 
+			result = Function.getSymbol(id).irReg;
 		}
-		
+
 		if (lastVal.type.equals("FLOAT")) {
 			NodeList.add(new IRNode(IRNode.IROpcode.STOREF,lastVal.value,null,result));
 		}
@@ -238,15 +244,31 @@ public class BaseNode extends HeadNode {
 		this.valueStack = null;
 		this.opStack = null;
 	}
-	
+
 	public void addRead(String idList) {
-		
+		List<String> ids = Function.splitIdList(idList);
+		for (String id : ids) {
+			Symbol temp = Function.getSymbol(id);
+			if (temp.type.equals("FLOAT"))
+				NodeList.add(new IRNode(IRNode.IROpcode.READF,null,null,temp.irReg));
+			else
+				NodeList.add(new IRNode(IRNode.IROpcode.READI,null,null,temp.irReg));
+		}
 	}
-	
+
 	public void addWrite(String idList) {
-		
+		List<String> ids = Function.splitIdList(idList);
+		for (String id : ids) {
+			Symbol temp = Function.getSymbol(id);
+			if (temp.type.equals("FLOAT"))
+				NodeList.add(new IRNode(IRNode.IROpcode.WRITEF,null,null,temp.irReg));
+			else if (temp.type.equals("INT"))
+				NodeList.add(new IRNode(IRNode.IROpcode.WRITEI,null,null,temp.irReg));
+			else
+				NodeList.add(new IRNode(IRNode.IROpcode.WRITES,null,null,temp.irReg));
+		}
 	}
-	
+
 	public int getPrec(String op) {
 		if (op.equals("*") || op.equals("/")) {
 			return 2;
@@ -256,7 +278,7 @@ public class BaseNode extends HeadNode {
 		else
 			return 0;
 	}
-	
+
 
 	public class stackVal
 	{
@@ -267,6 +289,6 @@ public class BaseNode extends HeadNode {
 			this.value = value;
 		}
 	}
-	
+
 
 }

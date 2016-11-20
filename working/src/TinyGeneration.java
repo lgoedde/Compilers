@@ -6,14 +6,18 @@ public class TinyGeneration {
 	private static HashMap<String,String> IRtoTinyReg = new HashMap<String,String>();
 	private static Stack<String> AvailableRegs = new Stack<String>();
 	public static LinkedList<TinyInstr> TinyList = new LinkedList<TinyInstr>();
-	
+	public static int paramLength;
+	public static int numLocals;
+
+	public static String lastLabel;
+
 	public TinyGeneration() {
 	}
-	
+
 	public static void printTiny(IRNode ir) {
 		if (ir == null || ir.Opcode == null)
 			return;
-		
+
 			switch(ir.Opcode) {
 			case STOREI :
 			case STOREF :
@@ -44,46 +48,78 @@ public class TinyGeneration {
 				arithmetic(TinyInstr.TinyOpcode.divr, ir.Op1, ir.Op2, ir.Result);
 				break;
 			case READI :
-				read_write("readi",ir.Result);
+				read_write("readi",convertOp(ir.Result));
 				break;
 			case READF :
-				read_write("readr",ir.Result);
+				read_write("readr",convertOp(ir.Result));
+				break;
+      case WRITES :
+				read_write("writes",convertOp(ir.Result));
 				break;
 			case WRITEI :
-				read_write("writei",ir.Result);
+				read_write("writei",convertOp(ir.Result));
 				break;
 			case WRITEF :
-				read_write("writer",ir.Result);
+				read_write("writer",convertOp(ir.Result));
 				break;
 			case GT :
-				branchCompare(TinyInstr.TinyOpcode.jgt,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jgt,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case GE :
-				branchCompare(TinyInstr.TinyOpcode.jge,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jge,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case LT :
-				branchCompare(TinyInstr.TinyOpcode.jlt,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jlt,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case LE :
-				branchCompare(TinyInstr.TinyOpcode.jle,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jle,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case NE :
-				branchCompare(TinyInstr.TinyOpcode.jne,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jne,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case EQ :
-				branchCompare(TinyInstr.TinyOpcode.jeq,ir.Op1,ir.Op2,ir.Result);
+				branchCompare(TinyInstr.TinyOpcode.jeq,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
 				break;
 			case JUMP :
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.jmp,null,ir.Result));
 				break;
 			case LABEL :
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.label,null,ir.Result));
+				lastLabel = ir.Result;
+				break;
+
+			case PUSH :
+				String op = convertOp(ir.Op1);
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,op,null));
+				break;
+			case POP :
+				String op2 = convertOp(ir.Result);
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,op2,null));
+				break;
+			case JSR :
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r0",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r1",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r2",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r3",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.jsr,null,ir.Result));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r3",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r2",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r1",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r0",null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,null,null));
+				break;
+			case LINK :
+				int numLocals = Function.LocalLookUp.get(lastLabel);
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.link,Integer.toString(numLocals),null));
+				break;
+			case RET :
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.unlnk,null,null));
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.ret,null,null));
 				break;
 			}
 	}
-	
-	private static void branchCompare(TinyInstr.TinyOpcode opcode, String op1, String op2, String dest) {
-		String type = ExpressionEval.getType(op1, op2);
+
+	private static void branchCompare(TinyInstr.TinyOpcode opcode, String op1, String op2, String dest, String type) {
 		op1 = convertOp(op1);
 		op2 = convertOp(op2);
 		if (!testReg(op2)) {
@@ -97,7 +133,7 @@ public class TinyGeneration {
 		TinyList.add(new TinyInstr(cmpInstr,op1,op2));
 		TinyList.add(new TinyInstr(opcode,null,dest));
 	}
-	
+
 	private static boolean testReg(String val) {
 		if (val.charAt(0) != 'r')
 			return false;
@@ -105,8 +141,8 @@ public class TinyGeneration {
 				return true;
 		return false;
 	}
-	
-	
+
+
 	private static void store(String value, String dest) {
 		value = convertOp(value);
 		dest = convertOp(dest);
@@ -119,11 +155,11 @@ public class TinyGeneration {
 			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
 		}
 	}
-	
-	public static boolean isNumeric(String s) {  
-    	return s.matches("[-+]?\\d*\\.?\\d+");  
+
+	public static boolean isNumeric(String s) {
+    	return s.matches("[-+]?\\d*\\.?\\d+");
 	}
-	
+
 	private static boolean testVarName(String val) {
 		if (isNumeric(val))
 			return false;
@@ -132,7 +168,7 @@ public class TinyGeneration {
 		}
 		return true;
 	}
-	
+
 	private static void arithmetic(TinyInstr.TinyOpcode opcode, String op1, String op2, String result) {
 		boolean dependency = hasDependency(op1,op2,result);
 		op1 = convertOp(op1);
@@ -146,24 +182,37 @@ public class TinyGeneration {
 		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,op1,result));
 		TinyList.add(new TinyInstr(opcode,op2,result));
 	}
-	
+
 	private static boolean hasDependency(String op1, String op2, String result) {
 		return op2.equals(result) && !op1.equals(result);
 	}
-	
+
 	private static void read_write(String opcode, String value) {
 		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.sys,opcode,value));
 	}
-	
+
 	private static String getNewDest(String dest) {
 		String newDest = AvailableRegs.pop();
 		IRtoTinyReg.put(dest, newDest);
 		return newDest;
 	}
-	
+
 	private static String convertOp(String op) {
+		if (op == null)
+			return null;
 		op = op.replaceAll(" ", "");
 		if (op.charAt(0) == '$') {
+			if (op.charAt(1) == 'L') {
+				String num = op.split("L")[1];
+				return "$-"+num;
+			}
+			if (op.charAt(1) == 'R') {
+				return "$"+Integer.toString(6+paramLength);
+			}
+			if (op.charAt(1) == 'P') {
+				String num = op.split("P")[1];
+				return "$"+Integer.toString(6+paramLength-Integer.parseInt(num));
+			}
 			if (IRtoTinyReg.containsKey(op)) {
 				return IRtoTinyReg.get(op);
 			}
@@ -176,10 +225,11 @@ public class TinyGeneration {
 		else
 			return op;
 	}
-	
+
 	public static void resetRegisterStack() {
 		for (int i = 999; i >= 0; i--) {
 			AvailableRegs.push("r"+Integer.toString(i));
 		}
+		IRtoTinyReg.clear();
 	}
 }

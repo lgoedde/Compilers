@@ -1,0 +1,12 @@
+PROGRAM test
+BEGIN
+
+	INT a;
+
+	FUNCTION VOID main()
+	BEGIN
+
+		a := 2 + 4 * 6 + (2 - 1);
+
+	END
+END

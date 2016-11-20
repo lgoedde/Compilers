@@ -23,9 +23,12 @@ public class IfBodyNode extends HeadNode {
 	public void printNode() {
 		if (label != null)
 			label.printNode();
-		conditionSetUp.leftSetUp.printNode();
-		conditionSetUp.rightSetUp.printNode();
-		conditionSetUp.condition.printNode();
+		if (conditionSetUp.leftSetUp != null)
+			conditionSetUp.leftSetUp.printNode();
+		if (conditionSetUp.rightSetUp != null)
+			conditionSetUp.rightSetUp.printNode();
+		if (conditionSetUp.condition != null)
+			conditionSetUp.condition.printNode();
 		for (HeadNode node : headNodes) {
 			node.printNode();
 		}

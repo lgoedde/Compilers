@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 
 public class IRNode {
-	
+
 	public enum IROpcode {
 		ADDI,
 		ADDF,
@@ -27,6 +27,7 @@ public class IRNode {
 		READF,
 		WRITEI,
 		WRITEF,
+    WRITES,
 		PUSH,
 		POP,
 		JSR,
@@ -38,6 +39,7 @@ public class IRNode {
 	public String Op1 = null;
 	public String Op2 = null;
 	public String Result;
+	public String typeBranch = null;
 
 	public IRNode(IROpcode opcode, String op1, String op2, String result){
 		this.Opcode = opcode;
@@ -47,7 +49,7 @@ public class IRNode {
 	}
 
 	public IRNode() {
-		
+
 	}
 
 	public void printNode() {

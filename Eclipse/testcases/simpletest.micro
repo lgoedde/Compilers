@@ -1,6 +1,8 @@
 PROGRAM factorial
 BEGIN
 
+INT g;
+
 FUNCTION INT funct(INT a,INT b)
 	BEGIN
 	RETURN 2;
@@ -10,7 +12,7 @@ FUNCTION INT funct(INT a,INT b)
 FUNCTION INT main ()
 	BEGIN
 		INT a;
-		a := 1;
+		READ(a);
 		DO
 			a := a - 1;
 		WHILE (a != 0);
