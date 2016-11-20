@@ -5,23 +5,23 @@ INT g;
 
 FUNCTION INT funct(INT a,INT b)
 	BEGIN
-	RETURN 2;
+	IF (a = 1)
+			RETURN 1;
+		ELSIF (TRUE)
+			RETURN 2;
+		ENDIF
 	END
 
 
 FUNCTION INT main ()
 	BEGIN
 		INT a;
-		READ(a);
-		DO
-			a := a - 1;
-		WHILE (a != 0);
-
-		IF (a<2)
-			a := 5;
-		ELSIF (TRUE)
+		IF(a = 1)
 			a := 2;
+		ELSIF(a >1)
+			 a := 3;
 		ENDIF
+		RETURN 0; 
 
 		
 

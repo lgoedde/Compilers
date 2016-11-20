@@ -97,11 +97,15 @@ public class SemanticHandler {
 		else if (node instanceof IfBodyNode) {
 
 			TinyGeneration.printTiny(((IfBodyNode)node).label);
-			for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+			if (((IfBodyNode)node).conditionSetUp.leftSetUp != null) {
+				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
+					TinyGeneration.printTiny(irNode);
+				}
 			}
-			for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+			if (((IfBodyNode)node).conditionSetUp.rightSetUp != null) {
+				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
+					TinyGeneration.printTiny(irNode);
+				}
 			}
 			TinyGeneration.printTiny(((IfBodyNode)node).conditionSetUp.condition);
 			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {

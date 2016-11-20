@@ -106,7 +106,7 @@ public class TinyGeneration {
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r2",null));
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r1",null));
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r0",null));
-				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,null,null));
+				//TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,null,null));
 				break;
 			case LINK :
 				int numLocals = Function.LocalLookUp.get(lastLabel);

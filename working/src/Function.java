@@ -29,6 +29,7 @@ public class Function {
 		currName = name;
 		ParamLookUp.put(name, 0);
 		LocalLookUp.put(name, 0);
+		regLookUp.clear();
 		tempReg = 0;
 		tempLocal = 1;
 		tempParam = 1;

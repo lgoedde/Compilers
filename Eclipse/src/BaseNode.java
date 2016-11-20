@@ -168,7 +168,9 @@ public class BaseNode extends HeadNode {
 				NodeList.add(new IRNode(IRNode.IROpcode.PUSH,null,null,null));
 				String param;
 				stackVal temp;
+				int count = 0;
 				while (!paramList.empty()) {
+					count++;
 					temp = paramList.pop();
 					typeList.add(temp.type);
 					NodeList.add(new IRNode(IRNode.IROpcode.PUSH,temp.value,null,null));
@@ -177,7 +179,10 @@ public class BaseNode extends HeadNode {
 				//NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
 
 				param = Function.GetNextReg(Function.TableLookUp.get(currOp).retType);
-				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
+				for (int k = 0; k < count; k++) {
+					NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,null));
+				}
+				
 				NodeList.add(new IRNode(IRNode.IROpcode.POP,null,null,param));
 				this.valueStack.push(new stackVal(Function.TableLookUp.get(currOp).retType,param));
 				break;
@@ -241,6 +246,8 @@ public class BaseNode extends HeadNode {
 		else {
 			NodeList.add(new IRNode(IRNode.IROpcode.STOREI,lastVal.value,null,result));
 		}
+    if (id == null)
+      NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
 		this.valueStack = null;
 		this.opStack = null;
 	}

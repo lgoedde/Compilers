@@ -6,20 +6,29 @@ public class IfBodyNode extends HeadNode {
 	//public IRNode condition = new IRNode();
 	public IRNode label = new IRNode();
 	public IRNode jumpOut = new IRNode();
-	
+  public static boolean lastFirst;
+  public static IfBodyNode currNode;
+
 	public IfBodyNode(boolean first) {
 		if (!first) {
 			SemanticHandler.popList();
 		}
+    currNode = this;
+    lastFirst = first;
 		IfNode parent = SemanticHandler.getParentIf();
 		parent.ifBodyList.add(this);
 		//jumpOut = parent.jumpOut;
 		//SemanticHandler.currentIRList = conditionSetUp;
 		SemanticHandler.conditionSetUp = this.conditionSetUp;
-		SemanticHandler.genCondition(conditionSetUp.condition,true);
+		//SemanticHandler.genCondition(conditionSetUp.condition,true);
 		SemanticHandler.pushList(this.headNodes);
 	}
-	
+
+  public void getCond() {
+		SemanticHandler.genCondition(conditionSetUp.condition,true);
+
+  }
+
 	public void printNode() {
 		if (label != null)
 			label.printNode();
@@ -32,9 +41,9 @@ public class IfBodyNode extends HeadNode {
 		for (HeadNode node : headNodes) {
 			node.printNode();
 		}
-		
+
 		jumpOut.printNode();
 	}
-	
+
 
 }

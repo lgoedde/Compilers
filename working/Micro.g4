@@ -83,15 +83,17 @@ if_stmt           : 'IF'
 						IfNode ifNode = new IfNode();
 						IfBodyNode ifbNode = new IfBodyNode(true);
 					} 
-					'(' cond ')' 
+					'(' cond ')' {IfBodyNode.currNode.getCond();}
 					
 					decl stmt_list {Function.popBlock();} else_part {SemanticHandler.addendIF();} 'ENDIF' ;
-else_part         : 'ELSIF' '(' cond ')' 
+else_part         : 'ELSIF' {Function.pushBlock();
+						IfBodyNode ifbNode = new IfBodyNode(false); }'(' cond ')' 
 					{
 						//SemanticHandler.popTree();
 						//SemanticHandler.pushTree();
-						Function.pushBlock();
-						IfBodyNode ifbNode = new IfBodyNode(false);
+						//Function.pushBlock();
+						//IfBodyNode ifbNode = new IfBodyNode(false);
+						IfBodyNode.currNode.getCond();
 					} 
 					decl  stmt_list {Function.popBlock();} else_part | ;
 cond              : {BaseNode newNode = new BaseNode(1);} expr {SemanticHandler.currentBaseNode.finishBase("1");} compop {BaseNode newNode2 = new BaseNode(2);} expr {SemanticHandler.compop = $compop.text; SemanticHandler.currentBaseNode.finishBase("2");} | 'TRUE' {SemanticHandler.expr1 = "TRUE";} | 'FALSE' {SemanticHandler.expr1 = "FALSE";} ;
