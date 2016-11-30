@@ -27,7 +27,7 @@ public class IRNode {
 		READF,
 		WRITEI,
 		WRITEF,
-    WRITES,
+		WRITES,
 		PUSH,
 		POP,
 		JSR,
@@ -40,12 +40,15 @@ public class IRNode {
 	public String Op2 = null;
 	public String Result;
 	public String typeBranch = null;
+	public List<String> liveOut = new ArrayList<String>();
 
 	public IRNode(IROpcode opcode, String op1, String op2, String result){
 		this.Opcode = opcode;
 		this.Op1 = op1;
 		this.Op2 = op2;
 		this.Result = result;
+		
+		
 	}
 
 	public IRNode() {
@@ -61,6 +64,8 @@ public class IRNode {
 				System.out.print(this.Op2+" ");
 			if (this.Result != null)
 				System.out.print(this.Result);
+			if (this.liveOut != null)
+				System.out.print(this.liveOut);
 			System.out.print("\n");
 		}
 	}

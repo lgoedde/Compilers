@@ -2,6 +2,7 @@ import java.util.*;
 
 
 
+
 public class SemanticHandler {
 	public static Stack<List<HeadNode>> SemanticStack = new Stack<List<HeadNode>>();
 	public static List<IRNode> currentIRList;
@@ -11,6 +12,8 @@ public class SemanticHandler {
 	public static List<Function> FunctionList = new ArrayList<Function>(); // Iterate through to print each functions semantic handler
 	public static Function currentFunction;
 	public static ConditionSetUp conditionSetUp;
+	
+	public static List<IRNode> functionIRNodes = new ArrayList<IRNode>();
 
 	public static IRNode.IROpcode lastOpCode;
 
@@ -81,51 +84,145 @@ public class SemanticHandler {
 		}
 
 	}
+	
+	public static void genLiveOut() {
+		int listSize = functionIRNodes.size();
+		functionIRNodes.get(listSize - 1).liveOut.clear();
+		for (int i = listSize - 2; i >= 0; i--) {
+			IRNode curr = functionIRNodes.get(i);
+			IRNode next = functionIRNodes.get(i+1);
+			if (curr.Opcode == IRNode.IROpcode.RET) {
+				curr.liveOut.clear();
+				continue;
+			}
+			copyList(next.liveOut,curr.liveOut);
+			switch (next.Opcode) {
+			case STOREI :
+			case STOREF :
+				curr.liveOut.remove(next.Result);
+				addUnique(curr.liveOut,next.Op1);
+				break;
+			case ADDI :
+			case ADDF :
+			case SUBI :
+			case SUBF :
+			case MULTI :
+			case MULTF :
+			case DIVI :
+			case DIVF :
+				curr.liveOut.remove(next.Result);
+				addUnique(curr.liveOut,next.Op1);
+				addUnique(curr.liveOut,next.Op2);
+				break;
+			case READI :
+			case READF :
+				curr.liveOut.remove(next.Result);
+				break;
+			case WRITES :
+			case WRITEI :
+			case WRITEF :
+				addUnique(curr.liveOut, next.Result);
+				break;
+			case GT :
+			case GE :
+			case LT :
+			case LE :
+			case NE :
+			case EQ :
+				addUnique(curr.liveOut,next.Op1);
+				addUnique(curr.liveOut,next.Op2);
+				break;
+			case JUMP :
+				break;
+			case LABEL :
+				break;
+			case PUSH :
+				addUnique(curr.liveOut,next.Op1);
+				break;
+			case POP :
+				curr.liveOut.remove(next.Result);
+				break;
+			case JSR :
+				break;
+			case LINK :
+				break;
+			case RET :
+				break;
+			}
+		}
+	}
+	
+	public static void copyList(List<String> src, List<String> dest) {
+		if (src == null || dest == null)
+			return;
+		for (String val : src) {
+			dest.add(val);
+		}
+		
+	}
+	
+	public static void addUnique(List<String> list,String value) {
+		if (isNumeric(value))
+			return;
+		if (value == null)
+			return;
+		for (String val : list) {
+			if (val.equals(value)) {
+				return;
+			}
+		}
+		list.add(value);
+		return;
+	}
+	
+	public static boolean isNumeric(String s) {
+    	return s.matches("[-+]?\\d*\\.?\\d+");
+	}
 
-	public static void printTinyCode(HeadNode node) {
+	public static void genFunctionList(HeadNode node) {
 		if (node instanceof BaseNode) {
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
-				TinyGeneration.printTiny(irNode);
+				functionIRNodes.add(irNode);
 			}
 		}
 		else if (node instanceof IfNode) {
 			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
-				printTinyCode(bodyNode);
+				genFunctionList(bodyNode);
 			}
-			TinyGeneration.printTiny(((IfNode) node).outLabel);
+			functionIRNodes.add(((IfNode) node).outLabel);
 		}
 		else if (node instanceof IfBodyNode) {
 
-			TinyGeneration.printTiny(((IfBodyNode)node).label);
+			functionIRNodes.add(((IfBodyNode)node).label);
 			if (((IfBodyNode)node).conditionSetUp.leftSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
-					TinyGeneration.printTiny(irNode);
+					functionIRNodes.add(irNode);
 				}
 			}
 			if (((IfBodyNode)node).conditionSetUp.rightSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
-					TinyGeneration.printTiny(irNode);
+					functionIRNodes.add(irNode);
 				}
 			}
-			TinyGeneration.printTiny(((IfBodyNode)node).conditionSetUp.condition);
+			functionIRNodes.add(((IfBodyNode)node).conditionSetUp.condition);
 			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
-				printTinyCode(headNode);
+				genFunctionList(headNode);
 			}
-			TinyGeneration.printTiny(((IfBodyNode)node).jumpOut);
+			functionIRNodes.add(((IfBodyNode)node).jumpOut);
 
 		}
 		else if (node instanceof WhileNode) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.leftSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+				functionIRNodes.add(irNode);
 			}
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.rightSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+				functionIRNodes.add(irNode);
 			}
-			TinyGeneration.printTiny(((WhileNode) node).labelTop);
+			functionIRNodes.add(((WhileNode) node).labelTop);
 			for (HeadNode headNode : ((WhileNode) node).headNodes) {
-				printTinyCode(headNode);
+				genFunctionList(headNode);
 			}
-			TinyGeneration.printTiny(((WhileNode)node).conditionSetUp.condition);
+			functionIRNodes.add(((WhileNode)node).conditionSetUp.condition);
 			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
 		}
 
@@ -140,6 +237,9 @@ public class SemanticHandler {
 				node.printNode();
 			}
 			if (lastOpCode != IRNode.IROpcode.RET) {
+				BaseNode temp = new BaseNode(2);
+				temp.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+				func.semanticHandler.rootList.add(temp);
 				System.out.println(";RET");
 			}
 
@@ -167,13 +267,23 @@ public class SemanticHandler {
 		for(Function func : FunctionList) {
 			TinyGeneration.paramLength = Function.ParamLookUp.get(func.name);
 			TinyGeneration.numLocals = Function.LocalLookUp.get(func.name);
+			TinyGeneration.numTemps = Function.TempLookUp.get(func.name);
 			TinyGeneration.resetRegisterStack();
+			functionIRNodes.clear();
 			for (HeadNode node : func.semanticHandler.rootList) {
-				printTinyCode(node);
+				genFunctionList(node);
 			}
-			if (lastOpCode != IRNode.IROpcode.RET) {
-				TinyGeneration.printTiny(new IRNode(IRNode.IROpcode.RET,null,null,null));
+			genLiveOut();
+			for (HeadNode node : func.semanticHandler.rootList) {
+				node.printNode();
 			}
+			/*for (IRNode node : functionIRNodes) {
+				TinyGeneration.printTiny(node);
+			}
+			
+			//if (lastOpCode != IRNode.IROpcode.RET) {
+				//TinyGeneration.printTiny(new IRNode(IRNode.IROpcode.RET,null,null,null));
+			//}
 		}
 
 		int listSize = TinyGeneration.TinyList.size();
@@ -181,8 +291,8 @@ public class SemanticHandler {
 		{
 			TinyGeneration.TinyList.get(i).printInstr();
 		}
-    System.out.println("end");
-
+		System.out.println("end");*/
+		}
 	}
 
 	public static IfNode getParentIf() {

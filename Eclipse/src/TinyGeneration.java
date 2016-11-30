@@ -8,10 +8,22 @@ public class TinyGeneration {
 	public static LinkedList<TinyInstr> TinyList = new LinkedList<TinyInstr>();
 	public static int paramLength;
 	public static int numLocals;
+	public static int numTemps;
+	
+	public static TinyReg[] TinyRegs = { new TinyReg(),new TinyReg(),new TinyReg(),new TinyReg()};
 
 	public static String lastLabel;
 
 	public TinyGeneration() {
+	}
+	
+	public static class TinyReg {
+		public String value;
+		public boolean dirty;
+		public boolean global;
+		
+		public TinyReg() {	
+		}
 	}
 
 	public static void printTiny(IRNode ir) {
@@ -109,8 +121,8 @@ public class TinyGeneration {
 				//TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,null,null));
 				break;
 			case LINK :
-				int numLocals = Function.LocalLookUp.get(lastLabel);
-				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.link,Integer.toString(numLocals),null));
+				//numLocals = Function.LocalLookUp.get(lastLabel);
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.link,Integer.toString(numLocals + numTemps),null));
 				break;
 			case RET :
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.unlnk,null,null));
@@ -227,9 +239,14 @@ public class TinyGeneration {
 	}
 
 	public static void resetRegisterStack() {
-		for (int i = 999; i >= 0; i--) {
-			AvailableRegs.push("r"+Integer.toString(i));
+		//for (int i = 999; i >= 0; i--) {
+		//	AvailableRegs.push("r"+Integer.toString(i));
+		//}
+		//IRtoTinyReg.clear();
+		for (int i = 0; i < 4; i++) {
+			TinyRegs[i].dirty = false;
+			TinyRegs[i].global = false;
+			TinyRegs[i].value = null;
 		}
-		IRtoTinyReg.clear();
 	}
 }
