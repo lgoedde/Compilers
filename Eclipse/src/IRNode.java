@@ -41,6 +41,8 @@ public class IRNode {
 	public String Result;
 	public String typeBranch = null;
 	public List<String> liveOut = new ArrayList<String>();
+	public List<Integer> prec = new ArrayList<Integer>();
+	public List<Integer> succ = new ArrayList<Integer>();
 
 	public IRNode(IROpcode opcode, String op1, String op2, String result){
 		this.Opcode = opcode;
@@ -57,6 +59,7 @@ public class IRNode {
 
 	public void printNode() {
 		if (this.Opcode != null) {
+			System.out.print(SemanticHandler.nodenum++);
 			System.out.print(";"+this.Opcode+" ");
 			if (this.Op1 != null)
 				System.out.print(this.Op1+" ");
@@ -66,6 +69,10 @@ public class IRNode {
 				System.out.print(this.Result);
 			if (this.liveOut != null)
 				System.out.print(this.liveOut);
+			if (this.succ != null)
+				System.out.print("Succ: "+this.succ);
+			if (this.succ != null)
+				System.out.print("Prec: "+this.prec);
 			System.out.print("\n");
 		}
 	}

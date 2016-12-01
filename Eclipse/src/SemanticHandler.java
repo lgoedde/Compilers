@@ -21,6 +21,9 @@ public class SemanticHandler {
 	public static String expr1;
 	public static String expr2;
 	public static String compop;
+	
+	
+	public static int nodenum = 0;
 	public SemanticHandler() {
 
 	}
@@ -83,6 +86,55 @@ public class SemanticHandler {
 			}
 		}
 
+	}
+	
+	public static IRNode findTarget(String name) {
+		for (IRNode temp : functionIRNodes)  {
+			if (temp.Result != null && temp.Result.equals(name)) {
+				return temp;
+			}
+		}
+		return null;
+	}
+	
+	
+	public static void genCFG() {
+		int listSize = functionIRNodes.size();
+		IRNode succ;
+		for (int i = 0; i < listSize; i++) {
+			IRNode curr = functionIRNodes.get(i);
+			switch (curr.Opcode) {
+			case GT :
+			case GE :
+			case LT :
+			case LE :
+			case NE :
+			case EQ :
+				// Taken branch
+				succ = functionIRNodes.get(i + 1);
+				curr.succ.add(i + 1);
+				succ.prec.add(i);
+				// Not taken branch
+				succ = findTarget(curr.Result);
+				succ.prec.add(i);
+				curr.succ.add(functionIRNodes.indexOf(succ));
+				break;
+			case JUMP :
+				succ = findTarget(curr.Result);
+				succ.prec.add(i);
+				curr.succ.add(functionIRNodes.indexOf(succ));
+				break;
+			case RET :
+				curr.succ.clear();
+				break;
+			default :
+				curr.succ.add(i + 1);
+				succ = functionIRNodes.get(i + 1);
+				succ.prec.add(i);
+				break;
+			}
+		
+		}
 	}
 	
 	public static void genLiveOut() {
@@ -238,8 +290,8 @@ public class SemanticHandler {
 			}
 			if (lastOpCode != IRNode.IROpcode.RET) {
 				BaseNode temp = new BaseNode(2);
-				temp.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
-				func.semanticHandler.rootList.add(temp);
+				//temp.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+				//func.semanticHandler.rootList.add(temp);
 				System.out.println(";RET");
 			}
 
@@ -273,18 +325,28 @@ public class SemanticHandler {
 			for (HeadNode node : func.semanticHandler.rootList) {
 				genFunctionList(node);
 			}
+			if (functionIRNodes.get(functionIRNodes.size() - 1).Opcode != IRNode.IROpcode.RET)
+				functionIRNodes.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+			genCFG();
+			nodenum = 0;
+			System.out.println("Printing CFG");
+			//for (HeadNode node : func.semanticHandler.rootList) {
+				//node.printNode();
+			//}
+			/*
 			genLiveOut();
 			for (HeadNode node : func.semanticHandler.rootList) {
 				node.printNode();
-			}
-			/*for (IRNode node : functionIRNodes) {
-				TinyGeneration.printTiny(node);
+			}*/
+			for (IRNode node : functionIRNodes) {
+				node.printNode();
+				//TinyGeneration.printTiny(node);
 			}
 			
 			//if (lastOpCode != IRNode.IROpcode.RET) {
 				//TinyGeneration.printTiny(new IRNode(IRNode.IROpcode.RET,null,null,null));
 			//}
-		}
+/*		}
 
 		int listSize = TinyGeneration.TinyList.size();
 		for (int i = 0; i < listSize; i++)
