@@ -401,12 +401,14 @@ public class SemanticHandler {
 				TinyGeneration.printTiny(node);
 			}
 			
-			int listSize = TinyGeneration.TinyList.size();
-			for (int i = 0; i < listSize; i++)
-			{
-				TinyGeneration.TinyList.get(i).printInstr();
-			}
 			
+			
+			
+		}
+		int listSize = TinyGeneration.TinyList.size();
+		for (int i = 0; i < listSize; i++)
+		{
+			TinyGeneration.TinyList.get(i).printInstr();
 		}
 		System.out.println("end");
 	}
