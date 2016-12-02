@@ -355,7 +355,7 @@ public class SemanticHandler {
 				node.printNode();
 			}
 			if (lastOpCode != IRNode.IROpcode.RET) {
-				BaseNode temp = new BaseNode(2);
+				//BaseNode temp = new BaseNode(2);
 				//temp.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
 				//func.semanticHandler.rootList.add(temp);
 				System.out.println(";RET");

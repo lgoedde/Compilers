@@ -3,6 +3,7 @@ import java.util.*;
 public class Function {
 	public static HashMap<String,Function> TableLookUp = new HashMap<String,Function>();
 	public static HashMap<String,Integer> ParamLookUp = new HashMap<String,Integer>();
+	public static HashMap<String,Integer> TempLookUp = new HashMap<String,Integer>();
 	public static HashMap<String,Integer> LocalLookUp = new HashMap<String,Integer>();
 	public static Stack<HashMap<String,Symbol>> symbolLookUp = new Stack<HashMap<String,Symbol>>();
 	public SemanticHandler semanticHandler = new SemanticHandler();
@@ -28,9 +29,10 @@ public class Function {
 		this.name = name;
 		currName = name;
 		ParamLookUp.put(name, 0);
+		TempLookUp.put(name, 0);
 		LocalLookUp.put(name, 0);
 		regLookUp.clear();
-		tempReg = 0;
+		tempReg = 1;
 		tempLocal = 1;
 		tempParam = 1;
 		regLookUp.clear();
@@ -67,6 +69,7 @@ public class Function {
 
 	public static String GetNextReg(String type) {
 		String reg = "$T"+Integer.toString(tempReg++);
+		TempLookUp.put(currName, tempReg-1);
 		regLookUp.put(reg,type);
 		return reg;
 	}

@@ -174,6 +174,51 @@ public class TinyGeneration {
 		return -1;
 	}
 	
+	
+	// return either literal, stackRef, or regValue for input value
+	private static String ensureSingle(String value, String dontTouch, boolean regNeeded) {
+		int regFound;
+		if (regNeeded) {
+			regFound = testRegs(value);
+			if (regFound != -1) {
+				//value already in reg
+				return "r"+Integer.toString(regFound);
+			}
+			else {
+				if (dontTouch != null) {
+					regFound = findBestReg(dontTouch);
+				}
+				else {
+					regFound = findBestReg(value);
+				}
+				if (TinyRegs[regFound].dirty)
+					saveValue(regFound);
+				String op = getStackRef(value);
+				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,op,"r"+Integer.toString(regFound)));
+				//System.out.print("move "+op+" "+"r"+Integer.toString(regFound)+" ");
+				//printRegs();
+				TinyRegs[regFound].value = value;
+				TinyRegs[regFound].dirty = false;
+				return "r"+Integer.toString(regFound);
+			}
+		}
+		else {
+			String op = getStackRef(value);
+			if (isNumeric(op)) {
+				return op;
+			}
+			else  {
+				regFound = testRegs(value);
+				if (regFound != -1) {
+					return "r"+Integer.toString(regFound);
+				}
+				else {
+					return op;
+				}
+ 			}
+		}
+	}
+	
 	private static String[] ensure(String op1, String op2, String result,boolean checkResult) {
 		int op1Reg = -1;
 		int op2Reg = -1;
@@ -188,7 +233,7 @@ public class TinyGeneration {
 				int i = findBestReg(op2);
 				op1Reg = i;
 				if (TinyRegs[i].dirty)
-					saveValue(TinyRegs[i].value,i);
+					//saveValue(TinyRegs[i].value,i);
 				TinyRegs[i].value = op1;
 				TinyRegs[i].dirty = false;
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,getStackRef(op1),"r"+Integer.toString(i)));
@@ -204,7 +249,7 @@ public class TinyGeneration {
 				int i = findBestReg(op1);
 				op2Reg = i;
 				if (TinyRegs[i].dirty)
-					saveValue(TinyRegs[i].value,i);
+					//saveValue(TinyRegs[i].value,i);
 				TinyRegs[i].value = op2;
 				TinyRegs[i].dirty = false;
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,getStackRef(op2),"r"+Integer.toString(i)));
@@ -248,30 +293,33 @@ public class TinyGeneration {
 		return op;
 	}
 		
-	private static void saveValue(String value,int regInd) {
-		if (isNumeric(value))
+	private static void saveValue(int regInd) {
+		if (isNumeric(TinyRegs[regInd].value))
 			return;
-		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,"r"+Integer.toString(regInd),getStackRef(value)));
+		//System.out.print("move "+"r"+Integer.toString(regInd)+" "+getStackRef(TinyRegs[regInd].value)+" ");
+		//printRegs();
+		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,"r"+Integer.toString(regInd),getStackRef(TinyRegs[regInd].value)));
 	}
 
 	private static void branchCompare(TinyInstr.TinyOpcode opcode, String op1, String op2, String dest, String type) {
+		String op1Cop = op1;
 		int op1Reg = testRegs(op1);
 		if (op1Reg == -1)
 			op1 = getStackRef(op1);
 		else
 			op1 = "r"+Integer.toString(op1Reg);
 		
-		int op2Reg = testRegs(op2);
+		/*int op2Reg = testRegs(op2);
 		if (op2Reg == -1) {
 			op2Reg = findBestReg(op1);
 			if (TinyRegs[op2Reg].dirty)
-				saveValue(TinyRegs[op2Reg].value,op2Reg);
+				//saveValue(TinyRegs[op2Reg].value,op2Reg);
 			TinyRegs[op2Reg].value = op2;
 			TinyRegs[op2Reg].dirty = true;
 			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,getStackRef(op2),"r"+Integer.toString(op2Reg)));
-		}
+		}*/
 		
-		op2 = "r"+Integer.toString(op2Reg);
+		op2 = ensureSingle(op2,op1Cop,true);
 		
 		TinyInstr.TinyOpcode cmpInstr = TinyInstr.TinyOpcode.cmpi;
 		if (type.equals("FLOAT"))
@@ -279,6 +327,7 @@ public class TinyGeneration {
 		TinyList.add(new TinyInstr(cmpInstr,op1,op2));
 		TinyList.add(new TinyInstr(opcode,null,dest));
 		
+		freeUnused();
 		/*op1 = convertOp(op1);
 		op2 = convertOp(op2);
 		if (!testReg(op2)) {
@@ -309,12 +358,57 @@ public class TinyGeneration {
 		return -1;
 	}
 
+	private static boolean testIDStackVar (String val) {
+	return true;
+		
+		
+	}
+	
+	private static void printRegs() {
+		System.out.print("\t");
+		for (int i = 0; i < 4; i++) {
+			System.out.print("r"+Integer.toString(i)+": "+TinyRegs[i].value);
+			if (TinyRegs[i].dirty)
+				System.out.print("*");
+			System.out.print("  ");
+		}
+		System.out.print("\n");
+	}
 
 	private static void store(String value, String dest) {
 		int reg1 = testRegs(value);
 		int reg2 = testRegs(dest);
 		
-		if (reg1 == -1 && reg2 == -1) {
+		String valueCop = value;
+		
+		if (reg1 != -1)
+			value = "r"+Integer.toString(reg1);
+		if (reg2 != -1) 
+			dest = "r"+Integer.toString(reg2);
+		
+		if ( (!isNumeric(value) && reg1 == -1) && reg2 == -1) {
+			//move value to reg, then that reg to dest
+			value = ensureSingle(value,dest,true);
+			
+		}
+		
+		if (reg2 == -1) {
+			int destReg = findBestReg(valueCop);
+			if (TinyRegs[destReg].dirty)
+				saveValue(destReg);
+			TinyRegs[destReg].dirty = true;
+			TinyRegs[destReg].value = dest;
+			dest = "r"+Integer.toString(destReg);
+		}
+		
+		
+		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
+		freeUnused();
+		//System.out.print("move "+value+" "+dest+" ");
+		//printRegs();
+		
+		
+		/*if (reg1 == -1 && reg2 == -1) {
 			int temp = findBestReg(value);
 			if (TinyRegs[temp].dirty)
 				saveValue(TinyRegs[temp].value,temp);
@@ -333,20 +427,8 @@ public class TinyGeneration {
 			else
 				dest = getStackRef(value);
 			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
-		}
-		
-		
-		/*value = convertOp(value);
-		dest = convertOp(dest);
-		if (testVarName(value) && testVarName(dest) ) {
-			String newReg = AvailableRegs.pop();
-			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,newReg));
-			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,newReg,dest));
-		}
-		else {
-			
-			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,dest));
 		}*/
+		
 	}
 
 	public static boolean isNumeric(String s) {
@@ -364,19 +446,18 @@ public class TinyGeneration {
 
 	private static void arithmetic(TinyInstr.TinyOpcode opcode, String op1, String op2, String result) {
 		//boolean dependency = hasDependency(op1,op2,result);
-		String[] regs = ensure(op1,op2,result,true);
-		TinyList.add(new TinyInstr(opcode,regs[0],regs[1]));
+		String newOp1 = ensureSingle(op1,op2,true);
+		String newOp2 = ensureSingle(op2,op1,true);
 		
-		/*op1 = convertOp(op1);
-		op2 = convertOp(op2);
-		if (dependency) {
-			result = getNewDest(result);
-		}
-		else {
-			result = convertOp(result);
-		}
-		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,op1,result));
-		TinyList.add(new TinyInstr(opcode,op2,result));*/
+		int destReg = Integer.parseInt(newOp2.split("r")[1]);
+		TinyRegs[destReg].value = result;
+		TinyRegs[destReg].dirty = true;
+		
+		//System.out.print(opcode+" "+newOp1+" "+newOp2);
+		//printRegs();
+		TinyList.add(new TinyInstr(opcode,newOp1,newOp2));
+		freeUnused();
+		
 	}
 
 	private static boolean hasDependency(String op1, String op2, String result) {
@@ -392,6 +473,8 @@ public class TinyGeneration {
 			}
 			else {
 				i = findBestReg(value);
+				if (TinyRegs[i].dirty)
+					saveValue(i);
 				TinyRegs[i].value = value;
 				TinyRegs[i].dirty = true;
 				

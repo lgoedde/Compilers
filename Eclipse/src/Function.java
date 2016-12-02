@@ -32,7 +32,7 @@ public class Function {
 		TempLookUp.put(name, 0);
 		LocalLookUp.put(name, 0);
 		regLookUp.clear();
-		tempReg = 0;
+		tempReg = 1;
 		tempLocal = 1;
 		tempParam = 1;
 		regLookUp.clear();
@@ -69,7 +69,7 @@ public class Function {
 
 	public static String GetNextReg(String type) {
 		String reg = "$T"+Integer.toString(tempReg++);
-		TempLookUp.put(currName, tempReg);
+		TempLookUp.put(currName, tempReg-1);
 		regLookUp.put(reg,type);
 		return reg;
 	}

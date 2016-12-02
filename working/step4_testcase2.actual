@@ -1,0 +1,62 @@
+;IR code
+;LABEL main []
+;LINK  []
+;STOREI 1 $T1 []
+;STOREI $T1 a []
+;STOREI 1 $T2 []
+;STOREI $T2 b []
+;LABEL label4 []
+;STOREI 1 $T3 []
+;NE b $T3 label1 []
+;STOREI 1 $T4 []
+;MULTI $T4 a $T5 []
+;STOREI $T5 g []
+;WRITEI g []
+;JUMP label0 []
+;LABEL label1 []
+;STOREI 2 $T6 []
+;NE b $T6 label2 []
+;STOREI 2 $T7 []
+;MULTI $T7 a $T8 []
+;STOREI $T8 p []
+;WRITEI p []
+;JUMP label0 []
+;LABEL label2 []
+;STOREI 3 $T9 []
+;NE b $T9 label3 []
+;STOREI 3 $T10 []
+;MULTI $T10 a $T11 []
+;STOREI $T11 k []
+;WRITEI k []
+;JUMP label0 []
+;LABEL label3 []
+;STOREI 120 $T19 []
+;NE b $T12 label0 []
+;STOREI 4 $T13 []
+;MULTI $T13 a $T14 []
+;STOREI $T14 u []
+;WRITEI u []
+;LABEL label0 []
+;STOREI 1 $T15 []
+;ADDI b $T15 $T16 []
+;STOREI $T16 b []
+;STOREI 20 $T17 []
+;ADDI a $T17 $T18 []
+;STOREI $T18 a []
+;LE a $T19 label4 []
+;RET
+
+;tiny code
+var g
+var u
+var b
+var p
+var a
+var k
+push
+push r0
+push r1
+push r2
+push r3
+jsr main
+sys halt

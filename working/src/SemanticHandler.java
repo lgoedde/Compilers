@@ -2,6 +2,7 @@ import java.util.*;
 
 
 
+
 public class SemanticHandler {
 	public static Stack<List<HeadNode>> SemanticStack = new Stack<List<HeadNode>>();
 	public static List<IRNode> currentIRList;
@@ -11,6 +12,8 @@ public class SemanticHandler {
 	public static List<Function> FunctionList = new ArrayList<Function>(); // Iterate through to print each functions semantic handler
 	public static Function currentFunction;
 	public static ConditionSetUp conditionSetUp;
+	
+	public static List<IRNode> functionIRNodes = new ArrayList<IRNode>();
 
 	public static IRNode.IROpcode lastOpCode;
 
@@ -18,6 +21,10 @@ public class SemanticHandler {
 	public static String expr1;
 	public static String expr2;
 	public static String compop;
+	
+	public static List<String> globalVars = new ArrayList<String>();
+	
+	public static int nodenum = 0;
 	public SemanticHandler() {
 
 	}
@@ -81,51 +88,259 @@ public class SemanticHandler {
 		}
 
 	}
+	
+	public static IRNode findTarget(String name) {
+		for (IRNode temp : functionIRNodes)  {
+			if (temp.Result != null && temp.Opcode == IRNode.IROpcode.LABEL && temp.Result.equals(name)) {
+				return temp;
+			}
+		}
+		return null;
+	}
+	
+	
+	public static void genCFG() {
+		int listSize = functionIRNodes.size();
+		
+		
+		IRNode succ;
+		
+		for (int i = 0; i < listSize; i++) {
+			IRNode curr = functionIRNodes.get(i);
+			switch (curr.Opcode) {
+			case GT :
+			case GE :
+			case LT :
+			case LE :
+			case NE :
+			case EQ :
+				// Taken branch
+				succ = functionIRNodes.get(i + 1);
+				curr.succ.add(i + 1);
+				succ.prec.add(i);
+				// Not taken branch
+				succ = findTarget(curr.Result);
+				succ.prec.add(i);
+				curr.succ.add(functionIRNodes.indexOf(succ));
+				break;
+			case JUMP :
+				succ = findTarget(curr.Result);
+				succ.prec.add(i);
+				curr.succ.add(functionIRNodes.indexOf(succ));
+				break;
+			case RET :
+				curr.succ.clear();
+				break;
+			default :
+				curr.succ.add(i + 1);
+				succ = functionIRNodes.get(i + 1);
+				succ.prec.add(i);
+				break;
+			}
+		
+		}
+	}
+	
+	
+	public static List<String> getInSet(List<String> outSet, String kill, String gen1, String gen2) {
+		List<String> result = new ArrayList<String>();
+		for (String val : outSet) {
+			result.add(val);
+		}
+		
+		if (gen1 != null && gen1.equals("$GLOBAL")) {
+			for (String val : globalVars) {
+				addUnique(result,val);
+			}
+			return result;
+		}
+		
+		if (kill != null)
+			result.remove(kill);
+		addUnique(result,gen1);
+		addUnique(result,gen2);
+		return result;
+	}
+	
+	public static boolean updateIn(IRNode node) {
+		List<String> newList = null;
+		switch (node.Opcode) {
+		case STOREI :
+		case STOREF :
+			newList = getInSet(node.liveOut,node.Result,node.Op1,null);
+			break;
+		case ADDI :
+		case ADDF :
+		case SUBI :
+		case SUBF :
+		case MULTI :
+		case MULTF :
+		case DIVI :
+		case DIVF :
+			newList = getInSet(node.liveOut,node.Result,node.Op1,node.Op2);
+			break;
+		case READI :
+		case READF :
+			newList = getInSet(node.liveOut,node.Result,null,null);
+			break;
+		case WRITES :
+		case WRITEI :
+		case WRITEF :
+			newList = getInSet(node.liveOut,null,node.Result,null);
+			break;
+		case GT :
+		case GE :
+		case LT :
+		case LE :
+		case NE :
+		case EQ :
+			newList = getInSet(node.liveOut,null,node.Op1,node.Op2);
+			break;
+		case JUMP :
+		case LABEL :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		case PUSH :
+			newList = getInSet(node.liveOut,null,node.Op1,null);
+			break;
+		case POP :
+			newList = getInSet(node.liveOut,node.Result,null,null);
+			break;
+		case JSR :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		case LINK :
+		case RET :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		}
+		
+		for (String val : newList) {
+			if (! node.liveIn.contains(val)) {
+				node.liveIn = newList;
+				return true;
+			}
+		}
+		if (newList.size() != node.liveIn.size()) {
+			node.liveIn = newList;
+			return true;
+		}
+		return false;
+	}
+	
+	public static void updateOut(IRNode node) {
+		if (node.Opcode == IRNode.IROpcode.RET)
+			return;
+		node.liveOut.clear();
+		for (int i : node.succ) {
+			IRNode successor = functionIRNodes.get(i);
+			updateIn(successor);
+			for (String val : successor.liveIn) {
+				addUnique(node.liveOut, val);
+			}
+		}
+		boolean changed = updateIn(node);
+		if (changed || node.liveIn.size() == 0) {
+			for (int precessor : node.prec) {
+				updateOut(functionIRNodes.get(precessor));
+			}
+		}
+		
+	}
+	
+	public static void Liveness() {
+		
+		for (IRNode node : functionIRNodes) {
+			if (node.Opcode == IRNode.IROpcode.RET) {
+				node.liveIn.clear();
+				node.liveOut.clear();
+				updateOut(functionIRNodes.get(node.prec.get(0)));
+			}
+		}
+	}
+	
+	public static void copyList(List<String> src, List<String> dest) {
+		if (src == null || dest == null)
+			return;
+		for (String val : src) {
+			dest.add(val);
+		}
+		
+	}
+	
+	public static void addUnique(List<String> list,String value) {
+		if (value == null)
+			return;
+		if (isNumeric(value))
+			return;
+		
+		for (String val : list) {
+			if (val.equals(value)) {
+				return;
+			}
+		}
+		list.add(value);
+		return;
+	}
+	
+	public static boolean isNumeric(String s) {
+    	return s.matches("[-+]?\\d*\\.?\\d+");
+	}
 
-	public static void printTinyCode(HeadNode node) {
+	public static void genFunctionList(HeadNode node) {
 		if (node instanceof BaseNode) {
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
-				TinyGeneration.printTiny(irNode);
+				if (irNode.Opcode != null)
+					functionIRNodes.add(irNode);
 			}
 		}
 		else if (node instanceof IfNode) {
 			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
-				printTinyCode(bodyNode);
+				genFunctionList(bodyNode);
 			}
-			TinyGeneration.printTiny(((IfNode) node).outLabel);
+			if (((IfNode) node).outLabel.Opcode != null)
+				functionIRNodes.add(((IfNode) node).outLabel);
 		}
 		else if (node instanceof IfBodyNode) {
-
-			TinyGeneration.printTiny(((IfBodyNode)node).label);
+			if (((IfBodyNode) node).label.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).label);
 			if (((IfBodyNode)node).conditionSetUp.leftSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
-					TinyGeneration.printTiny(irNode);
+					if (irNode.Opcode != null)
+						functionIRNodes.add(irNode);
 				}
 			}
 			if (((IfBodyNode)node).conditionSetUp.rightSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
-					TinyGeneration.printTiny(irNode);
+					if (irNode.Opcode != null)
+						functionIRNodes.add(irNode);
 				}
 			}
-			TinyGeneration.printTiny(((IfBodyNode)node).conditionSetUp.condition);
+			if (((IfBodyNode) node).conditionSetUp.condition.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).conditionSetUp.condition);
 			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
-				printTinyCode(headNode);
+				genFunctionList(headNode);
 			}
-			TinyGeneration.printTiny(((IfBodyNode)node).jumpOut);
+			if (((IfBodyNode) node).jumpOut.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).jumpOut);
 
 		}
 		else if (node instanceof WhileNode) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.leftSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+				if (irNode.Opcode != null)
+				functionIRNodes.add(irNode);
 			}
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.rightSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+				if (irNode.Opcode != null)
+				functionIRNodes.add(irNode);
 			}
-			TinyGeneration.printTiny(((WhileNode) node).labelTop);
+			if (((WhileNode) node).labelTop.Opcode != null)
+			functionIRNodes.add(((WhileNode) node).labelTop);
 			for (HeadNode headNode : ((WhileNode) node).headNodes) {
-				printTinyCode(headNode);
+				genFunctionList(headNode);
 			}
-			TinyGeneration.printTiny(((WhileNode)node).conditionSetUp.condition);
+			if (((WhileNode) node).conditionSetUp.condition.Opcode != null)
+			functionIRNodes.add(((WhileNode)node).conditionSetUp.condition);
 			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
 		}
 
@@ -140,15 +355,17 @@ public class SemanticHandler {
 				node.printNode();
 			}
 			if (lastOpCode != IRNode.IROpcode.RET) {
+				//BaseNode temp = new BaseNode(2);
+				//temp.NodeList.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+				//func.semanticHandler.rootList.add(temp);
 				System.out.println(";RET");
 			}
-
-
 			System.out.println("");
 		}
 		System.out.println(";tiny code");
 		HashMap<String,Symbol> globals = Function.symbolLookUp.pop();
 		for (String key : globals.keySet()) {
+			globalVars.add(key);
 			Symbol temp = globals.get(key);
 			if (temp.type.equals("STRING"))
 				System.out.println("str "+key+" "+temp.value);
@@ -167,22 +384,33 @@ public class SemanticHandler {
 		for(Function func : FunctionList) {
 			TinyGeneration.paramLength = Function.ParamLookUp.get(func.name);
 			TinyGeneration.numLocals = Function.LocalLookUp.get(func.name);
+			TinyGeneration.numTemps = Function.TempLookUp.get(func.name);
 			TinyGeneration.resetRegisterStack();
+			functionIRNodes.clear();
 			for (HeadNode node : func.semanticHandler.rootList) {
-				printTinyCode(node);
+				genFunctionList(node);
 			}
-			if (lastOpCode != IRNode.IROpcode.RET) {
-				TinyGeneration.printTiny(new IRNode(IRNode.IROpcode.RET,null,null,null));
+			if (functionIRNodes.get(functionIRNodes.size() - 1).Opcode != IRNode.IROpcode.RET)
+				functionIRNodes.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
+			genCFG();
+			nodenum = 0;
+			Liveness();
+			
+			for (IRNode node : functionIRNodes) {
+				//node.printNode();
+				TinyGeneration.printTiny(node);
 			}
+			
+			
+			
+			
 		}
-
 		int listSize = TinyGeneration.TinyList.size();
 		for (int i = 0; i < listSize; i++)
 		{
 			TinyGeneration.TinyList.get(i).printInstr();
 		}
-    System.out.println("end");
-
+		System.out.println("end");
 	}
 
 	public static IfNode getParentIf() {

@@ -1,0 +1,66 @@
+;IR code
+;LABEL main []
+;LINK  []
+;STOREF 7.0 $T1 []
+;STOREF $T1 num []
+;STOREI 100 $T2 []
+;STOREI $T2 i []
+;STOREI 1 $T3 []
+;STOREI $T3 j []
+;STOREF num approx []
+;STOREI 0 $T10 []
+;LABEL label0 []
+;DIVF num approx $T4 []
+;ADDF approx $T4 $T5 []
+;STOREF 0.5 $T6 []
+;MULTF $T6 $T5 $T7 []
+;STOREF $T7 newapprox []
+;STOREF newapprox approx []
+;STOREI 1 $T8 []
+;SUBI i $T8 $T9 []
+;STOREI $T9 i []
+;NE i $T10 label0 []
+;WRITEF approx []
+;RET
+
+;tiny code
+var num
+var approx
+var newapprox
+var j
+var i
+push
+push r0
+push r1
+push r2
+push r3
+jsr main
+sys halt
+label main
+link 10 
+move 7.0 r0
+move r0 r1
+move 100 r0
+move r0 r2
+move 1 r0
+move r0 r3
+move r1 r0
+move 0 r3
+label label0
+divr r1 r0
+move r1 num
+move approx r1
+addr r1 r0
+move 0.5 r1
+mulr r1 r0
+move r0 r1
+move r1 r0
+move 1 r1
+subi r2 r1
+move r1 r2
+cmpi r2 r3
+jne label0
+sys writer r0
+unlnk 
+ret 
+end

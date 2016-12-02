@@ -1,28 +1,14 @@
-Please input an integer number: 0 0
-1 1
-2 1
-3 2
-4 3
-5 5
-6 8
-7 13
-8 21
-9 34
-10 55
-11 89
-12 144
-13 233
-14 377
+Please enter an integer number: 0
 
 STATISTICS _____________________________
-   #Instructions:57829
-    (move-ops mem:0, reglit:37883)
-    ( int-ops mem:5590, reglit:14356)
+   #Instructions:32
+    (move-ops mem:0, reglit:19)
+    ( int-ops mem:5, reglit:8)
     (  fp-ops mem:0, reglit:0)
-   Memory Usage (mem:5590,reg:43395)
-      register-use[7839,5893,6865,5908,1974,2918,1944,2916,1974,2,1972,754,1218,1218,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-   Total Cycles = 90026
+   Memory Usage (mem:5,reg:21)
+      register-use[14,5,1,1]
+   Total Cycles = 41
 OTHER STATSvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    (int-ops:7518, fp-ops:0)
-    (branches:6516)
+    (int-ops:4, fp-ops:0)
+    (branches:3)
       peephole-ops:0

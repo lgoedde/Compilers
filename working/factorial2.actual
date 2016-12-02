@@ -1,0 +1,140 @@
+;IR code
+;LABEL factorial []
+;LINK  []
+;STOREI 1 $T1 []
+;NE $P1 $T1 label1 []
+;STOREI 1 $T2 []
+;STOREI $T2 $R []
+;RET  []
+;JUMP label0 []
+;LABEL label1 []
+;STOREI 1 $T3 []
+;SUBI $P1 $T3 $T4 []
+;PUSH  []
+;PUSH $T4  []
+;JSR factorial []
+;POP  []
+;POP $T5 []
+;STOREI $T5 $L2 []
+;MULTI $L2 $P1 $T6 []
+;STOREI $T6 $L1 []
+;LABEL label0 []
+;STOREI $L1 $R []
+;RET  []
+
+;LABEL main []
+;LINK  []
+;WRITES input []
+;READI $L1 []
+;STOREI 1 $T1 []
+;NE $L1 $T1 label3 []
+;STOREI 1 $T2 []
+;STOREI $T2 $L2 []
+;JUMP label2 []
+;LABEL label3 []
+;STOREI 1 $T3 []
+;LE $L1 $T3 label4 []
+;PUSH  []
+;PUSH $L1  []
+;JSR factorial []
+;POP  []
+;POP $T4 []
+;STOREI $T4 $L2 []
+;JUMP label2 []
+;LABEL label4 []
+;STOREI 0 $T5 []
+;STOREI $T5 $L2 []
+;LABEL label2 []
+;WRITEI $L2 []
+;WRITES eol []
+;STOREI 0 $T6 []
+;STOREI $T6 $R []
+;RET  []
+
+;tiny code
+str input "Please enter an integer number: "
+str eol "\n"
+push
+push r0
+push r1
+push r2
+push r3
+jsr main
+sys halt
+label factorial
+link 8 
+move 1 r0
+cmpi $6 r0
+jne label1
+move 1 r0
+move r0 r1
+unlnk 
+ret 
+jmp label0
+label label1
+move 1 r0
+move $6 r1
+subi r1 r0
+push 
+push r0 
+push r0 
+push r1 
+push r2 
+push r3 
+jsr factorial
+pop r3 
+pop r2 
+pop r1 
+pop r0 
+pop 
+pop $-7 
+move $-7 r0
+move r0 r2
+muli r2 r1
+move r1 r0
+label label0
+move r0 r1
+unlnk 
+ret 
+label main
+link 8 
+sys writes input
+sys readi r0
+move 1 r1
+cmpi r0 r1
+jne label3
+move r0 $-1
+move 1 r0
+move r0 r1
+jmp label2
+label label3
+move 1 r0
+cmpi $-1 r0
+jle label4
+push 
+push $-1 
+push r0 
+push r1 
+push r2 
+push r3 
+jsr factorial
+pop r3 
+pop r2 
+pop r1 
+pop r0 
+pop 
+pop $-6 
+move $-6 r0
+move r0 r1
+jmp label2
+label label4
+move 0 r0
+move r0 r1
+label label2
+sys writei r1
+sys writes eol
+move 0 r0
+move r0 r1
+unlnk 
+ret 
+end
