@@ -22,6 +22,7 @@ public class SemanticHandler {
 	public static String expr2;
 	public static String compop;
 	
+	public static List<String> globalVars = new ArrayList<String>();
 	
 	public static int nodenum = 0;
 	public SemanticHandler() {
@@ -90,7 +91,7 @@ public class SemanticHandler {
 	
 	public static IRNode findTarget(String name) {
 		for (IRNode temp : functionIRNodes)  {
-			if (temp.Result != null && temp.Result.equals(name)) {
+			if (temp.Result != null && temp.Opcode == IRNode.IROpcode.LABEL && temp.Result.equals(name)) {
 				return temp;
 			}
 		}
@@ -100,7 +101,10 @@ public class SemanticHandler {
 	
 	public static void genCFG() {
 		int listSize = functionIRNodes.size();
+		
+		
 		IRNode succ;
+		
 		for (int i = 0; i < listSize; i++) {
 			IRNode curr = functionIRNodes.get(i);
 			switch (curr.Opcode) {
@@ -137,69 +141,120 @@ public class SemanticHandler {
 		}
 	}
 	
-	public static void genLiveOut() {
-		int listSize = functionIRNodes.size();
-		functionIRNodes.get(listSize - 1).liveOut.clear();
-		for (int i = listSize - 2; i >= 0; i--) {
-			IRNode curr = functionIRNodes.get(i);
-			IRNode next = functionIRNodes.get(i+1);
-			if (curr.Opcode == IRNode.IROpcode.RET) {
-				curr.liveOut.clear();
-				continue;
+	
+	public static List<String> getInSet(List<String> outSet, String kill, String gen1, String gen2) {
+		List<String> result = new ArrayList<String>();
+		for (String val : outSet) {
+			result.add(val);
+		}
+		
+		if (gen1 != null && gen1.equals("$GLOBAL")) {
+			for (String val : globalVars) {
+				addUnique(result,val);
 			}
-			copyList(next.liveOut,curr.liveOut);
-			switch (next.Opcode) {
-			case STOREI :
-			case STOREF :
-				curr.liveOut.remove(next.Result);
-				addUnique(curr.liveOut,next.Op1);
-				break;
-			case ADDI :
-			case ADDF :
-			case SUBI :
-			case SUBF :
-			case MULTI :
-			case MULTF :
-			case DIVI :
-			case DIVF :
-				curr.liveOut.remove(next.Result);
-				addUnique(curr.liveOut,next.Op1);
-				addUnique(curr.liveOut,next.Op2);
-				break;
-			case READI :
-			case READF :
-				curr.liveOut.remove(next.Result);
-				break;
-			case WRITES :
-			case WRITEI :
-			case WRITEF :
-				addUnique(curr.liveOut, next.Result);
-				break;
-			case GT :
-			case GE :
-			case LT :
-			case LE :
-			case NE :
-			case EQ :
-				addUnique(curr.liveOut,next.Op1);
-				addUnique(curr.liveOut,next.Op2);
-				break;
-			case JUMP :
-				break;
-			case LABEL :
-				break;
-			case PUSH :
-				addUnique(curr.liveOut,next.Op1);
-				break;
-			case POP :
-				curr.liveOut.remove(next.Result);
-				break;
-			case JSR :
-				break;
-			case LINK :
-				break;
-			case RET :
-				break;
+			return result;
+		}
+		
+		if (kill != null)
+			result.remove(kill);
+		addUnique(result,gen1);
+		addUnique(result,gen2);
+		return result;
+	}
+	
+	public static boolean updateIn(IRNode node) {
+		List<String> newList = null;
+		switch (node.Opcode) {
+		case STOREI :
+		case STOREF :
+			newList = getInSet(node.liveOut,node.Result,node.Op1,null);
+			break;
+		case ADDI :
+		case ADDF :
+		case SUBI :
+		case SUBF :
+		case MULTI :
+		case MULTF :
+		case DIVI :
+		case DIVF :
+			newList = getInSet(node.liveOut,node.Result,node.Op1,node.Op2);
+			break;
+		case READI :
+		case READF :
+			newList = getInSet(node.liveOut,node.Result,null,null);
+			break;
+		case WRITES :
+		case WRITEI :
+		case WRITEF :
+			newList = getInSet(node.liveOut,null,node.Result,null);
+			break;
+		case GT :
+		case GE :
+		case LT :
+		case LE :
+		case NE :
+		case EQ :
+			newList = getInSet(node.liveOut,null,node.Op1,node.Op2);
+			break;
+		case JUMP :
+		case LABEL :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		case PUSH :
+			newList = getInSet(node.liveOut,null,node.Op1,null);
+			break;
+		case POP :
+			newList = getInSet(node.liveOut,node.Result,null,null);
+			break;
+		case JSR :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		case LINK :
+		case RET :
+			newList = getInSet(node.liveOut,null,null,null);
+			break;
+		}
+		
+		for (String val : newList) {
+			if (! node.liveIn.contains(val)) {
+				node.liveIn = newList;
+				return true;
+			}
+		}
+		if (newList.size() != node.liveIn.size()) {
+			node.liveIn = newList;
+			return true;
+		}
+		return false;
+	}
+	
+	public static void updateOut(IRNode node) {
+		if (node.Opcode == IRNode.IROpcode.RET)
+			return;
+		node.liveOut.clear();
+		for (int i : node.succ) {
+			IRNode successor = functionIRNodes.get(i);
+			updateIn(successor);
+			for (String val : successor.liveIn) {
+				addUnique(node.liveOut, val);
+			}
+		}
+		boolean changed = updateIn(node);
+		if (changed || node.liveIn.size() == 0) {
+			for (int precessor : node.prec) {
+				updateOut(functionIRNodes.get(precessor));
+			}
+		}
+		
+	}
+	
+	public static void Liveness() {
+		
+		for (IRNode node : functionIRNodes) {
+			if (node.Opcode == IRNode.IROpcode.RET) {
+				node.liveIn.clear();
+				node.liveOut.clear();
+				updateOut(functionIRNodes.get(node.prec.get(0)));
 			}
 		}
 	}
@@ -214,10 +269,11 @@ public class SemanticHandler {
 	}
 	
 	public static void addUnique(List<String> list,String value) {
-		if (isNumeric(value))
-			return;
 		if (value == null)
 			return;
+		if (isNumeric(value))
+			return;
+		
 		for (String val : list) {
 			if (val.equals(value)) {
 				return;
@@ -234,46 +290,56 @@ public class SemanticHandler {
 	public static void genFunctionList(HeadNode node) {
 		if (node instanceof BaseNode) {
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
-				functionIRNodes.add(irNode);
+				if (irNode.Opcode != null)
+					functionIRNodes.add(irNode);
 			}
 		}
 		else if (node instanceof IfNode) {
 			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
 				genFunctionList(bodyNode);
 			}
-			functionIRNodes.add(((IfNode) node).outLabel);
+			if (((IfNode) node).outLabel.Opcode != null)
+				functionIRNodes.add(((IfNode) node).outLabel);
 		}
 		else if (node instanceof IfBodyNode) {
-
-			functionIRNodes.add(((IfBodyNode)node).label);
+			if (((IfBodyNode) node).label.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).label);
 			if (((IfBodyNode)node).conditionSetUp.leftSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
-					functionIRNodes.add(irNode);
+					if (irNode.Opcode != null)
+						functionIRNodes.add(irNode);
 				}
 			}
 			if (((IfBodyNode)node).conditionSetUp.rightSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
-					functionIRNodes.add(irNode);
+					if (irNode.Opcode != null)
+						functionIRNodes.add(irNode);
 				}
 			}
-			functionIRNodes.add(((IfBodyNode)node).conditionSetUp.condition);
+			if (((IfBodyNode) node).conditionSetUp.condition.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).conditionSetUp.condition);
 			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
 				genFunctionList(headNode);
 			}
-			functionIRNodes.add(((IfBodyNode)node).jumpOut);
+			if (((IfBodyNode) node).jumpOut.Opcode != null)
+				functionIRNodes.add(((IfBodyNode)node).jumpOut);
 
 		}
 		else if (node instanceof WhileNode) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.leftSetUp.NodeList) {
+				if (irNode.Opcode != null)
 				functionIRNodes.add(irNode);
 			}
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.rightSetUp.NodeList) {
+				if (irNode.Opcode != null)
 				functionIRNodes.add(irNode);
 			}
+			if (((WhileNode) node).labelTop.Opcode != null)
 			functionIRNodes.add(((WhileNode) node).labelTop);
 			for (HeadNode headNode : ((WhileNode) node).headNodes) {
 				genFunctionList(headNode);
 			}
+			if (((WhileNode) node).conditionSetUp.condition.Opcode != null)
 			functionIRNodes.add(((WhileNode)node).conditionSetUp.condition);
 			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
 		}
@@ -294,13 +360,12 @@ public class SemanticHandler {
 				//func.semanticHandler.rootList.add(temp);
 				System.out.println(";RET");
 			}
-
-
 			System.out.println("");
 		}
 		System.out.println(";tiny code");
 		HashMap<String,Symbol> globals = Function.symbolLookUp.pop();
 		for (String key : globals.keySet()) {
+			globalVars.add(key);
 			Symbol temp = globals.get(key);
 			if (temp.type.equals("STRING"))
 				System.out.println("str "+key+" "+temp.value);
@@ -329,32 +394,21 @@ public class SemanticHandler {
 				functionIRNodes.add(new IRNode(IRNode.IROpcode.RET,null,null,null));
 			genCFG();
 			nodenum = 0;
-			System.out.println("Printing CFG");
-			//for (HeadNode node : func.semanticHandler.rootList) {
-				//node.printNode();
-			//}
-			/*
-			genLiveOut();
-			for (HeadNode node : func.semanticHandler.rootList) {
-				node.printNode();
-			}*/
+			Liveness();
+			
 			for (IRNode node : functionIRNodes) {
-				node.printNode();
-				//TinyGeneration.printTiny(node);
+				//node.printNode();
+				TinyGeneration.printTiny(node);
 			}
 			
-			//if (lastOpCode != IRNode.IROpcode.RET) {
-				//TinyGeneration.printTiny(new IRNode(IRNode.IROpcode.RET,null,null,null));
-			//}
-/*		}
-
-		int listSize = TinyGeneration.TinyList.size();
-		for (int i = 0; i < listSize; i++)
-		{
-			TinyGeneration.TinyList.get(i).printInstr();
+			int listSize = TinyGeneration.TinyList.size();
+			for (int i = 0; i < listSize; i++)
+			{
+				TinyGeneration.TinyList.get(i).printInstr();
+			}
+			
 		}
-		System.out.println("end");*/
-		}
+		System.out.println("end");
 	}
 
 	public static IfNode getParentIf() {
