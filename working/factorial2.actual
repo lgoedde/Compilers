@@ -74,6 +74,7 @@ jmp label0
 label label1
 move 1 r0
 move $6 r1
+move r0 $-5
 subi r1 r0
 push 
 push r0 
@@ -90,6 +91,7 @@ pop
 pop $-7 
 move $-7 r0
 move r0 r2
+move r1 $6
 muli r2 r1
 move r1 r0
 label label0

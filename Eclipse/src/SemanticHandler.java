@@ -326,13 +326,17 @@ public class SemanticHandler {
 
 		}
 		else if (node instanceof WhileNode) {
+			if (((WhileNode) node).conditionSetUp.leftSetUp != null) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.leftSetUp.NodeList) {
 				if (irNode.Opcode != null)
 				functionIRNodes.add(irNode);
 			}
+			}
+			if (((WhileNode) node).conditionSetUp.rightSetUp != null) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.rightSetUp.NodeList) {
 				if (irNode.Opcode != null)
 				functionIRNodes.add(irNode);
+			}
 			}
 			if (((WhileNode) node).labelTop.Opcode != null)
 			functionIRNodes.add(((WhileNode) node).labelTop);

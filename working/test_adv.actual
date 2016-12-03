@@ -1,0 +1,125 @@
+;IR code
+;LABEL main []
+;LINK  []
+;STOREF 0.0001 $T1 []
+;STOREF $T1 tolerance []
+;STOREF 7.0 $T2 []
+;STOREF $T2 num []
+;STOREF num approx []
+;STOREI 0 $T3 []
+;STOREI $T3 count []
+;STOREF 0.0 $T4 []
+;STOREF $T4 diff []
+;STOREI 0 $T5 []
+;STOREI $T5 enough []
+;LABEL label4 []
+;STOREI 1 $T6 []
+;ADDI count $T6 $T7 []
+;STOREI $T7 count []
+;DIVF num approx $T8 []
+;ADDF approx $T8 $T9 []
+;STOREF 0.5 $T10 []
+;MULTF $T10 $T9 $T11 []
+;STOREF $T11 newapprox []
+;SUBF approx newapprox $T12 []
+;STOREF $T12 diff []
+;STOREF 0.0 $T13 []
+;LE diff $T13 label3 []
+;GE diff tolerance label0 []
+;STOREI 1 $T14 []
+;STOREI $T14 enough []
+;LABEL label0 []
+;JUMP label2 []
+;LABEL label3 []
+;STOREI 1 $T18 []
+;LE diff $T16 label1 []
+;STOREI 1 $T17 []
+;STOREI $T17 enough []
+;LABEL label1 []
+;LABEL label2 []
+;STOREF newapprox approx []
+;NE enough $T18 label4 []
+;WRITEF approx []
+;WRITEI count []
+;RET
+
+;tiny code
+var num
+var approx
+var count
+var diff
+var tolerance
+var newapprox
+var enough
+push
+push r0
+push r1
+push r2
+push r3
+jsr main
+sys halt
+label main
+link 18 
+move 0.0001 r0
+move r0 r1
+move 7.0 r0
+move r0 r2
+move r2 r0
+move 0 r3
+move r0 approx
+move r3 r0
+move 0.0 r3
+move r0 count
+move r3 r0
+move 0 r0
+move r0 r3
+label label4
+move 1 r0
+move r1 tolerance
+move count r1
+addi r0 r1
+move r1 r0
+move r2 num
+move approx r1
+divr r1 r2
+move r1 approx
+addr r2 r1
+move 0.5 r2
+move r2 $-10
+mulr r1 r2
+move r2 r1
+move approx r2
+subr r1 r2
+move r0 count
+move r2 r0
+move 0.0 r2
+cmpr r0 r2
+jle label3
+move tolerance r2
+cmpr r0 r2
+jge label0
+move 1 r0
+move r0 r3
+label label0
+jmp label2
+label label3
+move 1 r0
+move r0 $-18
+move $-16 r0
+cmpr diff r0
+jle label1
+move r3 enough
+move 1 r3
+move r0 $-16
+move r3 r0
+label label1
+label label2
+move r1 r3
+move $-18 r1
+cmpi r0 r1
+jne label4
+sys writer r3
+sys writei count
+unlnk 
+ret 
+end

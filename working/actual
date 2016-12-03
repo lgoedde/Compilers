@@ -1,14 +1,13 @@
-Please enter an integer number: 0
-
+49
 STATISTICS _____________________________
-   #Instructions:32
-    (move-ops mem:0, reglit:19)
-    ( int-ops mem:5, reglit:8)
+   #Instructions:29
+    (move-ops mem:1, reglit:15)
+    ( int-ops mem:1, reglit:12)
     (  fp-ops mem:0, reglit:0)
-   Memory Usage (mem:5,reg:21)
-      register-use[14,5,1,1]
-   Total Cycles = 41
+   Memory Usage (mem:2,reg:28)
+      register-use[12,8,4,4]
+   Total Cycles = 36
 OTHER STATSvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     (int-ops:4, fp-ops:0)
-    (branches:3)
+    (branches:4)
       peephole-ops:0

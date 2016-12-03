@@ -1,0 +1,82 @@
+;IR code
+;LABEL main []
+;LINK  []
+;STOREI 20 $T1 []
+;STOREI $T1 a []
+;STOREI 30 $T2 []
+;STOREI $T2 b []
+;STOREI 40 $T3 []
+;STOREI $T3 c []
+;MULTI a b $T4 []
+;ADDI c $T4 $T5 []
+;MULTI a b $T6 []
+;ADDI $T6 c $T7 []
+;DIVI $T7 a $T8 []
+;ADDI $T5 $T8 $T9 []
+;STOREI 20 $T10 []
+;ADDI $T9 $T10 $T11 []
+;STOREI $T11 c []
+;MULTI b b $T12 []
+;ADDI $T12 a $T13 []
+;STOREI $T13 b []
+;MULTI b a $T14 []
+;DIVI $T14 a $T15 []
+;STOREI $T15 a []
+;WRITEI c []
+;WRITEI b []
+;WRITEI a []
+;RET
+
+;tiny code
+var b
+var c
+var a
+push
+push r0
+push r1
+push r2
+push r3
+jsr main
+sys halt
+label main
+link 15 
+move 20 r0
+move r0 r1
+move 30 r0
+move r0 r2
+move 40 r0
+move r0 r3
+move r1 a
+muli r2 r1
+move r3 c
+addi r1 r3
+move a r0
+muli r2 r0
+move r0 $-6
+move c r1
+addi r1 r0
+move r0 $-7
+move a r1
+divi r1 r0
+move r3 $-5
+addi r0 r3
+move 20 r0
+move r3 $-9
+addi r0 r3
+move r3 r0
+move r2 b
+muli r2 r2
+move r2 $-12
+addi r1 r2
+move r2 r3
+move r3 b
+muli r1 r3
+move r3 $-14
+divi r1 r3
+move r3 r1
+sys writei r0
+sys writei b
+sys writei r1
+unlnk 
+ret 
+end

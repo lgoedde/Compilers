@@ -5,26 +5,23 @@
 ;STOREI $T1 num []
 ;STOREI 2 $T2 []
 ;STOREI $T2 i []
-;STOREI 4 $T3 []
-;STOREI 42 $T4 []
-;SUBI $T4 $T3 $T5 []
-;ADDI $T5 num $T6 []
-;STOREI $T6 a []
-;STOREI 5 $T7 []
-;GE i $T7 label2 []
-;ADDI num a $T8 []
-;STOREI $T8 num []
-;STOREI 3 $T9 []
-;GE i $T9 label0 []
-;ADDI num a $T10 []
-;STOREI $T10 num []
+;STOREI 42 $T3 []
+;STOREI $T3 a []
+;STOREI 5 $T4 []
+;GE i $T4 label2 []
+;ADDI num a $T5 []
+;STOREI $T5 num []
+;STOREI 3 $T6 []
+;GE i $T6 label0 []
+;ADDI num a $T7 []
+;STOREI $T7 num []
 ;LABEL label0 []
 ;JUMP label1 []
 ;LABEL label2 []
-;STOREI 5 $T11 []
-;LT i $T11 label1 []
-;SUBI num a $T12 []
-;STOREI $T12 num []
+;STOREI 5 $T8 []
+;LT i $T8 label1 []
+;SUBI num a $T9 []
+;STOREI $T9 num []
 ;LABEL label1 []
 ;WRITEI num []
 ;RET
@@ -41,39 +38,35 @@ push r3
 jsr main
 sys halt
 label main
-link 12 
+link 9 
 move 7 r0
 move r0 r1
 move 2 r0
 move r0 r2
-move 4 r0
-move 42 r3
-subi r3 r0
+move 42 r0
+move r0 r3
+move 5 r0
+cmpi r2 r0
+jge label2
+addi r1 r3
+move r3 r0
+move 3 r1
+cmpi r2 r1
+jge label0
+move a r1
 addi r0 r1
 move r1 r0
-move 5 r1
-cmpi r2 r1
-jge label2
-move num r1
-addi r1 r0
-move r0 r1
-move 3 r0
-cmpi r2 r0
-jge label0
-move a r0
-addi r1 r0
-move r0 r1
 label label0
 jmp label1
 label label2
-move 5 r0
-cmpi i r0
+move 5 r1
+cmpi i r1
 jlt label1
-move a r0
-subi r1 r0
-move r0 r1
+move a r1
+subi r0 r1
+move r1 r0
 label label1
-sys writei r1
+sys writei r0
 unlnk 
 ret 
 end
