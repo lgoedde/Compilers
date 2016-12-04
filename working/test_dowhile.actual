@@ -1,26 +1,26 @@
 ;IR code
-;LABEL main []
-;LINK  []
-;STOREF 7.0 $T1 []
-;STOREF $T1 num []
-;STOREI 100 $T2 []
-;STOREI $T2 i []
-;STOREI 1 $T3 []
-;STOREI $T3 j []
-;STOREF num approx []
-;STOREI 0 $T10 []
-;LABEL label0 []
-;DIVF num approx $T4 []
-;ADDF approx $T4 $T5 []
-;STOREF 0.5 $T6 []
-;MULTF $T6 $T5 $T7 []
-;STOREF $T7 newapprox []
-;STOREF newapprox approx []
-;STOREI 1 $T8 []
-;SUBI i $T8 $T9 []
-;STOREI $T9 i []
-;NE i $T10 label0 []
-;WRITEF approx []
+;LABEL main
+;LINK 
+;STOREF 7.0 $T1
+;STOREF $T1 num
+;STOREI 100 $T2
+;STOREI $T2 i
+;STOREI 1 $T3
+;STOREI $T3 j
+;STOREF num approx
+;STOREI 0 $T10
+;LABEL label0
+;DIVF num approx $T4
+;ADDF approx $T4 $T5
+;STOREF 0.5 $T6
+;MULTF $T6 $T5 $T7
+;STOREF $T7 newapprox
+;STOREF newapprox approx
+;STOREI 1 $T8
+;SUBI i $T8 $T9
+;STOREI $T9 i
+;NE i $T10 label0
+;WRITEF approx
 ;RET
 
 ;tiny code

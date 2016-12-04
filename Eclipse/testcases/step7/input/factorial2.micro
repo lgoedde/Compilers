@@ -2,17 +2,22 @@ PROGRAM factorial2
 BEGIN
 	STRING input := "Please enter an integer number: ";
 	STRING eol := "\n";
-	
+  STRING retr := "RETURNED";
+  STRING sent := "SENDING";
+
 	FUNCTION INT factorial(INT a)
 	BEGIN
 		INT ret;
 		INT tret;
 		IF (a = 1)
+      WRITE(a,eol);
 			RETURN 1;
 		ELSIF (TRUE)
+      WRITE(sent,a,eol);
 			tret := factorial(a-1);
 			ret := tret*a;
 		ENDIF
+    WRITE(ret,eol);
 		RETURN ret;
 	END
 
@@ -22,11 +27,12 @@ BEGIN
 		INT result;
 		WRITE(input);
 		READ(num);
-		
+    WRITE(num);
+
 		IF(num = 1)
 			result := 1;
 		ELSIF(num >1)
-			  result := factorial(num); 
+			  result := factorial(num);
 	    ELSIF(TRUE)
 			  result := 0;
 		ENDIF

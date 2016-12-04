@@ -51,8 +51,8 @@ public class IRNode {
 		this.Op1 = op1;
 		this.Op2 = op2;
 		this.Result = result;
-		
-		
+
+
 	}
 
 	public IRNode() {
@@ -71,8 +71,8 @@ public class IRNode {
 				System.out.print(this.Result);
 			//if (this.liveIn != null)
 				//System.out.println(this.liveIn);
-			if (this.liveOut != null)
-				System.out.print(" "+this.liveOut);
+			//if (this.liveOut != null)
+				//System.out.print(" "+this.liveOut);
 			//if (this.succ != null)
 				//System.out.println("Succ: "+this.succ);
 			//if (this.succ != null)

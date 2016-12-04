@@ -1,29 +1,29 @@
 ;IR code
-;LABEL main []
-;LINK  []
-;STOREI 7 $T1 []
-;STOREI $T1 num []
-;STOREI 2 $T2 []
-;STOREI $T2 i []
-;STOREI 42 $T3 []
-;STOREI $T3 a []
-;STOREI 5 $T4 []
-;GE i $T4 label2 []
-;ADDI num a $T5 []
-;STOREI $T5 num []
-;STOREI 3 $T6 []
-;GE i $T6 label0 []
-;ADDI num a $T7 []
-;STOREI $T7 num []
-;LABEL label0 []
-;JUMP label1 []
-;LABEL label2 []
-;STOREI 5 $T8 []
-;LT i $T8 label1 []
-;SUBI num a $T9 []
-;STOREI $T9 num []
-;LABEL label1 []
-;WRITEI num []
+;LABEL main
+;LINK 
+;STOREI 7 $T1
+;STOREI $T1 num
+;STOREI 2 $T2
+;STOREI $T2 i
+;STOREI 42 $T3
+;STOREI $T3 a
+;STOREI 5 $T4
+;GE i $T4 label2
+;ADDI num a $T5
+;STOREI $T5 num
+;STOREI 3 $T6
+;GE i $T6 label0
+;ADDI num a $T7
+;STOREI $T7 num
+;LABEL label0
+;JUMP label1
+;LABEL label2
+;STOREI 5 $T8
+;LT i $T8 label1
+;SUBI num a $T9
+;STOREI $T9 num
+;LABEL label1
+;WRITEI num
 ;RET
 
 ;tiny code

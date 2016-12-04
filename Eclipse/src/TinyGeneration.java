@@ -62,19 +62,19 @@ public class TinyGeneration {
 				arithmetic(TinyInstr.TinyOpcode.divr, ir.Op1, ir.Op2, ir.Result);
 				break;
 			case READI :
-				read_write("readi",ir.Result);
+				read_write("readi",ir.Result,false);
 				break;
 			case READF :
-				read_write("readr",ir.Result);
+				read_write("readr",ir.Result,false);
 				break;
 			case WRITES :
-				read_write("writes",ir.Result);
+				write("writes",ir.Result);
 				break;
 			case WRITEI :
-				read_write("writei",ir.Result);
+				read_write("writei",ir.Result,true);
 				break;
 			case WRITEF :
-				read_write("writer",ir.Result);
+				read_write("writer",ir.Result,true);
 				break;
 			case GT :
 				branchCompare(TinyInstr.TinyOpcode.jgt,ir.Op1,ir.Op2,ir.Result,ir.typeBranch);
@@ -103,6 +103,10 @@ public class TinyGeneration {
 				break;
 
 			case PUSH :
+				if (ir.Op1 == null) {
+					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,null,null));
+					break;
+				}
 				int i = testRegs(ir.Op1);
 				if (i != -1) {
 					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r"+Integer.toString(i),null));
@@ -112,15 +116,24 @@ public class TinyGeneration {
 				}
 				break;
 			case POP :
+				if (ir.Result == null) {
+					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,null,null));
+					break;
+				}
 				int j = testRegs(ir.Result);
 				if (j != -1) {
 					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r"+Integer.toString(j),null));
 				}
 				else {
-					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,getStackRef(ir.Result),null));
+					j = findBestReg(ir.Result);
+					saveValue(j);
+					TinyRegs[j].value = ir.Result;
+					TinyRegs[j].dirty = true;
+					TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.pop,"r"+Integer.toString(j),null));
 				}
 				break;
 			case JSR :
+				spillAll();
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r0",null));
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r1",null));
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.push,"r2",null));
@@ -143,6 +156,7 @@ public class TinyGeneration {
 			}
 			freeUnused();
 			checkEndBasicBlock(ir);
+			
 	}
 	
 	private static void checkEndBasicBlock(IRNode node) {
@@ -396,6 +410,8 @@ public class TinyGeneration {
 	}
 
 	private static void store(String value, String dest) {
+		
+		
 		int reg1 = testRegs(value);
 		int reg2 = testRegs(dest);
 		
@@ -410,6 +426,12 @@ public class TinyGeneration {
 			//move value to reg, then that reg to dest
 			value = ensureSingle(value,dest,true,false);
 			
+		}
+		
+		if (dest.equals("$R")) {
+			String retReg = "$"+Integer.toString(6+paramLength);
+			TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,value,retReg));
+			return;
 		}
 		
 		if (reg2 == -1) {
@@ -462,23 +484,34 @@ public class TinyGeneration {
 		return op2.equals(result) && !op1.equals(result);
 	}
 
-	private static void read_write(String opcode, String value) {
+	private static void write(String opcode, String value) { 
+		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.sys,opcode,value));
+	}
+	
+	
+	private static void read_write(String opcode, String value,boolean write) {
 		int i = testRegs(value);
 		if (i == -1) {
 			if (value.charAt(0) != '$') {
 				TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.sys,opcode,value));
+				//System.out.print("sys"+" "+opcode+" "+value);
+				//printRegs();
 				return;
 			}
 			else {
 				i = findBestReg(value);
 				//if (TinyRegs[i].dirty)
 					saveValue(i);
+					if (write)
+						TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.move,getStackRef(value),"r"+Integer.toString(i)));
 				TinyRegs[i].value = value;
 				TinyRegs[i].dirty = true;
 				
 			}
 		}
 		TinyList.add(new TinyInstr(TinyInstr.TinyOpcode.sys,opcode,"r"+Integer.toString(i)));
+		//System.out.print("sys"+" "+opcode+" "+"r"+Integer.toString(i));
+		//printRegs();
 	}
 	
 
