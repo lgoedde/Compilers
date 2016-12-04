@@ -539,6 +539,12 @@ public class SemanticHandler {
 		node.labelTop.Result = labelTop;
 		node.conditionSetUp.condition.Result = labelTop;
 	}
+	
+	public static void setWhile() {
+		List<HeadNode> temp = SemanticStack.pop();
+		conditionSetUp = ((WhileNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1)).conditionSetUp;
+		SemanticStack.push(temp);
+	}
 
 	public static void addendWhile() {
 		popList();

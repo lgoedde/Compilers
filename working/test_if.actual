@@ -46,29 +46,44 @@ move r0 r2
 move 42 r0
 move r0 r3
 move 5 r0
-cmpi r2 r0
-jge label2
+move r0 $-4
 move r1 num
-addi r3 r1
-move r1 r0
-move 3 r1
-cmpi r2 r1
+move r2 i
+move r3 a
+move $-4 r0
+cmpi i r0
+jge label2
+move num r0
+move a r1
+addi r1 r0
+move r0 r2
+move 3 r0
+move r0 $-6
+move r1 a
+move r2 num
+move $-6 r0
+cmpi i r0
 jge label0
-move r0 num
-addi r3 r0
+move num r0
+move a r1
+addi r1 r0
 move r0 r1
+move r1 num
 label label0
 jmp label1
 label label2
 move 5 r0
+move r0 $-8
+move $-8 r0
 cmpi i r0
 jlt label1
+move num r0
+move a r1
+subi r1 r0
+move r0 r1
 move r1 num
-move a r0
-subi r0 r1
-move r1 r0
 label label1
-sys writei r0
+sys writei num
 unlnk 
 ret 
 end

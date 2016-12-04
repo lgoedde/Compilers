@@ -10,8 +10,8 @@ public class Micro {
     public static void main(String[] args) throws Exception{
     	//get the current file
     	String fileName = args[0]; 
-    	fileName = "testcases/step7/input/test_expr.micro";
-    	//System.setIn(new FileInputStream("testcases/step5/input/step4_testcase.input"));
+    	fileName = "testcases/step7/input/factorial2.micro";
+    	System.setIn(new FileInputStream("testcases/step7/input/factorial2.input"));
     	//set up all of the stuff we need to parse
 		ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
 		MicroLexer lexer = new MicroLexer(fileStream);

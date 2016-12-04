@@ -70,18 +70,18 @@ label add
 link 2 
 move $7 r0
 move $6 r1
-addr r0 r1
-move r1 r0
+addr r1 r0
 move r0 r1
+move r1 r0
 unlnk 
 ret 
 label multiply
 link 2 
 move $7 r0
 move $6 r1
-mulr r0 r1
-move r1 r0
+mulr r1 r0
 move r0 r1
+move r1 r0
 unlnk 
 ret 
 label main

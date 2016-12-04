@@ -9,13 +9,13 @@ public class Micro {
 
     public static void main(String[] args) throws Exception{
     	//get the current file
-    	String fileName = args[0]; 
-    	//fileName = "testcases/step5/input/test_if.micro";
+    	String fileName = args[0];
+    //	fileName = "testcases/step7/input/step4_testcase2.micro";
     	//System.setIn(new FileInputStream("testcases/step5/input/step4_testcase.input"));
     	//set up all of the stuff we need to parse
 		ANTLRFileStream fileStream = new ANTLRFileStream(fileName);
 		MicroLexer lexer = new MicroLexer(fileStream);
-		CommonTokenStream tokens = new CommonTokenStream(lexer); 
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		MicroParser parser = new MicroParser(tokens);
 
 		//do the actual parsing

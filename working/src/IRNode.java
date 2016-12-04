@@ -45,6 +45,7 @@ public class IRNode {
 	public List<Integer> prec = new ArrayList<Integer>();
 	public List<Integer> succ = new ArrayList<Integer>();
 
+
 	public IRNode(IROpcode opcode, String op1, String op2, String result){
 		this.Opcode = opcode;
 		this.Op1 = op1;

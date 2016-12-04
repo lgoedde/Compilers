@@ -64,6 +64,8 @@ sys halt
 label factorial
 link 8 
 move 1 r0
+move r0 $-3
+move $-3 r0
 cmpi $6 r0
 jne label1
 move 1 r0
@@ -74,10 +76,9 @@ jmp label0
 label label1
 move 1 r0
 move $6 r1
-move r0 $-5
-subi r1 r0
+subi r0 r1
 push 
-push r0 
+push r1 
 push r0 
 push r1 
 push r2 
@@ -90,11 +91,14 @@ pop r0
 pop 
 pop $-7 
 move $-7 r0
-move r0 r2
-move r1 $6
-muli r2 r1
+move r0 r1
+move r1 $-2
+move $6 r0
+muli r0 r1
 move r1 r0
+move r0 $-1
 label label0
+move $-1 r0
 move r0 r1
 unlnk 
 ret 
@@ -103,14 +107,19 @@ link 8
 sys writes input
 sys readi r0
 move 1 r1
-cmpi r0 r1
-jne label3
 move r0 $-1
+move r1 $-3
+move $-3 r0
+cmpi $-1 r0
+jne label3
 move 1 r0
 move r0 r1
+move r1 $-2
 jmp label2
 label label3
 move 1 r0
+move r0 $-5
+move $-5 r0
 cmpi $-1 r0
 jle label4
 push 
@@ -128,12 +137,14 @@ pop
 pop $-6 
 move $-6 r0
 move r0 r1
+move r1 $-2
 jmp label2
 label label4
 move 0 r0
 move r0 r1
+move r1 $-2
 label label2
-sys writei r1
+sys writei r0
 sys writes eol
 move 0 r0
 move r0 r1

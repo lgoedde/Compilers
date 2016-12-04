@@ -142,9 +142,32 @@ public class TinyGeneration {
 				break;
 			}
 			freeUnused();
+			checkEndBasicBlock(ir);
 	}
 	
+	private static void checkEndBasicBlock(IRNode node) {
+		for (int successor : node.succ) {
+			IRNode succ = SemanticHandler.functionIRNodes.get(successor);
+			int i = SemanticHandler.functionIRNodes.indexOf(succ);
+			for (int prec : succ.prec) {
+				if (prec != i-1)
+					spillAll();
+				
+			}
+			for (int sucnum : succ.succ) {
+				if (sucnum != i+1)
+					spillAll();
+			}
+		}
+	}
 	
+	private static void spillAll() {
+		for (int i = 0; i < 4; i++) {
+			saveValue(i);
+			TinyRegs[i].value = "";
+			TinyRegs[i].dirty = false;
+		}
+	}
 	
 	
 	private static boolean checkLive(String value) {

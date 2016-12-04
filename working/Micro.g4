@@ -104,7 +104,7 @@ do_while_stmt       : 'DO'
 							Function.pushBlock();
 							WhileNode whileNode = new WhileNode();
 						} 
-						decl stmt_list 'WHILE' '(' cond ')' {Function.popBlock(); SemanticHandler.addendWhile();} ';' ;
+						decl stmt_list 'WHILE' {SemanticHandler.setWhile();} '(' cond ')' {Function.popBlock(); SemanticHandler.addendWhile();} ';' ;
 
 
 KEYWORD: 'PROGRAM' | 'BEGIN' | 'END' | 'FUNCTION' | 'READ' | 'WRITE' | 'IF' | 'ELSIF' | 'ENDIF' | 'DO' | 'WHILE' | 'CONTINUE' | 'BREAK' | 'RETURN' | 'INT' | 'VOID' | 'STRING' | 'FLOAT' | 'TRUE' | 'FALSE' ;
