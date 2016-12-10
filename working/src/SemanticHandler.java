@@ -146,6 +146,12 @@ public class SemanticHandler {
 
 	}
 
+	public static void setWhile() {
+		List<HeadNode> temp = SemanticStack.pop();
+		conditionSetUp = ((WhileNode)SemanticHandler.getCurrentList().get(SemanticHandler.getCurrentList().size() - 1)).conditionSetUp;
+		SemanticStack.push(temp);
+	}
+
 	public static void printIRCode() {
 		System.out.println(";IR code");
 
