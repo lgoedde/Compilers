@@ -24,11 +24,21 @@ givenOut+=$fileName
 givenOut+=".out"
 
 tinyFile=$testPath
-tinyfile+="output/"
+tinyFile+="output/"
 tinyFile+=$fileName
 tinyFile+=".tinyout"
 
-$(java -cp classes/:lib/antlr.jar Micro $microFile > $inputFile < $outFile)
+$(java -cp classes/:lib/antlr.jar Micro $microFile < $inputFile > $outFile)
 
 $(tiny $outFile < $inputFile > actual.out)
+echo
+echo
+echo "********* YOUR OUTPUT *********"
+head -n 5 actual.out
+echo
+echo
+echo "********* CORRECT OUTPUT ******"
+head -n 5 $tinyFile
 
+#rm actual.out
+#rm $outFile
