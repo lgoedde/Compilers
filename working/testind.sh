@@ -34,9 +34,11 @@ $(tiny $outFile < $inputFile > actual.out)
 echo
 echo
 echo "********* YOUR OUTPUT *********"
-head -n 5 actual.out
+head -n 15 actual.out
 echo
 echo
 echo "********* CORRECT OUTPUT ******"
-head -n 5 $tinyFile
+head -n 15 $tinyFile
 
+rm actual.out
+rm $outFile
