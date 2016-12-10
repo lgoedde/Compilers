@@ -85,6 +85,7 @@ public class SemanticHandler {
 	public static void printTinyCode(HeadNode node) {
 		if (node instanceof BaseNode) {
 			for (IRNode irNode : ((BaseNode) node).NodeList) {
+				if (irNode.Opcode != null)
 				TinyGeneration.printTiny(irNode);
 			}
 		}
@@ -92,39 +93,53 @@ public class SemanticHandler {
 			for (IfBodyNode bodyNode : ((IfNode) node).ifBodyList) {
 				printTinyCode(bodyNode);
 			}
+			if (((IfNode) node).outLabel.Opcode != null)
 			TinyGeneration.printTiny(((IfNode) node).outLabel);
 		}
 		else if (node instanceof IfBodyNode) {
-
+			if (((IfBodyNode) node).label.Opcode != null)
 			TinyGeneration.printTiny(((IfBodyNode)node).label);
 			if (((IfBodyNode)node).conditionSetUp.leftSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.leftSetUp.NodeList) {
+					if (irNode.Opcode != null)
 					TinyGeneration.printTiny(irNode);
 				}
 			}
 			if (((IfBodyNode)node).conditionSetUp.rightSetUp != null) {
 				for (IRNode irNode : ((IfBodyNode)node).conditionSetUp.rightSetUp.NodeList) {
+					if (irNode.Opcode != null)
 					TinyGeneration.printTiny(irNode);
 				}
 			}
+			if (((IfBodyNode) node).conditionSetUp.condition.Opcode != null)
 			TinyGeneration.printTiny(((IfBodyNode)node).conditionSetUp.condition);
 			for (HeadNode headNode : ((IfBodyNode) node).headNodes) {
 				printTinyCode(headNode);
 			}
+			if (((IfBodyNode) node).jumpOut.Opcode != null)
 			TinyGeneration.printTiny(((IfBodyNode)node).jumpOut);
 
 		}
 		else if (node instanceof WhileNode) {
+			if (((WhileNode) node).conditionSetUp.leftSetUp != null) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.leftSetUp.NodeList) {
-				TinyGeneration.printTiny(irNode);
+				
+				if (irNode.Opcode != null)
+					TinyGeneration.printTiny(irNode);
 			}
+			}
+			if (((WhileNode) node).conditionSetUp.rightSetUp != null) {
 			for (IRNode irNode : ((WhileNode)node).conditionSetUp.rightSetUp.NodeList) {
+				if (irNode.Opcode != null)
 				TinyGeneration.printTiny(irNode);
 			}
+			}
+			if (((WhileNode) node).labelTop.Opcode != null)
 			TinyGeneration.printTiny(((WhileNode) node).labelTop);
 			for (HeadNode headNode : ((WhileNode) node).headNodes) {
 				printTinyCode(headNode);
 			}
+			if (((WhileNode) node).conditionSetUp.condition.Opcode != null)
 			TinyGeneration.printTiny(((WhileNode)node).conditionSetUp.condition);
 			//TinyGeneration.printTiny(((WhileNode)node).jumpTop);
 		}
