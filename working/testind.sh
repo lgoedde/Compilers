@@ -40,5 +40,5 @@ echo
 echo "********* CORRECT OUTPUT ******"
 head -n 5 $tinyFile
 
-#rm actual.out
-#rm $outFile
+rm actual.out
+rm $outFile
